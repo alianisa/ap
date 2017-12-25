@@ -55,7 +55,7 @@ public class GroupPreSelectParentFragment extends SimpleDisplayListFragment<Grou
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        SimpleBindedDisplayList<GroupPre> displayList = ActorSDK.sharedActor().getMessenger().getGroupsPreDisplayList(parentId,
+        SimpleBindedDisplayList<GroupPre> displayList = ActorSDK.sharedActor().getMessenger().getGroupsPreSimpleDisplayList(parentId,
                 value -> (value.getGroupId().compareTo(groupVM.getId()) != 0
                         && groupVM.getGroupType() == messenger().getGroup(value.getGroupId()).getGroupType()));
 
@@ -94,22 +94,12 @@ public class GroupPreSelectParentFragment extends SimpleDisplayListFragment<Grou
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-    }
-
-    @Override
     protected SimpleBindedListAdapter onCreateAdapter(SimpleBindedDisplayList displayList, Activity activity) {
         return new GrupoPreSimpleAdapter(displayList, new OnItemClickedListener<GroupPre>() {
             @Override
             public void onClicked(GroupPre item) {
-
+                messenger().changeGroupParent(groupVM.getId(), item.getGroupId(), parentId);
+                finishActivity();
             }
 
             @Override

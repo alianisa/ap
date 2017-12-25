@@ -55,6 +55,7 @@ import im.actor.runtime.android.AndroidContext;
 import im.actor.runtime.eventbus.EventBus;
 import im.actor.runtime.generic.mvvm.BindedDisplayList;
 import im.actor.runtime.generic.mvvm.SimpleBindedDisplayList;
+import im.actor.runtime.storage.ListEngineDisplayExt;
 import me.leolin.shortcutbadger.ShortcutBadger;
 
 import static im.actor.runtime.actors.ActorSystem.system;
@@ -596,12 +597,10 @@ public class AndroidMessenger extends im.actor.core.Messenger {
         return groupPreList;
     }
 
-
-    public SimpleBindedDisplayList<GroupPre> getGroupsPreDisplayList(Integer parentId,
-                                                                     SimpleBindedDisplayList.Filter<GroupPre> filter){
-        SimpleBindedDisplayList<GroupPre> groupsPreListEngine =
-                new SimpleBindedDisplayList<>(modules.getDisplayListsModule().getGroupsPreListEngine(parentId), filter);
-        return groupsPreListEngine;
+    public SimpleBindedDisplayList<GroupPre> getGroupsPreSimpleDisplayList(Integer parentId,
+                                                                           SimpleBindedDisplayList.Filter<GroupPre> filter){
+       return new SimpleBindedDisplayList<>((ListEngineDisplayExt<GroupPre>) modules.getGrupoPreModule().getGrupospreEngine(parentId),
+               filter);
     }
 
     public GalleryVM getGalleryVM() {
