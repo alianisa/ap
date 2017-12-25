@@ -14,6 +14,7 @@ import im.actor.runtime.Log;
 import im.actor.runtime.annotations.MainThread;
 import im.actor.runtime.bser.BserObject;
 import im.actor.runtime.collections.ArrayUtils;
+import im.actor.runtime.function.Tuple2;
 import im.actor.runtime.mvvm.ValueModel;
 import im.actor.runtime.storage.ListEngineDisplayExt;
 import im.actor.runtime.storage.ListEngineDisplayListener;
@@ -41,12 +42,12 @@ public class SimpleBindedDisplayList<T extends BserObject & ListEngineItem>{
         engineListener = new ListEngineDisplayListener<T>() {
             @Override
             public void onItemRemoved(long key) {
-                Log.d(TAG, "onItemRemoved");
+                itensRemoved(new long[]{key});
             }
 
             @Override
             public void onItemsRemoved(long[] keys) {
-                Log.d(TAG, "onItemsRemoved");
+                itensRemoved(keys);
             }
 
             @Override
@@ -61,7 +62,7 @@ public class SimpleBindedDisplayList<T extends BserObject & ListEngineItem>{
 
             @Override
             public void onItemsReplaced(List<T> items) {
-                Log.d(TAG, "onItemsReplaced");
+               itensReplaced(items);
             }
 
             @Override
@@ -85,8 +86,46 @@ public class SimpleBindedDisplayList<T extends BserObject & ListEngineItem>{
             }
         }
         updateListState();
-
     }
+
+    private void itensRemoved(long[] keys){
+        for (long value : keys) {
+            int removedPos = findPositionById(value);
+            if(removedPos > 0)
+                this.currentList.remove(removedPos);
+        }
+
+        updateListState();
+    }
+
+    private void itensReplaced(List<T> items){
+        List<Tuple2<Integer, T>> valuesReplaced = new ArrayList<>();
+
+        for(T vr : items){
+            int posReplaced = findPositionById(vr.getEngineId());
+            if(posReplaced > 0){
+                valuesReplaced.add(new Tuple2<>(posReplaced, vr));
+            }
+        }
+
+        for(Tuple2<Integer, T> tuple : valuesReplaced){
+            currentList.set(tuple.getT1(), tuple.getT2());
+        }
+
+        updateListState();
+    }
+
+    public int findPositionById(long key){
+
+        for(int i =0; i < currentList.size(); i++){
+            T currentVal = currentList.get(i);
+            if(currentVal.getEngineId() == key){
+                return i;
+            }
+        }
+        return -1;
+    }
+
 
     private void updateListState(){
         if(!this.currentList.isEmpty()){
