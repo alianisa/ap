@@ -60,6 +60,14 @@ NSString * const SLKTextInputbarDidMoveNotification =   @"SLKTextInputbarDidMove
     return self;
 }
 
+-(void) layoutSubviews
+{
+    [super layoutSubviews];
+    [self bringSubviewToFront:self.textView];
+    [self bringSubviewToFront:self.rightButton];
+    [self bringSubviewToFront:self.leftButton];
+}
+
 - (id)init
 {
     if (self = [super init]) {

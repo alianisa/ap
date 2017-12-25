@@ -39,7 +39,7 @@ open class AAWelcomeController: AAViewController {
         appNameLabel.text = AALocalized("WelcomeTitle").replace("{app_name}", dest: ActorSDK.sharedActor().appName)
         appNameLabel.textAlignment = .center
         appNameLabel.backgroundColor = UIColor.clear
-        appNameLabel.font = UIFont.mediumSystemFontOfSize(24)
+        appNameLabel.font = UIFont.mediumSystemFontOfSize(27)
         appNameLabel.textColor = ActorSDK.sharedActor().style.welcomeTitleColor
         
         someInfoLabel.text = AALocalized("WelcomeTagline")

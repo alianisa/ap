@@ -471,7 +471,6 @@
 		0659754F1BC7DD3C00B8C7DF /* highlight.min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = highlight.min.js; sourceTree = "<group>"; };
 		065975531BC7DF5100B8C7DF /* CocoaAssetsRuntime.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CocoaAssetsRuntime.swift; sourceTree = "<group>"; };
 		065A06B51C6CEFE00012EA09 /* CocoaWebRTCRuntime.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CocoaWebRTCRuntime.swift; sourceTree = "<group>"; };
-		066A50D21BC4AE63000E606E /* ActorSDK.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = ActorSDK.framework; path = "/Users/diego/Documents/projetos/actor-platform/actor-sdk/sdk-core-ios/build/Debug-iphoneos/ActorSDK.framework"; sourceTree = "<absolute>"; };
 		066A50D51BC4AE63000E606E /* ActorSDK.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ActorSDK.h; sourceTree = "<group>"; };
 		066A50D71BC4AE63000E606E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		066A50E11BC4AF9F000E606E /* ActorSDK.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActorSDK.swift; sourceTree = "<group>"; };
@@ -766,6 +765,7 @@
 		BEFE68D41C4657360001F2D6 /* AAThumbnailCollectionCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AAThumbnailCollectionCell.swift; sourceTree = "<group>"; };
 		E30822B631D108159E8B306B /* Pods-ActorSDK.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ActorSDK.debug.xcconfig"; path = "Pods/Target Support Files/Pods-ActorSDK/Pods-ActorSDK.debug.xcconfig"; sourceTree = "<group>"; };
 		F076508E3899D309954904A3 /* Pods-ActorSDK.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ActorSDK.release.xcconfig"; path = "Pods/Target Support Files/Pods-ActorSDK/Pods-ActorSDK.release.xcconfig"; sourceTree = "<group>"; };
+		F11737131FF03B120096993A /* ActorSDK.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ActorSDK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F175DF891E168C69005BCF1A /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-BR"; path = "pt-BR.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		F17C24901FE9C61F002EFFF3 /* ListProblem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ListProblem.m; sourceTree = "<group>"; };
 		FCB25A92F679E862F539373D /* Pods_ActorSDK.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ActorSDK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -921,6 +921,7 @@
 				066A50D41BC4AE63000E606E /* ActorSDK */,
 				2F428D134E194A828C3DF863 /* Frameworks */,
 				F0BB28A250FF185B1F4D414D /* Pods */,
+				F11737131FF03B120096993A /* ActorSDK.framework */,
 			);
 			sourceTree = "<group>";
 		};
@@ -1912,7 +1913,7 @@
 			);
 			name = ActorSDK;
 			productName = ActorSDK;
-			productReference = 066A50D21BC4AE63000E606E /* ActorSDK.framework */;
+			productReference = F11737131FF03B120096993A /* ActorSDK.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 /* End PBXNativeTarget section */

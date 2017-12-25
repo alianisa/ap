@@ -33,7 +33,6 @@ open class AAConvActionSheet: UIView, AAThumbnailViewDelegate {
     
     public init() {
         super.init(frame: CGRect.zero)
-        
         self.backgroundColor = UIColor.clear
     }
     
@@ -129,7 +128,7 @@ open class AAConvActionSheet: UIView, AAThumbnailViewDelegate {
             
             self.btnCamera = {
                 let button = UIButton(type: UIButtonType.system)
-                button.tintColor = UIColor(red: 5.0/255.0, green: 124.0/255.0, blue: 226.0/255.0, alpha: 1)
+                button.tintColor = UIColor(red: 92.0/255.0, green: 107.0/255.0, blue: 192.0/255.0, alpha: 1)
                 button.titleLabel?.font = UIFont.systemFont(ofSize: 17)
                 button.setTitle(AALocalized("PhotoCamera"), for: UIControlState())
                 button.addTarget(self, action: #selector(AAConvActionSheet.btnCameraAction), for: UIControlEvents.touchUpInside)
@@ -139,7 +138,7 @@ open class AAConvActionSheet: UIView, AAThumbnailViewDelegate {
             
             self.btnLibrary = {
                 let button = UIButton(type: UIButtonType.system)
-                button.tintColor = UIColor(red: 5.0/255.0, green: 124.0/255.0, blue: 226.0/255.0, alpha: 1)
+                button.tintColor = UIColor(red: 92.0/255.0, green: 107.0/255.0, blue: 192.0/255.0, alpha: 1)
                 button.titleLabel?.font = UIFont.systemFont(ofSize: 17)
                 button.setTitle(AALocalized("PhotoLibrary"), for: UIControlState())
                 button.addTarget(self, action: #selector(AAConvActionSheet.btnLibraryAction), for: UIControlEvents.touchUpInside)
@@ -154,7 +153,7 @@ open class AAConvActionSheet: UIView, AAThumbnailViewDelegate {
             let b = customActions[i]
             self.buttons.append({
                 let button = UIButton(type: UIButtonType.system)
-                button.tintColor = UIColor(red: 5.0/255.0, green: 124.0/255.0, blue: 226.0/255.0, alpha: 1)
+                button.tintColor = UIColor(red: 92.0/255.0, green: 107.0/255.0, blue: 192.0/255.0, alpha: 1)
                 button.titleLabel?.font = UIFont.systemFont(ofSize: 17)
                 button.setTitle(AALocalized(b), for: UIControlState())
                 button.tag = i
@@ -165,7 +164,7 @@ open class AAConvActionSheet: UIView, AAThumbnailViewDelegate {
         
         self.btnCancel = {
             let button = UIButton(type: UIButtonType.system)
-            button.tintColor = UIColor(red: 5.0/255.0, green: 124.0/255.0, blue: 226.0/255.0, alpha: 1)
+            button.tintColor = UIColor(red: 92.0/255.0, green: 107.0/255.0, blue: 192.0/255.0, alpha: 1)
             button.titleLabel?.font = UIFont.systemFont(ofSize: 17)
             button.setTitle(AALocalized("AlertCancel"), for: UIControlState())
             button.addTarget(self, action: #selector(AAConvActionSheet.btnCloseAction), for: UIControlEvents.touchUpInside)

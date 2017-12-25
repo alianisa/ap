@@ -1810,7 +1810,7 @@ typedef NS_ENUM(NSUInteger, YYTextMoveDirection) {
 
 /// Returns the default tint color for text view (used for caret and select range background).
 - (UIColor *)_defaultTintColor {
-    return [UIColor colorWithRed:69/255.0 green:111/255.0 blue:238/255.0 alpha:1];
+    return [UIColor colorWithRed:92/255.0 green:107/255.0 blue:192/255.0 alpha:1];
 }
 
 /// Returns the default placeholder color for text view (same as UITextField).

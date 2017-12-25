@@ -62,7 +62,7 @@ open class AABigAlertController: UIViewController,UIViewControllerTransitioningD
         
         self.buttonOk = UIButton(type: UIButtonType.system)
         self.buttonOk.setTitle(AALocalized("AlertOk"), for: UIControlState())
-        self.buttonOk.setTitleColor(UIColor.blue, for: UIControlState())
+        self.buttonOk.setTitleColor(UIColor(red:0.36, green:0.42, blue:0.75, alpha:1.0), for: UIControlState())
         self.buttonOk.frame = CGRect(x: 0,y: 291,width: 240,height: 39)
         self.buttonOk.addTarget(self, action: #selector(AABigAlertController.closeController), for: UIControlEvents.touchUpInside)
         self.alertView.addSubview(self.buttonOk)
