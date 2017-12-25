@@ -424,7 +424,8 @@ public class GroupInfoFragment extends BaseFragment {
                  bind(parentVm.getIsLoaded(), isLoaded -> {
                      if(isLoaded) {
                          GroupVM groupParentVm = groups().get(parentId);
-                         groupPreParentAction.setText(groupParentVm.getName().get());
+                         int parentGroupChannel = groupVM.getGroupType() == GroupType.GROUP ? R.string.parent_group : R.string.parent_channel;
+                         groupPreParentAction.setText(getText(parentGroupChannel)+": "+groupParentVm.getName().get());
                      }
                  });
             }else{

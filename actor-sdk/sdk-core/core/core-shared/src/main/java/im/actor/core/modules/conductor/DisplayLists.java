@@ -16,7 +16,6 @@ import im.actor.core.modules.AbsModule;
 import im.actor.core.modules.ModuleContext;
 import im.actor.runtime.Storage;
 import im.actor.runtime.mvvm.PlatformDisplayList;
-import im.actor.runtime.storage.ListEngineDisplayExt;
 
 public class DisplayLists extends AbsModule {
 
@@ -179,10 +178,4 @@ public class DisplayLists extends AbsModule {
 
         return res;
     }
-
-
-    public ListEngineDisplayExt<GroupPre> getGroupsPreListEngine(Integer idGrupoPai){
-        return (ListEngineDisplayExt<GroupPre>) context().getGrupoPreModule().getGrupospreEngine(idGrupoPai);
-    }
-
 }

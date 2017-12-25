@@ -1571,6 +1571,12 @@ public class Messenger {
         return modules.getGrupoPreModule().changeGroupPre(groupId, isGroupPre);
     }
 
+    @NotNull
+    @ObjectiveCName("changeGroupParentWithGroupId:withParentId:withOldParentId:")
+    public Promise<Void> changeGroupParent(int groupId, int parentId, int oldParentId) {
+        return modules.getGrupoPreModule().changeParent(groupId, parentId, oldParentId);
+    }
+
     /**
      * Create channel
      *
