@@ -33,6 +33,7 @@ public abstract class SimpleDisplayListFragment<T extends BserObject & ListEngin
 
     protected View inflate(LayoutInflater inflater, ViewGroup container, int resource, SimpleBindedDisplayList<T> displayList) {
         View res = inflater.inflate(resource, container, false);
+        afterViewInflate(res, displayList);
         return res;
     }
 

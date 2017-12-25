@@ -60,12 +60,7 @@ public class DisplayList<T> {
 
         this.operationMode = operationMode;
 
-        this.executor = system().actorOf(Props.create(new ActorCreator() {
-            @Override
-            public ListSwitcher create() {
-                return new ListSwitcher(DisplayList.this);
-            }
-        }).changeDispatcher("display_list"), "display_lists/" + DISPLAY_LIST_ID);
+        this.executor = system().actorOf(Props.create(() -> new ListSwitcher(DisplayList.this)).changeDispatcher("display_list"), "display_lists/" + DISPLAY_LIST_ID);
         this.lists = new ArrayList[2];
 
         this.currentList = 0;
