@@ -7,17 +7,18 @@ package im.actor.runtime.generic.mvvm;
 import com.google.j2objc.annotations.ObjectiveCName;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import im.actor.runtime.Log;
 import im.actor.runtime.annotations.MainThread;
 import im.actor.runtime.bser.BserObject;
+import im.actor.runtime.collections.ArrayUtils;
+import im.actor.runtime.function.Tuple2;
+import im.actor.runtime.mvvm.ValueModel;
 import im.actor.runtime.storage.ListEngineDisplayExt;
 import im.actor.runtime.storage.ListEngineDisplayListener;
-import im.actor.runtime.storage.ListEngineDisplayLoadCallback;
 import im.actor.runtime.storage.ListEngineItem;
-
-// Disabling Bounds checks for speeding up calculations
 
 /*-[
 #define J2OBJC_DISABLE_ARRAY_BOUND_CHECKS 1
@@ -30,9 +31,8 @@ public class SimpleBindedDisplayList<T extends BserObject & ListEngineItem>{
     private final ListEngineDisplayExt<T> listEngine;
     private final ListEngineDisplayListener<T> engineListener;
     private Filter<T> filter;
-    private ListChanged<T> listChanged;
     private List<T> currentList = new ArrayList<>();
-
+    private ValueModel<State> state;
 
     public SimpleBindedDisplayList(ListEngineDisplayExt<T> listEngine,
                                    Filter<T> filter){
@@ -42,37 +42,42 @@ public class SimpleBindedDisplayList<T extends BserObject & ListEngineItem>{
         engineListener = new ListEngineDisplayListener<T>() {
             @Override
             public void onItemRemoved(long key) {
-                Log.d(TAG, "onItemRemoved");
+                itensRemoved(new long[]{key});
             }
 
             @Override
             public void onItemsRemoved(long[] keys) {
-                Log.d(TAG, "onItemsRemoved");
+                itensRemoved(keys);
             }
 
             @Override
             public void addOrUpdate(T item) {
-                Log.d(TAG, "addOrUpdate");
+                addOrUpdateItens(Arrays.asList(item));
             }
 
             @Override
             public void addOrUpdate(List<T> items) {
-                Log.d(TAG, "addOrUpdate");
+               addOrUpdateItens(items);
             }
 
             @Override
             public void onItemsReplaced(List<T> items) {
-                Log.d(TAG, "onItemsReplaced");
+               itensReplaced(items);
             }
 
             @Override
             public void onListClear() {
-                Log.d(TAG, "onListClear");
+               currentList.clear();
+               updateListState();
             }
         };
+
+        this.state = new ValueModel<>("simple_display_list.state", State.LOADING_EMPTY);
+
         listEngine.subscribe(engineListener);
         listEngine.loadForward(Integer.MAX_VALUE, (items, topSortKey, bottomSortKey) -> addOrUpdateItens(items));
     }
+
 
     private void addOrUpdateItens(List<T> values){
         for (T value : values) {
@@ -80,8 +85,53 @@ public class SimpleBindedDisplayList<T extends BserObject & ListEngineItem>{
                 this.currentList.add(value);
             }
         }
-        if(listChanged != null){
-            listChanged.onListChanged();
+        updateListState();
+    }
+
+    private void itensRemoved(long[] keys){
+        for (long value : keys) {
+            int removedPos = findPositionById(value);
+            if(removedPos > 0)
+                this.currentList.remove(removedPos);
+        }
+
+        updateListState();
+    }
+
+    private void itensReplaced(List<T> items){
+        List<Tuple2<Integer, T>> valuesReplaced = new ArrayList<>();
+
+        for(T vr : items){
+            int posReplaced = findPositionById(vr.getEngineId());
+            if(posReplaced > 0){
+                valuesReplaced.add(new Tuple2<>(posReplaced, vr));
+            }
+        }
+
+        for(Tuple2<Integer, T> tuple : valuesReplaced){
+            currentList.set(tuple.getT1(), tuple.getT2());
+        }
+
+        updateListState();
+    }
+
+    public int findPositionById(long key){
+
+        for(int i =0; i < currentList.size(); i++){
+            T currentVal = currentList.get(i);
+            if(currentVal.getEngineId() == key){
+                return i;
+            }
+        }
+        return -1;
+    }
+
+
+    private void updateListState(){
+        if(!this.currentList.isEmpty()){
+            getState().change(State.LOADED);
+        }else{
+            getState().change(State.LOADED_EMPTY);
         }
     }
 
@@ -90,10 +140,6 @@ public class SimpleBindedDisplayList<T extends BserObject & ListEngineItem>{
             return filter.accept(value);
         }
         return true;
-    }
-
-    public void setListChanged(ListChanged<T> listChanged) {
-        this.listChanged = listChanged;
     }
 
     @MainThread
@@ -119,14 +165,16 @@ public class SimpleBindedDisplayList<T extends BserObject & ListEngineItem>{
         return currentList.get(position);
     }
 
+    public ValueModel<State> getState() {
+        return state;
+    }
+
     public static interface Filter<T>{
         boolean accept(T value);
     }
 
-    public static interface ListChanged<T>{
-        void onListChanged();
+    public enum State {
+        LOADING_EMPTY, LOADED, LOADED_EMPTY
     }
-
-
 
 }

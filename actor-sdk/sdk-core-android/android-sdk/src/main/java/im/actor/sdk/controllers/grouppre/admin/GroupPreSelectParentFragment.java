@@ -56,7 +56,8 @@ public class GroupPreSelectParentFragment extends SimpleDisplayListFragment<Grou
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         SimpleBindedDisplayList<GroupPre> displayList = ActorSDK.sharedActor().getMessenger().getGroupsPreDisplayList(parentId,
-                value -> (value.getGroupId().compareTo(groupVM.getId()) != 0));
+                value -> (value.getGroupId().compareTo(groupVM.getId()) != 0
+                        && groupVM.getGroupType() == messenger().getGroup(value.getGroupId()).getGroupType()));
 
         View res = inflate(inflater, container, R.layout.fragment_group_pre_select_parent, displayList);
         res.setBackgroundColor(ActorSDK.sharedActor().style.getMainBackgroundColor());
@@ -81,6 +82,27 @@ public class GroupPreSelectParentFragment extends SimpleDisplayListFragment<Grou
         return res;
     }
 
+    @Override
+    protected void onListStateChange(SimpleBindedDisplayList.State state) {
+        super.onListStateChange(state);
+
+        if(state == SimpleBindedDisplayList.State.LOADED){
+            emptyGroups.setVisibility(View.GONE);
+        }else{
+            emptyGroups.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
 
     @Override
     protected SimpleBindedListAdapter onCreateAdapter(SimpleBindedDisplayList displayList, Activity activity) {

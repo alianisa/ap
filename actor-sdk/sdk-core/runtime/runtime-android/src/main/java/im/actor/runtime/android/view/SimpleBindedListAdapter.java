@@ -9,15 +9,18 @@ import android.view.ViewGroup;
 
 import im.actor.runtime.bser.BserObject;
 import im.actor.runtime.generic.mvvm.SimpleBindedDisplayList;
+import im.actor.runtime.mvvm.ValueChangedListener;
 import im.actor.runtime.storage.ListEngineItem;
 
 public abstract class SimpleBindedListAdapter<V extends BserObject & ListEngineItem,
         T extends RecyclerView.ViewHolder>
-        extends RecyclerView.Adapter<T>
-        implements SimpleBindedDisplayList.ListChanged<V>{
-
+        extends RecyclerView.Adapter<T>{
 
     private SimpleBindedDisplayList<V> displayList;
+
+    private ValueChangedListener<SimpleBindedDisplayList.State> listener = (val, valueModel) -> {
+        notifyDataSetChanged();
+    };
 
     public SimpleBindedListAdapter(SimpleBindedDisplayList<V> displayList) {
         this(displayList, true);
@@ -25,7 +28,6 @@ public abstract class SimpleBindedListAdapter<V extends BserObject & ListEngineI
 
     public SimpleBindedListAdapter(SimpleBindedDisplayList<V> displayList, boolean autoConnect) {
         this.displayList = displayList;
-        this.displayList.setListChanged(this);
         setHasStableIds(true);
         if (autoConnect) {
             resume();
@@ -60,21 +62,16 @@ public abstract class SimpleBindedListAdapter<V extends BserObject & ListEngineI
         onBindViewHolder(dialogHolder, i, getItem(i));
     }
 
-    @Override
-    public void onListChanged(){
-        notifyDataSetChanged();
-    }
-
     public abstract void onBindViewHolder(T dialogHolder, int index, V item);
-
 
     public void resume() {
         displayList.resume();
-        notifyDataSetChanged();
+        displayList.getState().subscribe(listener);
     }
 
     public void pause() {
         displayList.dispose();
+        displayList.getState().unsubscribe(listener);
     }
 
     public void dispose() {

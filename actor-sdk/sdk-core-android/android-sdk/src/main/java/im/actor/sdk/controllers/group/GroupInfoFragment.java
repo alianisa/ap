@@ -262,9 +262,6 @@ public class GroupInfoFragment extends BaseFragment {
             administrationAction.setVisibility(View.GONE);
         }
 
-
-
-
         // Async Members
         // Showing member only when members available and async members is enabled
         bind(groupVM.getIsCanViewMembers(), groupVM.getIsAsyncMembers(), (canViewMembers, vm1, isAsync, vm2) -> {
@@ -389,6 +386,7 @@ public class GroupInfoFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
+
         memberBindings = bind(groupVM.getIsAsyncMembers(), groupVM.getMembers(), (isAsyncMembers, valueModel, memberList, valueModel2) -> {
             if (isAsyncMembers) {
                 groupUserAdapter.setMembers(new ArrayList<>());
@@ -424,8 +422,10 @@ public class GroupInfoFragment extends BaseFragment {
             if(parentId > 0){
                  GroupPreVM parentVm = messenger().getGroupPreVM(parentId);
                  bind(parentVm.getIsLoaded(), isLoaded -> {
-                     GroupVM groupParentVm = groups().get(parentId);
-                     groupPreParentAction.setText(groupParentVm.getName().get());
+                     if(isLoaded) {
+                         GroupVM groupParentVm = groups().get(parentId);
+                         groupPreParentAction.setText(groupParentVm.getName().get());
+                     }
                  });
             }else{
                 groupPreParentAction.setText(groupVM.getGroupType() == GroupType.GROUP ? R.string.parent_group : R.string.parent_channel);
