@@ -447,24 +447,20 @@ public abstract class BaseActorSettingsFragment extends BaseFragment implements 
             askQuestion.setVisibility(View.GONE);
             view.findViewById(R.id.divider3).setVisibility(View.GONE);
         }
-        askQuestion.setOnClickListener(new View.OnClickListener() {
+
+        askQuestion.setOnClickListener(view1 -> execute(messenger().findUsers(ActorSDK.sharedActor().getHelpPhone()), R.string.progress_common, new CommandCallback<UserVM[]>() {
             @Override
-            public void onClick(View view) {
-                execute(messenger().findUsers(ActorSDK.sharedActor().getHelpPhone()), R.string.progress_common, new CommandCallback<UserVM[]>() {
-                    @Override
-                    public void onResult(UserVM[] res) {
-                        if (res.length >= 1) {
-                            startActivity(Intents.openPrivateDialog(res[0].getId(), true, getActivity()));
-                        }
-                    }
-
-                    @Override
-                    public void onError(Exception e) {
-
-                    }
-                });
+            public void onResult(UserVM[] res) {
+                if (res.length >= 1) {
+                    startActivity(Intents.openPrivateDialog(res[0].getId(), true, getActivity()));
+                }
             }
-        });
+
+            @Override
+            public void onError(Exception e) {
+
+            }
+        }));
 
         //Twitter
         View twitterView = view.findViewById(R.id.twitter);
@@ -472,12 +468,9 @@ public abstract class BaseActorSettingsFragment extends BaseFragment implements 
         if (ActorSDK.sharedActor().getTwitterAcc() == null || ActorSDK.sharedActor().getTwitterAcc().isEmpty()) {
             twitterView.setVisibility(View.GONE);
         }
-        twitterView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent viewIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://twitter.com/" + ActorSDK.sharedActor().getTwitterAcc()));
-                startActivity(viewIntent);
-            }
+        twitterView.setOnClickListener(view12 -> {
+            Intent viewIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://twitter.com/" + ActorSDK.sharedActor().getTwitterAcc()));
+            startActivity(viewIntent);
         });
 
         TextView twitterTitle = (TextView) view.findViewById(R.id.settings_twitter);

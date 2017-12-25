@@ -7,17 +7,17 @@ package im.actor.runtime.generic.mvvm;
 import com.google.j2objc.annotations.ObjectiveCName;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import im.actor.runtime.Log;
 import im.actor.runtime.annotations.MainThread;
 import im.actor.runtime.bser.BserObject;
+import im.actor.runtime.collections.ArrayUtils;
+import im.actor.runtime.mvvm.ValueModel;
 import im.actor.runtime.storage.ListEngineDisplayExt;
 import im.actor.runtime.storage.ListEngineDisplayListener;
-import im.actor.runtime.storage.ListEngineDisplayLoadCallback;
 import im.actor.runtime.storage.ListEngineItem;
-
-// Disabling Bounds checks for speeding up calculations
 
 /*-[
 #define J2OBJC_DISABLE_ARRAY_BOUND_CHECKS 1
@@ -30,9 +30,8 @@ public class SimpleBindedDisplayList<T extends BserObject & ListEngineItem>{
     private final ListEngineDisplayExt<T> listEngine;
     private final ListEngineDisplayListener<T> engineListener;
     private Filter<T> filter;
-    private ListChanged<T> listChanged;
     private List<T> currentList = new ArrayList<>();
-
+    private ValueModel<State> state;
 
     public SimpleBindedDisplayList(ListEngineDisplayExt<T> listEngine,
                                    Filter<T> filter){
@@ -52,12 +51,12 @@ public class SimpleBindedDisplayList<T extends BserObject & ListEngineItem>{
 
             @Override
             public void addOrUpdate(T item) {
-                Log.d(TAG, "addOrUpdate");
+                addOrUpdateItens(Arrays.asList(item));
             }
 
             @Override
             public void addOrUpdate(List<T> items) {
-                Log.d(TAG, "addOrUpdate");
+               addOrUpdateItens(items);
             }
 
             @Override
@@ -67,12 +66,17 @@ public class SimpleBindedDisplayList<T extends BserObject & ListEngineItem>{
 
             @Override
             public void onListClear() {
-                Log.d(TAG, "onListClear");
+               currentList.clear();
+               updateListState();
             }
         };
+
+        this.state = new ValueModel<>("simple_display_list.state", State.LOADING_EMPTY);
+
         listEngine.subscribe(engineListener);
         listEngine.loadForward(Integer.MAX_VALUE, (items, topSortKey, bottomSortKey) -> addOrUpdateItens(items));
     }
+
 
     private void addOrUpdateItens(List<T> values){
         for (T value : values) {
@@ -80,8 +84,15 @@ public class SimpleBindedDisplayList<T extends BserObject & ListEngineItem>{
                 this.currentList.add(value);
             }
         }
-        if(listChanged != null){
-            listChanged.onListChanged();
+        updateListState();
+
+    }
+
+    private void updateListState(){
+        if(!this.currentList.isEmpty()){
+            getState().change(State.LOADED);
+        }else{
+            getState().change(State.LOADED_EMPTY);
         }
     }
 
@@ -90,10 +101,6 @@ public class SimpleBindedDisplayList<T extends BserObject & ListEngineItem>{
             return filter.accept(value);
         }
         return true;
-    }
-
-    public void setListChanged(ListChanged<T> listChanged) {
-        this.listChanged = listChanged;
     }
 
     @MainThread
@@ -119,14 +126,16 @@ public class SimpleBindedDisplayList<T extends BserObject & ListEngineItem>{
         return currentList.get(position);
     }
 
+    public ValueModel<State> getState() {
+        return state;
+    }
+
     public static interface Filter<T>{
         boolean accept(T value);
     }
 
-    public static interface ListChanged<T>{
-        void onListChanged();
+    public enum State {
+        LOADING_EMPTY, LOADED, LOADED_EMPTY
     }
-
-
 
 }

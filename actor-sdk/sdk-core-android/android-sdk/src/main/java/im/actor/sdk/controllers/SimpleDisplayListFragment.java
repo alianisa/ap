@@ -39,20 +39,10 @@ public abstract class SimpleDisplayListFragment<T extends BserObject & ListEngin
 
     protected void afterViewInflate(View view, SimpleBindedDisplayList<T> displayList) {
         collection = (RecyclerView) view.findViewById(R.id.collection);
-
-//        if (displayList.getCount() == 0) {
-//            collection.setVisibility(View.INVISIBLE);
-//        } else {
-//            collection.setVisibility(View.VISIBLE);
-//        }
-
         setAnimationsEnabled(true);
-
         this.displayList = displayList;
         configureRecyclerView(collection);
-
         adapter = onCreateAdapter(displayList, getActivity());
-
         collection.setAdapter(adapter);
     }
 
@@ -103,6 +93,14 @@ public abstract class SimpleDisplayListFragment<T extends BserObject & ListEngin
 
     protected abstract SimpleBindedListAdapter<T, V> onCreateAdapter(SimpleBindedDisplayList<T> displayList, Activity activity);
 
+    protected void onListStateChange(SimpleBindedDisplayList.State state){
+        if(state == SimpleBindedDisplayList.State.LOADED){
+            getCollection().setVisibility(View.VISIBLE);
+        }else{
+            getCollection().setVisibility(View.GONE);
+        }
+    }
+
     public SimpleBindedListAdapter<T, V> getAdapter() {
         return adapter;
     }
@@ -119,41 +117,25 @@ public abstract class SimpleDisplayListFragment<T extends BserObject & ListEngin
     public void onResume() {
         super.onResume();
         adapter.resume();
-//        displayList.addListener(this);
-//        if (displayList.getSize() == 0) {
-//            hideView(collection, false);
-//        } else {
-//            showView(collection, false);
-//        }
-    }
+        setUnbindOnPause(true);
 
-//    @Override
-//    public void onCollectionChanged() {
-//        if (displayList.getSize() == 0) {
-//            hideView(collection, false);
-//        } else {
-//            showView(collection, false);
-//        }
-//    }
+        bind(displayList.getState(), val -> {
+            onListStateChange(val);
+        });
+    }
 
     @Override
     public void onPause() {
         super.onPause();
         adapter.pause();
-       // displayList.removeListener(this);
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-
         if (adapter != null) {
             adapter.dispose();
         }
-
         collection = null;
     }
-
-
-
 }
