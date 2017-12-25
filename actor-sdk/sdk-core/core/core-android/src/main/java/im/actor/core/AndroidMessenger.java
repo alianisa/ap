@@ -23,11 +23,7 @@ import android.webkit.MimeTypeMap;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Random;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -56,17 +52,9 @@ import im.actor.runtime.actors.ActorRef;
 import im.actor.runtime.actors.ActorSystem;
 import im.actor.runtime.actors.Props;
 import im.actor.runtime.android.AndroidContext;
-import im.actor.runtime.collections.ArrayUtils;
 import im.actor.runtime.eventbus.EventBus;
-import im.actor.runtime.generic.mvvm.AndroidListUpdate;
 import im.actor.runtime.generic.mvvm.BindedDisplayList;
-import im.actor.runtime.generic.mvvm.ChangeDescription;
-import im.actor.runtime.generic.mvvm.DisplayList;
 import im.actor.runtime.generic.mvvm.SimpleBindedDisplayList;
-import im.actor.runtime.generic.mvvm.alg.Modification;
-import im.actor.runtime.generic.mvvm.alg.Modifications;
-import im.actor.runtime.storage.ListEngineDisplayExt;
-import im.actor.runtime.storage.ListEngineDisplayListener;
 import me.leolin.shortcutbadger.ShortcutBadger;
 
 import static im.actor.runtime.actors.ActorSystem.system;
@@ -609,9 +597,10 @@ public class AndroidMessenger extends im.actor.core.Messenger {
     }
 
 
-    public SimpleBindedDisplayList<GroupPre> getGroupsPreDisplayList(Integer parentId){
+    public SimpleBindedDisplayList<GroupPre> getGroupsPreDisplayList(Integer parentId,
+                                                                     SimpleBindedDisplayList.Filter<GroupPre> filter){
         SimpleBindedDisplayList<GroupPre> groupsPreListEngine =
-                new SimpleBindedDisplayList<>(modules.getDisplayListsModule().getGroupsPreListEngine(parentId));
+                new SimpleBindedDisplayList<>(modules.getDisplayListsModule().getGroupsPreListEngine(parentId), filter);
         return groupsPreListEngine;
     }
 

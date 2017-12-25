@@ -12,9 +12,6 @@ import java.util.List;
 import im.actor.runtime.Log;
 import im.actor.runtime.annotations.MainThread;
 import im.actor.runtime.bser.BserObject;
-import im.actor.runtime.generic.mvvm.alg.Modification;
-import im.actor.runtime.generic.mvvm.alg.Modifications;
-import im.actor.runtime.mvvm.ValueModel;
 import im.actor.runtime.storage.ListEngineDisplayExt;
 import im.actor.runtime.storage.ListEngineDisplayListener;
 import im.actor.runtime.storage.ListEngineDisplayLoadCallback;
@@ -32,11 +29,14 @@ public class SimpleBindedDisplayList<T extends BserObject & ListEngineItem>{
 
     private final ListEngineDisplayExt<T> listEngine;
     private final ListEngineDisplayListener<T> engineListener;
-    private List<T> currentList;
     private Filter<T> filter;
+    private ListChanged<T> listChanged;
+    private List<T> currentList = new ArrayList<>();
 
 
-    public SimpleBindedDisplayList(ListEngineDisplayExt<T> listEngine){
+    public SimpleBindedDisplayList(ListEngineDisplayExt<T> listEngine,
+                                   Filter<T> filter){
+        this.filter = filter;
         this.listEngine = listEngine;
 
         engineListener = new ListEngineDisplayListener<T>() {
@@ -71,27 +71,29 @@ public class SimpleBindedDisplayList<T extends BserObject & ListEngineItem>{
             }
         };
         listEngine.subscribe(engineListener);
-
-        fillCurrentList(listEngine);
+        listEngine.loadForward(Integer.MAX_VALUE, (items, topSortKey, bottomSortKey) -> addOrUpdateItens(items));
     }
 
-    private void fillCurrentList(ListEngineDisplayExt<T> listEngine){
-        if(currentList == null){
-            currentList = new ArrayList<>();
+    private void addOrUpdateItens(List<T> values){
+        for (T value : values) {
+            if(applyFilter(value)){
+                this.currentList.add(value);
+            }
         }
+        if(listChanged != null){
+            listChanged.onListChanged();
+        }
+    }
 
-        currentList.clear();
+    private boolean applyFilter(T value){
+        if(filter != null){
+            return filter.accept(value);
+        }
+        return true;
+    }
 
-//        for(int i = 0; i < listEngine.getCount(); i++){
-//            listEngine.
-//
-//            if(filter != null){
-//
-//            }else{
-//                //currentList.add(listEngine.)
-//            }
-//        }
-
+    public void setListChanged(ListChanged<T> listChanged) {
+        this.listChanged = listChanged;
     }
 
     @MainThread
@@ -109,8 +111,22 @@ public class SimpleBindedDisplayList<T extends BserObject & ListEngineItem>{
         listEngine.subscribe(engineListener);
     }
 
+    public int getSize(){
+        return currentList.size();
+    }
+
+    public T getValue(int position){
+        return currentList.get(position);
+    }
+
     public static interface Filter<T>{
         boolean accept(T value);
     }
+
+    public static interface ListChanged<T>{
+        void onListChanged();
+    }
+
+
 
 }

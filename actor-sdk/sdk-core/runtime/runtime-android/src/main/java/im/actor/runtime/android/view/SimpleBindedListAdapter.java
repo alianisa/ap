@@ -7,21 +7,14 @@ package im.actor.runtime.android.view;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 
-import java.util.List;
-
 import im.actor.runtime.bser.BserObject;
-import im.actor.runtime.generic.mvvm.AndroidListUpdate;
-import im.actor.runtime.generic.mvvm.BindedDisplayList;
-import im.actor.runtime.generic.mvvm.ChangeDescription;
-import im.actor.runtime.generic.mvvm.DisplayList;
 import im.actor.runtime.generic.mvvm.SimpleBindedDisplayList;
-import im.actor.runtime.storage.ListEngineDisplayExt;
-import im.actor.runtime.storage.ListEngineDisplayListener;
 import im.actor.runtime.storage.ListEngineItem;
 
 public abstract class SimpleBindedListAdapter<V extends BserObject & ListEngineItem,
         T extends RecyclerView.ViewHolder>
-        extends RecyclerView.Adapter<T> {
+        extends RecyclerView.Adapter<T>
+        implements SimpleBindedDisplayList.ListChanged<V>{
 
 
     private SimpleBindedDisplayList<V> displayList;
@@ -32,6 +25,7 @@ public abstract class SimpleBindedListAdapter<V extends BserObject & ListEngineI
 
     public SimpleBindedListAdapter(SimpleBindedDisplayList<V> displayList, boolean autoConnect) {
         this.displayList = displayList;
+        this.displayList.setListChanged(this);
         setHasStableIds(true);
         if (autoConnect) {
             resume();
@@ -40,16 +34,16 @@ public abstract class SimpleBindedListAdapter<V extends BserObject & ListEngineI
 
     @Override
     public int getItemCount() {
-//        if (displayList != null) {
-//            return displayList.getCount();
-//        }
+        if (displayList != null) {
+            return displayList.getSize();
+        }
         return 0;
     }
 
     protected V getItem(int position) {
-//        if (displayList != null) {
-//            return displayList.getValue(position);
-//        }
+        if (displayList != null) {
+            return displayList.getValue(position);
+        }
         return null;
     }
 
@@ -66,16 +60,21 @@ public abstract class SimpleBindedListAdapter<V extends BserObject & ListEngineI
         onBindViewHolder(dialogHolder, i, getItem(i));
     }
 
+    @Override
+    public void onListChanged(){
+        notifyDataSetChanged();
+    }
+
     public abstract void onBindViewHolder(T dialogHolder, int index, V item);
 
 
     public void resume() {
-//        displayList.subscribe(listener);
+        displayList.resume();
         notifyDataSetChanged();
     }
 
     public void pause() {
-//        displayList.unsubscribe(listener);
+        displayList.dispose();
     }
 
     public void dispose() {
