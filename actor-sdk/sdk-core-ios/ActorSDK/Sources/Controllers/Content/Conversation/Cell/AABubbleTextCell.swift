@@ -53,7 +53,7 @@ open class AABubbleTextCell : AABubbleCell {
         }
         
         messageText.highlightLongPressAction = { (containerView: UIView, text: NSAttributedString, range: NSRange, rect: CGRect) -> () in
-            self.bubble
+          //  self.bubble
             let attributes = text.attributes(at: range.location, effectiveRange: nil)
             if let attrs = attributes[NSAttributedStringKey("YYTextHighlight")] as? YYTextHighlight {
                 if let url = attrs.userInfo!["url"] as? String {
