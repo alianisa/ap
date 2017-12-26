@@ -33,6 +33,7 @@ import im.actor.core.viewmodel.GroupVM;
 import im.actor.runtime.files.FileSystemReference;
 import im.actor.sdk.ActorSDK;
 import im.actor.sdk.ActorStyle;
+import im.actor.sdk.R;
 import im.actor.sdk.util.Fonts;
 import im.actor.sdk.util.Screen;
 import im.actor.sdk.view.ListItemBackgroundView;
@@ -50,12 +51,8 @@ public class GrupoPreView extends ListItemBackgroundView<GroupPre, GrupoPreView.
 
     private static boolean isStylesLoaded = false;
     private static TextPaint titlePaint;
-    private static TextPaint titleSecurePaint;
-    private static TextPaint datePaint;
     private static TextPaint textPaint;
-    private static TextPaint textActivePaint;
     private static TextPaint counterTextPaint;
-    private static Paint counterBgPaint;
 
     private static int[] placeholderColors;
     private static Paint avatarBorder;
@@ -65,12 +62,11 @@ public class GrupoPreView extends ListItemBackgroundView<GroupPre, GrupoPreView.
     private static Drawable groupIcon;
     private static Drawable channelIcon;
 
+    private static Drawable chevronIcon;
+
     private long bindedId;
     private DraweeHolder<GenericDraweeHierarchy> draweeHolder;
-    private RectF tmpRect = new RectF();
-
     private GroupVM groupVM;
-
 
     public GrupoPreView(Context context) {
         super(context);
@@ -143,23 +139,27 @@ public class GrupoPreView extends ListItemBackgroundView<GroupPre, GrupoPreView.
             }
 
             canvas.save();
+
             if (layout.getTitleIcon() == null) {
                 canvas.translate(Screen.dp(72), Screen.dp(14));
             } else {
                 canvas.translate(Screen.dp(72 + 16 + 4), Screen.dp(14));
             }
+
             layout.getTitleLayout().draw(canvas);
             canvas.restore();
 
             //
-            // Content
+            // Chevron
             //
-            if (layout.getTextLayout() != null) {
-                canvas.save();
-                canvas.translate(Screen.dp(72), Screen.dp(40));
-                layout.getTextLayout().draw(canvas);
-                canvas.restore();
+
+            if (layout.isHasChildren()) {
+                layout.getChevronIcon().setBounds(layout.chevronLeft, layout.chevronTop,
+                        layout.chevronLeft + layout.getChevronIcon().getIntrinsicWidth(),
+                        layout.chevronTop + layout.getChevronIcon().getIntrinsicHeight());
+                layout.getChevronIcon().draw(canvas);
             }
+            canvas.save();
         }
     }
 
@@ -179,25 +179,23 @@ public class GrupoPreView extends ListItemBackgroundView<GroupPre, GrupoPreView.
     }
 
     @Override
-    public GrupoPreView.GrupoPreLayout buildLayout(GroupPre arg, int width, int height) {
+    public GrupoPreView.GrupoPreLayout buildLayout(GroupPre groupPre, int width, int height) {
         if (!isStylesLoaded) {
             isStylesLoaded = true;
             ActorStyle style = ActorSDK.sharedActor().style;
             Context context = getContext();
             titlePaint = createTextPaint(Fonts.medium(), 16, style.getDialogsTitleColor());
-            titleSecurePaint = createTextPaint(Fonts.medium(), 16, style.getDialogsTitleSecureColor());
-            datePaint = createTextPaint(Fonts.regular(), 14, style.getDialogsTimeColor());
             textPaint = createTextPaint(Fonts.regular(), 16, style.getDialogsTimeColor());
-            textActivePaint = createTextPaint(Fonts.regular(), 16, style.getDialogsActiveTextColor());
 
             groupIcon = new TintDrawable(context.getResources().getDrawable(im.actor.sdk.R.drawable.ic_group_black_18dp),
                     style.getDialogsTitleColor());
+
             channelIcon = new TintDrawable(context.getResources().getDrawable(im.actor.sdk.R.drawable.ic_megaphone_18dp_black),
                     style.getDialogsTitleColor());
 
             counterTextPaint = createTextPaint(Fonts.medium(), 14, style.getDialogsCounterTextColor());
             counterTextPaint.setTextAlign(Paint.Align.CENTER);
-            counterBgPaint = createFilledPaint(style.getDialogsCounterBackgroundColor());
+
             fillPaint = createFilledPaint(Color.BLACK);
             placeholderColors = ActorSDK.sharedActor().style.getDefaultAvatarPlaceholders();
             avatarBorder = new Paint();
@@ -208,11 +206,14 @@ public class GrupoPreView extends ListItemBackgroundView<GroupPre, GrupoPreView.
             avatarTextColor = createTextPaint(Fonts.regular(), 20, Color.WHITE);
             avatarTextColor.setTextAlign(Paint.Align.CENTER);
 
+            chevronIcon = new TintDrawable(context.getResources().getDrawable(R.drawable.ic_chevron_right_black_24dp),
+                    style.getDialogsTitleColor());
+
         }
 
         GrupoPreView.GrupoPreLayout res = new GrupoPreView.GrupoPreLayout();
 
-        res.setPlaceholderIndex(Math.abs(arg.getGroupId()) % placeholderColors.length);
+        res.setPlaceholderIndex(Math.abs(groupPre.getGroupId()) % placeholderColors.length);
         res.setShortName(buildShortName(groupVM.getName().get()));
 
         if (groupVM.getAvatar().get() != null) {
@@ -223,8 +224,6 @@ public class GrupoPreView extends ListItemBackgroundView<GroupPre, GrupoPreView.
                     ImageRequest request = ImageRequestBuilder.newBuilderWithSource(
                             Uri.fromFile(new File(desc)))
                             .setResizeOptions(new ResizeOptions(Screen.dp(52), Screen.dp(52)))
-                            //.setImageType(ImageRequest.ImageType.SMALL)
-                            //.setImageDecodeOptions(ImageDecodeOptions.newBuilder().s)
                             .build();
                     res.setImageRequest(request);
                 } else {
@@ -236,14 +235,12 @@ public class GrupoPreView extends ListItemBackgroundView<GroupPre, GrupoPreView.
                                 messenger().unbindRawFile(image.getFileReference().getFileId(), false, this);
                             }
                         }
-
                         @Override
                         public void onDownloading(float progress) {
                             if (invalidationContext.isCancelled()) {
                                 messenger().unbindRawFile(image.getFileReference().getFileId(), false, this);
                             }
                         }
-
                         @Override
                         public void onDownloaded(FileSystemReference reference) {
                             messenger().unbindRawFile(image.getFileReference().getFileId(), false, this);
@@ -264,6 +261,11 @@ public class GrupoPreView extends ListItemBackgroundView<GroupPre, GrupoPreView.
             res.setTitleIconTop(Screen.dp(33));
         }
 
+        res.setHasChildren(groupPre.getHasChildren());
+        res.setChevronIcon(chevronIcon);
+        res.setChevronLeft((width - Screen.dp(40)));
+        res.setChevronTop(Screen.dp(20));
+
         maxTitleWidth -= Screen.dp(16 + 4);
         res.setTitleLayout(singleLineText(groupVM.getName().get(), titlePaint, maxTitleWidth));
 
@@ -275,6 +277,7 @@ public class GrupoPreView extends ListItemBackgroundView<GroupPre, GrupoPreView.
         super.layoutReady(res);
 
         draweeHolder.onAttach();
+
         if (res.getImageRequest() != null) {
             draweeHolder.setController(Fresco.newDraweeControllerBuilder()
                     .setImageRequest(res.getImageRequest())
@@ -326,8 +329,10 @@ public class GrupoPreView extends ListItemBackgroundView<GroupPre, GrupoPreView.
         private Layout titleLayout;
         private Drawable titleIcon;
         private int titleIconTop;
-
-        private Layout textLayout;
+        private boolean hasChildren;
+        private Drawable chevronIcon;
+        private int chevronLeft;
+        private int chevronTop;
 
         public int getTitleIconTop() {
             return titleIconTop;
@@ -369,14 +374,6 @@ public class GrupoPreView extends ListItemBackgroundView<GroupPre, GrupoPreView.
             this.titleLayout = titleLayout;
         }
 
-        public Layout getTextLayout() {
-            return textLayout;
-        }
-
-        public void setTextLayout(Layout textLayout) {
-            this.textLayout = textLayout;
-        }
-
         public Drawable getTitleIcon() {
             return titleIcon;
         }
@@ -385,5 +382,36 @@ public class GrupoPreView extends ListItemBackgroundView<GroupPre, GrupoPreView.
             this.titleIcon = titleIcon;
         }
 
+        public boolean isHasChildren() {
+            return hasChildren;
+        }
+
+        public void setHasChildren(boolean hasChildren) {
+            this.hasChildren = hasChildren;
+        }
+
+        public Drawable getChevronIcon() {
+            return chevronIcon;
+        }
+
+        public void setChevronIcon(Drawable chevronIcon) {
+            this.chevronIcon = chevronIcon;
+        }
+
+        public int getChevronLeft() {
+            return chevronLeft;
+        }
+
+        public void setChevronLeft(int chevronLeft) {
+            this.chevronLeft = chevronLeft;
+        }
+
+        public int getChevronTop() {
+            return chevronTop;
+        }
+
+        public void setChevronTop(int chevronTop) {
+            this.chevronTop = chevronTop;
+        }
     }
 }

@@ -7,9 +7,9 @@ package im.actor.runtime.android.view;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 
+import im.actor.runtime.Runtime;
 import im.actor.runtime.bser.BserObject;
 import im.actor.runtime.generic.mvvm.SimpleBindedDisplayList;
-import im.actor.runtime.mvvm.ValueChangedListener;
 import im.actor.runtime.storage.ListEngineItem;
 
 public abstract class SimpleBindedListAdapter<V extends BserObject & ListEngineItem,
@@ -17,10 +17,6 @@ public abstract class SimpleBindedListAdapter<V extends BserObject & ListEngineI
         extends RecyclerView.Adapter<T>{
 
     private SimpleBindedDisplayList<V> displayList;
-
-    private ValueChangedListener<SimpleBindedDisplayList.State> listener = (val, valueModel) -> {
-        notifyDataSetChanged();
-    };
 
     public SimpleBindedListAdapter(SimpleBindedDisplayList<V> displayList) {
         this(displayList, true);
@@ -66,12 +62,14 @@ public abstract class SimpleBindedListAdapter<V extends BserObject & ListEngineI
 
     public void resume() {
         displayList.resume();
-        displayList.getState().subscribe(listener);
+        displayList.setListChangeListener(size->{
+            Runtime.postToMainThread(() -> notifyDataSetChanged());
+        });
     }
 
     public void pause() {
         displayList.dispose();
-        displayList.getState().unsubscribe(listener);
+        displayList.setListChangeListener(null);
     }
 
     public void dispose() {

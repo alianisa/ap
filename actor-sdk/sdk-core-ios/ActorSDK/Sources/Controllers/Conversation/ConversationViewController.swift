@@ -1016,6 +1016,8 @@ final public class ConversationViewController:
         
         self.voiceRecorderView.isHidden = false
         self.stickersButton.isHidden = true
+        self.textView.isHidden = true
+        self.leftButton.isHidden = true
         
         let touches : Set<UITouch> = event.touches(for: button)!
         let touch = touches.first!
@@ -1051,6 +1053,9 @@ final public class ConversationViewController:
             
             self.voiceRecorderView.isHidden = true
             self.stickersButton.isHidden = false
+            self.textView.isHidden = false
+            self.leftButton.isHidden = false
+            
             self.stopAudioRecording()
             self.voiceRecorderView.recordingStoped()
             button.cancelTracking(with: event)
@@ -1090,6 +1095,8 @@ final public class ConversationViewController:
         closeRecorderAnimation()
         self.voiceRecorderView.isHidden = true
         self.stickersButton.isHidden = false
+        self.textView.isHidden = false
+        self.leftButton.isHidden = false
         self.onAudioRecordingFinished()
         self.voiceRecorderView.recordingStoped()
     }

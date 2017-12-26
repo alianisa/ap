@@ -122,7 +122,11 @@ private [grouppre] trait GroupPreCommandHandlers {
       activeUsersIds <- db.run(UserRepo.activeUsersIds)
       seqState <- seqUpdExt.broadcastClientUpdate(cmd.userId, cmd.authId, activeUsersIds.toSet - cmd.userId, update)
     } yield (ChangeParentAck(Some(seqState)))
-  }
 
+    result pipeTo sender() onFailure {
+      case e ⇒
+        log.error(e, "Failed to Change GroupPre parent")
+    }
+  }
 
 }

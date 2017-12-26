@@ -33,6 +33,7 @@ open class AAConvActionSheet: UIView, AAThumbnailViewDelegate {
     
     public init() {
         super.init(frame: CGRect.zero)
+        
         self.backgroundColor = UIColor.clear
     }
     

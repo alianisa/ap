@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import im.actor.core.entity.GroupType;
 import im.actor.sdk.ActorSDK;
 import im.actor.sdk.R;
 import im.actor.sdk.controllers.BaseFragment;
@@ -18,6 +19,7 @@ import im.actor.sdk.controllers.compose.ComposeFabFragment;
 import im.actor.sdk.controllers.contacts.ContactsActivity;
 import im.actor.sdk.controllers.dialogs.DialogsDefaultFragment;
 import im.actor.sdk.controllers.fragment.help.HelpActivity;
+import im.actor.sdk.controllers.grouppre.GroupsPreActivity;
 import im.actor.sdk.controllers.placeholder.GlobalPlaceholderFragment;
 import im.actor.sdk.controllers.search.GlobalSearchDefaultFragment;
 
@@ -101,6 +103,12 @@ public class RootFragment extends BaseFragment {
             return true;
         } else if (i == R.id.contacts) {
             startActivity(new Intent(getActivity(), ContactsActivity.class));
+            return true;
+        }else if (i == R.id.preDefinedGroups) {
+            startActivity(GroupsPreActivity.createIntent(getActivity(), GroupType.GROUP));
+            return true;
+        }else if (i == R.id.preDefinedChannels) {
+            startActivity(GroupsPreActivity.createIntent(getActivity(), GroupType.CHANNEL));
             return true;
         } else {
             return super.onOptionsItemSelected(item);

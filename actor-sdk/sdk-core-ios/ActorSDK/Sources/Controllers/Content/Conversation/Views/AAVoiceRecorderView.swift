@@ -154,16 +154,24 @@ class AAVoiceRecorderView: UIView {
     }
     
     func recordingStarted() {
+        
         UIView.animate(withDuration: 0.3, animations: { () -> Void in
+            
                 self.recorderImageCircle.alpha = 0
+            
             }, completion: { (comp) -> Void in
+                
                 self.recorderImageCircle.image = UIImage.bundled("aa_recordercircle")
+                
                 UIView.animate(withDuration: 0.3, animations: { () -> Void in
                     self.recorderImageCircle.alpha = 1
                 })
+                
                 self.addAnimationsOnRecorderCircle()
                 self.startUpdateTimer()
-        })
+                
+        }) 
+        
     }
     
     func recordingStoped() {
@@ -221,4 +229,6 @@ class AAVoiceRecorderView: UIView {
     func closeRecording() {
         
     }
+    
+
 }
