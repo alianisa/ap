@@ -42,7 +42,7 @@ object PublicGroupRepo {
   def createOrUpdate(publicGroup: PublicGroup) = publicGroups.insertOrUpdate(publicGroup)
 
   def updateHasChildrenByParent(parentId: Int, hasChildrem:Boolean) = {
-    byIdPai(parentId).map(_.hasChildrem).update(hasChildrem)
+    publicGroups.filter(_.id === parentId).map(_.hasChildrem).update(hasChildrem)
   }
 
   def updateParentByOldParend(oldParentId: Int, newParentId:Int) = {

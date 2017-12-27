@@ -68,11 +68,13 @@ private [grouppre] trait GroupPreCommandHandlers {
             (removedChildrens, parentChildrens) <- db.run(for {
               _ <- PublicGroupRepo.delete(pg.id)
               removedChildrens <- PublicGroupRepo.childrenIds(pg.id)
-              parentChildrens <- PublicGroupRepo.childrenIds(pg.parentId)
-              _ <- PublicGroupRepo.updateParentByOldParend(pg.id, pg.parentId)
-              hasChildren <- PublicGroupRepo.possuiFilhos(pg.parentId)
-              _ <- PublicGroupRepo.updateHasChildrenByParent(pg.parentId, hasChildren)
 
+              _ <- PublicGroupRepo.updateParentByOldParend(pg.id, pg.parentId)
+
+              parentHasChildren <- PublicGroupRepo.possuiFilhos(pg.parentId)
+              _ <- PublicGroupRepo.updateHasChildrenByParent(pg.parentId, parentHasChildren)
+
+              parentChildrens <- PublicGroupRepo.childrenIds(pg.parentId)
             } yield (removedChildrens,parentChildrens))
 
             update = UpdateGroupPreRemoved(ApiGroupPre(

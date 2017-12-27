@@ -92,7 +92,7 @@ public class SimpleBindedDisplayList<T extends BserObject & ListEngineItem>{
     private void itensRemoved(long[] keys){
         for (long value : keys) {
             int removedPos = findPositionById(value);
-            if(removedPos > 0)
+            if(removedPos >= 0)
                 this.currentList.remove(removedPos);
         }
         updateListState();

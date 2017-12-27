@@ -99,8 +99,9 @@ public class GrupoPreRouter extends ModuleActor {
             });
         }
 
-
-        groupPreStates.removeItem(groupRemoved.getEngineId());
+        groupPreStates.getValueAsync(groupRemoved.getEngineId()).then(v->{
+           groupPreStates.addOrUpdateItem(v.changeIsLoaded(false).changeParentId(0).changeHasChildren(false));
+        });
         unfreeze();
 
         return Promise.success(null);
@@ -111,18 +112,20 @@ public class GrupoPreRouter extends ModuleActor {
         freeze();
 
         return groupPreStates.getValueAsync(groupId).map(groupPreState -> {
-
-            groupPreStates.addOrUpdateItem(groupPreState.changeParentId(parentId));
-
+            groupPreStates.addOrUpdateItem(groupPreState.changeParentId(parentId).changeHasChildren(true));
+            gruposPre(parentId).addOrUpdateItem(gruposPre(oldParentId).getValue(groupId));
             gruposPre(oldParentId).removeItem(groupId);
-            gruposPre(parentId).addOrUpdateItem(new GroupPre(groupId, parentId));
 
-            groupPreStates.getValueAsync(oldParentId).then(st -> {
-                st.changeHasChildren(!gruposPre(oldParentId).isEmpty());
-            });
-
-            return Void.INSTANCE;
-        }).after((stage, exception) -> unfreeze());
+            if(oldParentId > 0) {
+                groupPreStates.getValueAsync(oldParentId).then(st -> {
+                    st.changeHasChildren(!gruposPre(oldParentId).isEmpty());
+                });
+            }
+            return null;
+        }).map(r -> {
+            unfreeze();
+            return null;
+        });
 
     }
 
