@@ -64,17 +64,6 @@ public class GroupsPreFragment extends SimpleDisplayListFragment<GroupPre, Grupo
         super.onCreate(saveInstance);
         parentId = getArguments().getInt("parentId", GroupPre.DEFAULT_ID);
         groupType = getArguments().getInt("groupType", GroupType.GROUP);
-
-        if(parentId > 0){
-            parentVm = groups().get(parentId);
-            bind(parentVm.getName(), val -> setTitle(val));
-        }else{
-            if(groupType == GroupType.CHANNEL){
-                setTitle(getString(R.string.predefined_channel));
-            }else {
-                setTitle(getString(R.string.predefined_group));
-            }
-        }
     }
 
     @Nullable
@@ -95,7 +84,8 @@ public class GroupsPreFragment extends SimpleDisplayListFragment<GroupPre, Grupo
 
         // Header
         View header = new View(getActivity());
-        header.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Screen.dp(ActorSDK.sharedActor().style.getDialogsPaddingTopDp())));
+        header.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                Screen.dp(ActorSDK.sharedActor().style.getDialogsPaddingTopDp())));
         header.setBackgroundColor(ActorSDK.sharedActor().style.getMainBackgroundColor());
         addHeaderView(header);
 
@@ -130,7 +120,6 @@ public class GroupsPreFragment extends SimpleDisplayListFragment<GroupPre, Grupo
 
                 }
             }
-
             @Override
             public boolean onLongClicked(GroupPre item) {
                 return false;
@@ -138,4 +127,19 @@ public class GroupsPreFragment extends SimpleDisplayListFragment<GroupPre, Grupo
         }, getActivity());
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if(parentId > 0){
+            parentVm = groups().get(parentId);
+            bind(parentVm.getName(), val -> setTitle(val));
+        }else{
+            if(groupType == GroupType.CHANNEL){
+                setTitle(getString(R.string.predefined_channel));
+            }else {
+                setTitle(getString(R.string.predefined_group));
+            }
+        }
+    }
 }

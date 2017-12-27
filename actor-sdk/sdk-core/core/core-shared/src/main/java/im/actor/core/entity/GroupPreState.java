@@ -35,6 +35,13 @@ public class GroupPreState extends BserObject implements KeyValueItem {
         this.hasChildren = hasChildren;
     }
 
+    public GroupPreState(long groupId, int parentId) {
+        this.groupId = groupId;
+        this.parentId = parentId;
+        this.isLoaded = false;
+        this.hasChildren = false;
+    }
+
     private GroupPreState() {
 
     }
@@ -45,6 +52,10 @@ public class GroupPreState extends BserObject implements KeyValueItem {
 
     public GroupPreState changeParentId(int parentId) {
         return new GroupPreState(this.groupId, parentId, this.isLoaded, this.hasChildren);
+    }
+
+    public GroupPreState changeHasChildren(boolean hasChildren) {
+        return new GroupPreState(this.groupId, this.parentId, this.isLoaded, hasChildren);
     }
 
     public long getGroupId() {
