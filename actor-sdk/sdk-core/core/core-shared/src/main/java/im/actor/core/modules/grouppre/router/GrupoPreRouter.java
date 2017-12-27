@@ -112,9 +112,17 @@ public class GrupoPreRouter extends ModuleActor {
         freeze();
 
         return groupPreStates.getValueAsync(groupId).map(groupPreState -> {
-            groupPreStates.addOrUpdateItem(groupPreState.changeParentId(parentId).changeHasChildren(true));
+            //atualizando o id do pai no statdo do grupo atual
+            groupPreStates.addOrUpdateItem(groupPreState.changeParentId(parentId));
+            //adicionando o grupo ataual abaixo do novo pai
             gruposPre(parentId).addOrUpdateItem(gruposPre(oldParentId).getValue(groupId));
+            //removendo o grupo atual do antigo pai
             gruposPre(oldParentId).removeItem(groupId);
+
+            //setar o estado do novo pai para que possui filhos
+            groupPreStates.getValueAsync(parentId).then(parentState -> {
+                groupPreStates.addOrUpdateItem(parentState.changeHasChildren(true));
+            });
 
             if(oldParentId > 0) {
                 groupPreStates.getValueAsync(oldParentId).then(st -> {
