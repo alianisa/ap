@@ -2,7 +2,6 @@ package im.actor.server.grouppre
 
 import im.actor.api.rpc.grouppre.{ApiGroupPre, UpdateGroupPreCreated, UpdateGroupPreParentChanged, UpdateGroupPreRemoved}
 import im.actor.api.rpc.groups.ApiGroupType
-import im.actor.server.GroupPre
 import akka.pattern.pipe
 import im.actor.server.GroupPreCommands.{ChangeParent, ChangeParentAck, Create, CreateAck, Remove, RemoveAck}
 import im.actor.server.persist.UserRepo
@@ -10,6 +9,7 @@ import im.actor.server.persist.grouppre.{PublicGroup, PublicGroupRepo}
 import im.actor.server.sequence.SeqState
 import org.joda.time.Instant
 
+import scala.collection.IndexedSeq
 import scala.concurrent.Future
 
 /**
@@ -65,19 +65,23 @@ private [grouppre] trait GroupPreCommandHandlers {
       seqState:SeqState <- publicGroup match {
         case Some(pg) => {
           for{
-            _ <- db.run(for {
+            (removedChildrens, parentChildrens) <- db.run(for {
               _ <- PublicGroupRepo.delete(pg.id)
+              removedChildrens <- PublicGroupRepo.childrenIds(pg.id)
+              parentChildrens <- PublicGroupRepo.childrenIds(pg.parentId)
+              _ <- PublicGroupRepo.updateParentByOldParend(pg.id, pg.parentId)
               hasChildren <- PublicGroupRepo.possuiFilhos(pg.parentId)
-              _ <- PublicGroupRepo.atualizaPossuiFilhos(pg.parentId, hasChildren)
-            } yield ())
+              _ <- PublicGroupRepo.updateHasChildrenByParent(pg.parentId, hasChildren)
+
+            } yield (removedChildrens,parentChildrens))
 
             update = UpdateGroupPreRemoved(ApiGroupPre(
               groupId = apiGroup.id,
-              hasChildrem = false,
+              hasChildrem = pg.hasChildrem,
               acessHash = apiGroup.accessHash,
-              order = 0,
+              order = pg.order,
               parentId = Option(pg.parentId)
-            ))
+            ), removedChildrens.toIndexedSeq, parentChildrens.toIndexedSeq)
 
             activeUsersIds <- db.run(UserRepo.activeUsersIds)
             seqState <- seqUpdExt.broadcastClientUpdate(cmd.userId, cmd.authId, activeUsersIds.toSet, update)
@@ -91,7 +95,7 @@ private [grouppre] trait GroupPreCommandHandlers {
             acessHash = apiGroup.accessHash,
             order = 0,
             parentId = None
-          ))
+          ), IndexedSeq.empty, IndexedSeq.empty)
 
           for{
             activeUsersIds <- db.run(UserRepo.activeUsersIds)
@@ -114,7 +118,9 @@ private [grouppre] trait GroupPreCommandHandlers {
       previous <- db.run(for{
         retorno <- PublicGroupRepo.findById(cmd.groupId)
         _ <- PublicGroupRepo.updateParent(cmd.groupId, cmd.parentId)
-        _ ← PublicGroupRepo.atualizaPossuiFilhos(cmd.parentId, true)
+        _ ← PublicGroupRepo.updateHasChildrenByParent(cmd.parentId, true)
+        hasChildren <- PublicGroupRepo.possuiFilhos(retorno.get.parentId)
+        _ <- PublicGroupRepo.updateHasChildrenByParent(retorno.get.parentId, hasChildren)
       } yield(retorno))
 
       update = UpdateGroupPreParentChanged(cmd.groupId, cmd.parentId, previous.get.parentId)

@@ -41,8 +41,12 @@ object PublicGroupRepo {
 
   def createOrUpdate(publicGroup: PublicGroup) = publicGroups.insertOrUpdate(publicGroup)
 
-  def atualizaPossuiFilhos(parentId: Int, hasChildrem:Boolean) = {
+  def updateHasChildrenByParent(parentId: Int, hasChildrem:Boolean) = {
     byIdPai(parentId).map(_.hasChildrem).update(hasChildrem)
+  }
+
+  def updateParentByOldParend(oldParentId: Int, newParentId:Int) = {
+    byIdPai(oldParentId).map(_.parentId).update(newParentId)
   }
 
   def updateParent(groupId: Int, parentId:Int) = {
@@ -51,6 +55,10 @@ object PublicGroupRepo {
 
   def possuiFilhos(parentId: Int): SqlAction[Boolean, NoStream, Read] = {
     byIdPai(parentId).exists.result
+  }
+
+  def childrenIds(parentId: Int) : SqlAction[Seq[Int], NoStream, Read] = {
+    byIdPai(parentId).map(_.id).result
   }
 
   def findById(groupId:Int) =

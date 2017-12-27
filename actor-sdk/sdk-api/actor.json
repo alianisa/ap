@@ -4369,6 +4369,8 @@
 "doc":[
 "GroupPre removed"],"attributes":[
 {"type":{"type":"struct","childType":"GroupPre"},"id":1,"name":"groupPre"}
+,{"type":{"type":"list","childType":"int32"},"id":2,"name":"removedChildren"}
+,{"type":{"type":"list","childType":"int32"},"id":3,"name":"parentChildren"}
 ]}},{"type":"update","content":{
 "name":"GroupPreParentChanged",
 "header":88,
