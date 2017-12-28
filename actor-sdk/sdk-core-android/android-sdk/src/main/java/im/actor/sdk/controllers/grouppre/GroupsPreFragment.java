@@ -136,15 +136,15 @@ public class GroupsPreFragment extends SimpleDisplayListFragment<GroupPre, Grupo
         if (groupVM.isMember().get()) {
             startActivity(Intents.openGroupDialog(groupPre.getGroupId(), true, getActivity()));
         } else {
-            final ProgressDialog dialog = ProgressDialog.show(getContext(), "", "Entrando", true, false);
+            final ProgressDialog dialog = ProgressDialog.show(getContext(), "", getString(R.string.entering), true, false);
             messenger().joinGroupById(groupPre.getGroupId()).then(aVoid -> {
                 dialog.dismiss();
                 startActivity(Intents.openGroupDialog(groupPre.getGroupId(), true, getActivity()));
             }).failure(e -> {
                 dialog.dismiss();
                 Log.e(TAG, e);
-                SnackUtils.showError(getView(), "Você não pode entrar neste grupo", Snackbar.LENGTH_INDEFINITE,
-                        view -> enterInGroupById(groupPre), "Tentar Novamente");
+                SnackUtils.showError(getView(), getString(R.string.you_can_not_enter), Snackbar.LENGTH_INDEFINITE,
+                        view -> enterInGroupById(groupPre), getString(R.string.dialog_try_again));
             });
         }
     }

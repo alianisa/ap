@@ -671,4 +671,6 @@
     <string name="predefined_channel">Pre defined Channel</string>
     <string name="group_pre_empty">Does not exist any group to select</string>
     <string name="making_group_pre">Creating Pre Defined Group</string>
+    <string name="entering">Entering</string>
+    <string name="you_can_not_enter">You have no permissions to enter</string>
 </resources>
