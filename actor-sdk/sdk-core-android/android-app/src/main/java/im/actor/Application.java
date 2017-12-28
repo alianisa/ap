@@ -86,6 +86,7 @@ public class Application extends ActorSDKApplication {
 
         ActorSDK.sharedActor().setVideoCallsEnabled(false);
 
+        ActorSDK.sharedActor().setHelpPhone("+55 (55) 55555-5555");
         ActorSDK.sharedActor().setAutoJoinGroups(new String[]{
                 "canalxloto"
         });

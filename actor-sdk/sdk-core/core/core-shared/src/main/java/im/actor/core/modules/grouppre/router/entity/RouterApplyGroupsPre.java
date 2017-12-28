@@ -12,12 +12,12 @@ import im.actor.runtime.actors.messages.Void;
  * Created by diego on 25/10/17.
  */
 
-public class RouterApplyGruposPre implements AskMessage<Void>, RouterMessageOnlyActive {
+public class RouterApplyGroupsPre implements AskMessage<Void>, RouterMessageOnlyActive {
 
     private Integer idGrupoPai;
     private List<GroupPre> gruposPre;
 
-    public RouterApplyGruposPre(Integer idGrupoPai, List<GroupPre> gruposPre) {
+    public RouterApplyGroupsPre(Integer idGrupoPai, List<GroupPre> gruposPre) {
         this.idGrupoPai = idGrupoPai;
         this.gruposPre = gruposPre;
     }

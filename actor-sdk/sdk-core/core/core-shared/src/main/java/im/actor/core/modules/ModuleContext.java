@@ -13,7 +13,7 @@ import im.actor.core.modules.encryption.EncryptionModule;
 import im.actor.core.modules.eventbus.EventBusModule;
 import im.actor.core.modules.external.ExternalModule;
 import im.actor.core.modules.file.FilesModule;
-import im.actor.core.modules.grouppre.GrupoPreModule;
+import im.actor.core.modules.grouppre.GroupsPreModule;
 import im.actor.core.modules.groups.GroupsModule;
 import im.actor.core.modules.mentions.MentionsModule;
 import im.actor.core.modules.messaging.MessagesModule;
@@ -104,5 +104,5 @@ public interface ModuleContext {
 
     ConductorModule getConductor();
 
-    GrupoPreModule getGrupoPreModule();
+    GroupsPreModule getGrupoPreModule();
 }

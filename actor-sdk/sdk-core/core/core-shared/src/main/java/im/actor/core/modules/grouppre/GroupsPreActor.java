@@ -3,21 +3,16 @@ package im.actor.core.modules.grouppre;
 import java.util.ArrayList;
 import java.util.List;
 
-import im.actor.core.api.ApiGroup;
 import im.actor.core.api.ApiGroupOutPeer;
 import im.actor.core.api.ApiGroupPre;
-import im.actor.core.api.rpc.RequestLoadGroups;
 import im.actor.core.api.rpc.RequestLoadGroupsPre;
 import im.actor.core.api.rpc.ResponseLoadGroupsPre;
-import im.actor.core.entity.Group;
 import im.actor.core.entity.GroupPre;
 import im.actor.core.modules.ModuleActor;
 import im.actor.core.modules.ModuleContext;
 import im.actor.runtime.actors.messages.Void;
-import im.actor.runtime.function.Function;
 import im.actor.runtime.function.Tuple2;
 import im.actor.runtime.promise.Promise;
-import im.actor.runtime.promise.PromiseTools;
 import im.actor.runtime.promise.Promises;
 import im.actor.runtime.promise.PromisesArray;
 
@@ -25,7 +20,7 @@ import im.actor.runtime.promise.PromisesArray;
  * Created by diego on 31/05/17.
  */
 
-public class GrupoPreActor extends ModuleActor {
+public class GroupsPreActor extends ModuleActor {
 
     private static final String KEY_VERSION = "_1";
     private final String KEY_LOADED;
@@ -35,7 +30,7 @@ public class GrupoPreActor extends ModuleActor {
     private boolean isLoading = false;
     private boolean isLoaded = false;
 
-    public GrupoPreActor(ModuleContext context, Integer idGrupoPai) {
+    public GroupsPreActor(ModuleContext context, Integer idGrupoPai) {
         super(context);
         this.idGrupoPai = idGrupoPai;
         KEY_LOADED = "grupo_pre_loaded_loaded" + "_" + idGrupoPai + KEY_VERSION;
@@ -46,7 +41,7 @@ public class GrupoPreActor extends ModuleActor {
     public void preStart() {
         isLoaded = preferences().getBool(KEY_LOADED, false);
         if (!preferences().getBool(KEY_LOADED_INIT, false)) {
-            self().send(new GrupoPreActor.LoadGruposPre());
+            self().send(new GroupsPreActor.LoadGruposPre());
         } else {
             context().getConductor().getConductor().onGruposPreLoaded(null);
         }
@@ -71,7 +66,7 @@ public class GrupoPreActor extends ModuleActor {
                 .map(r -> PromisesArray.of(r.getT1())
                         .map(r2 -> Promises.tuple(Promise.success(r2), groups().getValueAsync(r2.getGroupId())))
                         .map(r2 -> Promise.success(new GroupPre(r2.getT1().getGroupId(), r2.getT1().getParentId(),
-                                r2.getT1().getOrder(), r2.getT1().hasChildrem())))
+                                r2.getT1().getOrder(), r2.getT1().hasChildrem(), true)))
                         .zip())
                 .map(r -> r.map(r2 -> onGruposPreLoaded(r2)))
                 .after((r, e)->{

@@ -1,7 +1,6 @@
 package im.actor.sdk.controllers.group;
 
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -27,6 +26,7 @@ import java.util.ArrayList;
 import im.actor.core.entity.GroupMember;
 import im.actor.core.entity.GroupType;
 import im.actor.core.entity.Peer;
+import im.actor.core.viewmodel.CommandCallback;
 import im.actor.core.viewmodel.GroupPreVM;
 import im.actor.core.viewmodel.GroupVM;
 import im.actor.core.viewmodel.UserVM;
@@ -56,6 +56,9 @@ public class GroupInfoFragment extends BaseFragment {
 
     private static final String EXTRA_CHAT_ID = "chat_id";
     private ActorBinder.Binding[] memberBindings;
+    private ActorBinder.Binding[] groupPreBindings;
+    private View groupPreContainer;
+    private View dividerGroupPre;
     private SwitchCompat isGroupPreEnabled;
     private TextView groupPreParentAction;
     private View header;
@@ -131,6 +134,8 @@ public class GroupInfoFragment extends BaseFragment {
         TextView leaveAction = (TextView) header.findViewById(R.id.leaveAction);
         TextView administrationAction = (TextView) header.findViewById(R.id.administrationAction);
 
+        groupPreContainer = header.findViewById(R.id.groupPreCont);
+        dividerGroupPre = header.findViewById(R.id.dividerGroupPre);
         isGroupPreEnabled = (SwitchCompat) header.findViewById(R.id.enableGroupPre);
         groupPreParentAction = (TextView) header.findViewById(R.id.groupPreSelectParentAction);
 
@@ -383,27 +388,51 @@ public class GroupInfoFragment extends BaseFragment {
         return res;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        memberBindings = bind(groupVM.getIsAsyncMembers(), groupVM.getMembers(), (isAsyncMembers, valueModel, memberList, valueModel2) -> {
-            if (isAsyncMembers) {
-                groupUserAdapter.setMembers(new ArrayList<>());
-            } else {
-                groupUserAdapter.setMembers(memberList);
+    private void enableHideSupportUserViews(){
+        messenger().findUsers(ActorSDK.sharedActor().getHelpPhone()).start(new CommandCallback<UserVM[]>() {
+            @Override
+            public void onResult(UserVM[] res) {
+                if(res.length > 0){
+                    UserVM supportUser = res[0];
+                    if(supportUser.getId() == myUid()){
+                        groupPreContainer.setVisibility(View.VISIBLE);
+                        dividerGroupPre.setVisibility(View.VISIBLE);
+                        bindGroupPreItens();
+                    }else{
+                        groupPreContainer.setVisibility(View.GONE);
+                        dividerGroupPre.setVisibility(View.GONE);
+                        unbindGroupPreItens();
+                    }
+                }
+            }
+            @Override
+            public void onError(Exception e) {
+                //do nothing
             }
         });
+    }
 
+    private void bindGroupPreItens(){
 
-        // GroupPre
-        bind(groupPreVm.getIsLoaded(), isLoaded -> {
+        groupPreBindings = bind(groupPreVm.getIsLoaded(), groupPreVm.getParentId(), (isLoaded, vm1, parentId, vm2)->{
             if(isLoaded){
                 isGroupPreEnabled.setChecked(true);
                 groupPreParentAction.setVisibility(View.VISIBLE);
             }else{
                 isGroupPreEnabled.setChecked(false);
                 groupPreParentAction.setVisibility(View.GONE);
+            }
+            if(parentId > 0){
+                GroupPreVM parentVm = messenger().getGroupPreVM(parentId);
+                bind(parentVm.getIsLoaded(), parentIsLoaded -> {
+                    if(parentIsLoaded) {
+                        GroupVM groupParentVm = groups().get(parentId);
+                        int parentGroupChannel = groupVM.getGroupType() == GroupType.GROUP ? R.string.parent_group : R.string.parent_channel;
+                        groupPreParentAction.setText(getText(parentGroupChannel)+": "+groupParentVm.getName().get());
+                    }
+                });
+            }else{
+                groupPreParentAction.setText(groupVM.getGroupType() == GroupType.GROUP ? R.string.parent_group : R.string.parent_channel);
             }
         });
 
@@ -414,30 +443,35 @@ public class GroupInfoFragment extends BaseFragment {
                     });
         });
 
-        header.findViewById(R.id.groupPreCont).setOnClickListener(v -> {
+        groupPreContainer.setOnClickListener(v -> {
             isGroupPreEnabled.setChecked(!isGroupPreEnabled.isChecked());
-        });
-
-        bind(groupPreVm.getParentId(), parentId -> {
-            if(parentId > 0){
-                 GroupPreVM parentVm = messenger().getGroupPreVM(parentId);
-                 bind(parentVm.getIsLoaded(), isLoaded -> {
-                     if(isLoaded) {
-                         GroupVM groupParentVm = groups().get(parentId);
-                         int parentGroupChannel = groupVM.getGroupType() == GroupType.GROUP ? R.string.parent_group : R.string.parent_channel;
-                         groupPreParentAction.setText(getText(parentGroupChannel)+": "+groupParentVm.getName().get());
-                     }
-                 });
-            }else{
-                groupPreParentAction.setText(groupVM.getGroupType() == GroupType.GROUP ? R.string.parent_group : R.string.parent_channel);
-            }
         });
 
         groupPreParentAction.setOnClickListener(view -> {
             startActivity(new Intent(getActivity(), GroupPreSelectParentActivity.class)
                     .putExtra(Intents.EXTRA_GROUP_ID, chatId));
         });
+    }
 
+    private void unbindGroupPreItens(){
+        if (groupPreBindings != null) {
+            for (ActorBinder.Binding b : groupPreBindings) {
+                getBINDER().unbind(b);
+            }
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        memberBindings = bind(groupVM.getIsAsyncMembers(), groupVM.getMembers(), (isAsyncMembers, valueModel, memberList, valueModel2) -> {
+            if (isAsyncMembers) {
+                groupUserAdapter.setMembers(new ArrayList<>());
+            } else {
+                groupUserAdapter.setMembers(memberList);
+            }
+        });
+        enableHideSupportUserViews();
     }
 
     @Override
@@ -448,6 +482,7 @@ public class GroupInfoFragment extends BaseFragment {
                 getBINDER().unbind(b);
             }
         }
+        unbindGroupPreItens();
     }
 
     @Override

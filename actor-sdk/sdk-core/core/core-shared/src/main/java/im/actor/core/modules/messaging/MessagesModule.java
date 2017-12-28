@@ -258,7 +258,6 @@ public class MessagesModule extends AbsModule implements BusSubscriber {
     //
     // Sending Message
     //
-
     public void sendMessage(@NotNull Peer peer, @NotNull String message, @Nullable String markDownText,
                             @Nullable ArrayList<Integer> mentions, boolean autoDetect) {
         context().getTypingModule().onMessageSent(peer);
@@ -361,7 +360,6 @@ public class MessagesModule extends AbsModule implements BusSubscriber {
         return new Promise<>(resolver -> resolver.result(getConversationEngine(peer).getCount() == 0));
     }
 
-
     public void forwardContent(Peer peer, AbsContent content) {
         sendMessageActor.send(new SenderActor.ForwardContent(peer, content));
     }
@@ -370,7 +368,6 @@ public class MessagesModule extends AbsModule implements BusSubscriber {
                             @NotNull Sticker sticker) {
         sendMessageActor.send(new SenderActor.SendSticker(peer, sticker));
     }
-
 
     public void saveDraft(Peer peer, String draft) {
         context().getSettingsModule().setStringValue("drafts_" + peer.getUnuqueId(), draft);
@@ -505,7 +502,6 @@ public class MessagesModule extends AbsModule implements BusSubscriber {
     //
     // Misc
     //
-
     public void resetModule() {
         // TODO: Implement
     }

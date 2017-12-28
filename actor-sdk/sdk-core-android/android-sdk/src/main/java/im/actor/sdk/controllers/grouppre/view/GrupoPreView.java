@@ -159,6 +159,7 @@ public class GrupoPreView extends ListItemBackgroundView<GroupPre, GrupoPreView.
                         layout.chevronTop + layout.getChevronIcon().getIntrinsicHeight());
                 layout.getChevronIcon().draw(canvas);
             }
+
             canvas.save();
         }
     }
@@ -264,7 +265,7 @@ public class GrupoPreView extends ListItemBackgroundView<GroupPre, GrupoPreView.
         res.setHasChildren(groupPre.getHasChildren());
         res.setChevronIcon(chevronIcon);
         res.setChevronLeft((width - Screen.dp(40)));
-        res.setChevronTop(Screen.dp(20));
+        res.setChevronTop(Screen.dp(23));
 
         maxTitleWidth -= Screen.dp(16 + 4);
         res.setTitleLayout(singleLineText(groupVM.getName().get(), titlePaint, maxTitleWidth));

@@ -14,6 +14,7 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 
+import im.actor.core.entity.Group;
 import im.actor.core.entity.GroupPre;
 import im.actor.core.entity.GroupType;
 import im.actor.core.viewmodel.GroupVM;
@@ -44,11 +45,14 @@ import static im.actor.sdk.util.ActorSDKMessenger.messenger;
 
 public class GroupsPreFragment extends SimpleDisplayListFragment<GroupPre, GrupoPreHolder> {
 
+    private static final String TAG = GroupsPreFragment.class.getName();
+
     private int parentId = GroupPre.DEFAULT_ID;
     private int groupType = GroupType.GROUP;
     private GroupVM parentVm;
 
     private View emptyGroups;
+
 
     public static GroupsPreFragment create(int parentId, int groupType) {
         Bundle bundle = new Bundle();
@@ -112,12 +116,12 @@ public class GroupsPreFragment extends SimpleDisplayListFragment<GroupPre, Grupo
     protected SimpleBindedListAdapter onCreateAdapter(SimpleBindedDisplayList displayList, Activity activity) {
         return new GrupoPreSimpleAdapter(displayList, new OnItemClickedListener<GroupPre>() {
             @Override
-            public void onClicked(GroupPre item) {
-                if(item.getHasChildren()){
+            public void onClicked(GroupPre groupPre) {
+                if(groupPre.getHasChildren()){
                     ((GroupsPreActivity)getActivity()).showFragment(GroupsPreFragment.create(
-                            item.getGroupId(), groupType),true);
+                            groupPre.getGroupId(), groupType),true);
                 }else{
-
+                    enterInGroupById(groupPre);
                 }
             }
             @Override
@@ -125,6 +129,24 @@ public class GroupsPreFragment extends SimpleDisplayListFragment<GroupPre, Grupo
                 return false;
             }
         }, getActivity());
+    }
+
+    private void enterInGroupById(GroupPre groupPre){
+        GroupVM groupVM = groups().get(groupPre.getGroupId());
+        if (groupVM.isMember().get()) {
+            startActivity(Intents.openGroupDialog(groupPre.getGroupId(), true, getActivity()));
+        } else {
+            final ProgressDialog dialog = ProgressDialog.show(getContext(), "", "Entrando", true, false);
+            messenger().joinGroupById(groupPre.getGroupId()).then(aVoid -> {
+                dialog.dismiss();
+                startActivity(Intents.openGroupDialog(groupPre.getGroupId(), true, getActivity()));
+            }).failure(e -> {
+                dialog.dismiss();
+                Log.e(TAG, e);
+                SnackUtils.showError(getView(), "Você não pode entrar neste grupo", Snackbar.LENGTH_INDEFINITE,
+                        view -> enterInGroupById(groupPre), "Tentar Novamente");
+            });
+        }
     }
 
     @Override

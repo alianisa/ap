@@ -14,8 +14,8 @@ import im.actor.runtime.promise.Promise;
  * Created by diego on 23/11/2017.
  */
 
-public class GroupPreProcessor extends AbsModule implements SequenceProcessor {
-    public GroupPreProcessor(ModuleContext context) {
+public class GroupsPreProcessor extends AbsModule implements SequenceProcessor {
+    public GroupsPreProcessor(ModuleContext context) {
         super(context);
     }
 

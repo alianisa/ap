@@ -128,7 +128,7 @@ private [grouppre] trait GroupPreCommandHandlers {
       update = UpdateGroupPreParentChanged(cmd.groupId, cmd.parentId, previous.get.parentId)
 
       activeUsersIds <- db.run(UserRepo.activeUsersIds)
-      seqState <- seqUpdExt.broadcastClientUpdate(cmd.userId, cmd.authId, activeUsersIds.toSet - cmd.userId, update)
+      seqState <- seqUpdExt.broadcastClientUpdate(cmd.userId, cmd.authId, activeUsersIds.toSet, update)
     } yield (ChangeParentAck(Some(seqState)))
 
     result pipeTo sender() onFailure {

@@ -4,13 +4,13 @@ import java.util.HashMap;
 
 import im.actor.core.api.rpc.RequestChangeGroupParent;
 import im.actor.core.api.rpc.RequestChangeGroupPre;
+import im.actor.core.api.rpc.ResponseVoid;
 import im.actor.core.api.updates.UpdateGroupPreParentChanged;
 import im.actor.core.entity.GroupPre;
-import im.actor.core.entity.GroupPreState;
 import im.actor.core.events.AppVisibleChanged;
 import im.actor.core.modules.AbsModule;
 import im.actor.core.modules.ModuleContext;
-import im.actor.core.modules.grouppre.router.GrupoPreRouterInt;
+import im.actor.core.modules.grouppre.router.GroupsPreRouterInt;
 import im.actor.core.viewmodel.GroupPreVM;
 import im.actor.runtime.Storage;
 import im.actor.runtime.actors.messages.Void;
@@ -24,26 +24,28 @@ import im.actor.runtime.storage.ListEngine;
  * Created by diego on 27/05/17.
  */
 
-public class GrupoPreModule extends AbsModule implements BusSubscriber {
+public class GroupsPreModule extends AbsModule implements BusSubscriber {
 
-    public static final String STORAGE_GRUPOSPRE = "grupospre";
-    public static final String STORAGE_GRUPOSPRE_STATES = "grupospre_states";
+    // Workaround for j2objc bug
+    private static final Void DUMB = null;
+    private static final ResponseVoid DUMB2 = null;
+
+    private static final String STORAGE_GRUPOSPRE = "grupospre";
+    private static final String STORAGE_GRUPOSPRE_STATES = "grupospre_states";
 
     private final HashMap<Integer, ListEngine<GroupPre>> gruposPreEngine = new HashMap<>();
-
-    private MVVMCollection<GroupPreState, GroupPreVM> groupsPreStates;
+    private final MVVMCollection<GroupPre, GroupPreVM> groupsPreStates;
 
     private final HashMap<Integer, GrupoPreActorInt> gruposPreLoadActor = new HashMap<>();
-    private final GrupoPreRouterInt router;
+    private final GroupsPreRouterInt router;
 
-    public GrupoPreModule(ModuleContext context) {
+    public GroupsPreModule(ModuleContext context) {
         super(context);
-        router = new GrupoPreRouterInt(context);
-
+        router = new GroupsPreRouterInt(context);
         this.groupsPreStates = Storage.createKeyValue(STORAGE_GRUPOSPRE_STATES,
                 GroupPreVM.CREATOR,
-                GroupPreState.CREATOR,
-                GroupPreState.DEFAULT_CREATOR);
+                GroupPre.CREATOR,
+                GroupPre.DEFAULT_CREATOR);
     }
 
     @Override
@@ -75,6 +77,7 @@ public class GrupoPreModule extends AbsModule implements BusSubscriber {
     public ListEngine<GroupPre> getGrupospreEngine(Integer idGrupoPai) {
         synchronized (gruposPreEngine) {
             if (!gruposPreEngine.containsKey(idGrupoPai)) {
+                getGruposPreLoadActor(idGrupoPai);//force to load the grous from the server for the first time
                 gruposPreEngine.put(idGrupoPai,
                         Storage.createList(STORAGE_GRUPOSPRE + idGrupoPai, GroupPre.CREATOR));
             }
@@ -82,7 +85,7 @@ public class GrupoPreModule extends AbsModule implements BusSubscriber {
         }
     }
 
-    public GrupoPreRouterInt getRouter() {
+    public GroupsPreRouterInt getRouter() {
         return router;
     }
 
@@ -95,7 +98,7 @@ public class GrupoPreModule extends AbsModule implements BusSubscriber {
         }
     }
 
-    public MVVMCollection<GroupPreState, GroupPreVM> getGroupsPreStates() {
+    public MVVMCollection<GroupPre, GroupPreVM> getGroupsPreStates() {
         return groupsPreStates;
     }
 

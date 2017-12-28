@@ -11,16 +11,14 @@ import im.actor.core.api.updates.UpdateGroupPreParentChanged;
 import im.actor.core.api.updates.UpdateGroupPreRemoved;
 import im.actor.core.entity.Group;
 import im.actor.core.entity.GroupPre;
-import im.actor.core.entity.GroupPreState;
 import im.actor.core.modules.ModuleActor;
 import im.actor.core.modules.ModuleContext;
-import im.actor.core.modules.grouppre.router.entity.RouterApplyGruposPre;
+import im.actor.core.modules.grouppre.router.entity.RouterApplyGroupsPre;
 import im.actor.core.modules.grouppre.router.entity.RouterGroupPreUpdate;
 import im.actor.core.network.parser.Update;
 import im.actor.runtime.Log;
 import im.actor.runtime.actors.messages.Void;
 import im.actor.runtime.annotations.Verified;
-import im.actor.runtime.collections.ArrayUtils;
 import im.actor.runtime.function.Tuple2;
 import im.actor.runtime.promise.Promise;
 import im.actor.runtime.promise.Promises;
@@ -28,14 +26,14 @@ import im.actor.runtime.promise.PromisesArray;
 import im.actor.runtime.storage.KeyValueEngine;
 import im.actor.runtime.storage.ListEngine;
 
-public class GrupoPreRouter extends ModuleActor {
+public class GroupsPreRouter extends ModuleActor {
 
-    private static final String TAG = GrupoPreRouter.class.getName();
+    private static final String TAG = GroupsPreRouter.class.getName();
     private boolean isFreezed = false;
 
-    private KeyValueEngine<GroupPreState> groupPreStates;
+    private KeyValueEngine<GroupPre> groupPreStates;
 
-    public GrupoPreRouter(ModuleContext context) {
+    public GroupsPreRouter(ModuleContext context) {
         super(context);
     }
 
@@ -66,9 +64,9 @@ public class GrupoPreRouter extends ModuleActor {
                 Arrays.asList(new ApiGroupOutPeer(apiGroupPre.getGroupId(), apiGroupPre.getAcessHash())))
                 .map(r -> groups().getValueAsync(apiGroupPre.getGroupId())
                         .map(group -> {
-                            GroupPre groupPre = new GroupPre(apiGroupPre.getGroupId(), apiGroupPre.getParentId(), apiGroupPre.getOrder(), apiGroupPre.hasChildrem());
+                            GroupPre groupPre = new GroupPre(apiGroupPre.getGroupId(), apiGroupPre.getParentId(), apiGroupPre.getOrder(), apiGroupPre.hasChildrem(), true);
                             gruposPre(apiGroupPre.getParentId()).addOrUpdateItem(groupPre);
-                            groupPreStates.addOrUpdateItem(new GroupPreState(groupPre.getGroupId(), apiGroupPre.getParentId(), true, apiGroupPre.hasChildrem()));
+                            groupPreStates.addOrUpdateItem(groupPre);
                             return null;
                         }))
                 .map(r -> {
@@ -81,30 +79,36 @@ public class GrupoPreRouter extends ModuleActor {
     public Promise<Void> onGroupPreRemoved(final ApiGroupPre apiGroupPre,
                                            List<Integer> removedChildren,
                                            List<Integer> parentChildren) {
-
         freeze();
-        Integer parentId = apiGroupPre.getParentId();
-        GroupPre groupRemoved = gruposPre(parentId).getValue(apiGroupPre.getGroupId());
-        gruposPre(parentId).removeItem(groupRemoved.getEngineId());
+        return new Promise<Void>(resolver -> {
+            Integer parentId = apiGroupPre.getParentId();
+            GroupPre groupRemoved = gruposPre(parentId).getValue(apiGroupPre.getGroupId());
+            gruposPre(parentId).removeItem(groupRemoved.getEngineId());
 
-        for(Integer orphanId : removedChildren){
-            GroupPre orphan = gruposPre(groupRemoved.getGroupId()).getValue(orphanId);
-            gruposPre(parentId).addOrUpdateItem(orphan);
-            gruposPre(groupRemoved.getGroupId()).removeItem(orphanId);
-        }
+            for (Integer orphanId : removedChildren) {
+                GroupPre orphan = gruposPre(groupRemoved.getGroupId()).getValue(orphanId);
+                gruposPre(parentId).addOrUpdateItem(orphan);
+                gruposPre(groupRemoved.getGroupId()).removeItem(orphanId);
+            }
 
-        if(parentId > GroupPre.DEFAULT_ID){
-            groupPreStates.getValueAsync(parentId).then(r->{
-                groupPreStates.addOrUpdateItem(r.changeHasChildren(!parentChildren.isEmpty()));
+            new Promise<GroupPre>(resolver1 -> {
+                if (parentId > GroupPre.DEFAULT_ID) {
+                    groupPreStates.getValueAsync(parentId).then(r -> {
+                        groupPreStates.addOrUpdateItem(r.changeHasChildren(!parentChildren.isEmpty()));
+                        resolver1.result(groupRemoved);
+                    });
+                }else{
+                    resolver1.result(groupRemoved);
+                }
+            }).then(r -> {
+                groupPreStates.getValueAsync(r.getEngineId()).then(v -> {
+                    groupPreStates.addOrUpdateItem(v.changeIsLoaded(false).changeParentId(0).changeHasChildren(false));
+                });
             });
-        }
-
-        groupPreStates.getValueAsync(groupRemoved.getEngineId()).then(v->{
-           groupPreStates.addOrUpdateItem(v.changeIsLoaded(false).changeParentId(0).changeHasChildren(false));
+        }).map(r -> {
+            unfreeze();
+            return null;
         });
-        unfreeze();
-
-        return Promise.success(null);
     }
 
     public Promise<Void> onGroupPreParentChanged(final Integer groupId, final Integer oldParentId, final Integer parentId) {
@@ -124,7 +128,7 @@ public class GrupoPreRouter extends ModuleActor {
                 groupPreStates.addOrUpdateItem(parentState.changeHasChildren(true));
             });
 
-            if(oldParentId > 0) {
+            if (oldParentId > 0) {
                 groupPreStates.getValueAsync(oldParentId).then(st -> {
                     st.changeHasChildren(!gruposPre(oldParentId).isEmpty());
                 });
@@ -162,8 +166,9 @@ public class GrupoPreRouter extends ModuleActor {
                 .then(rt -> {
                     List<GroupPre> grupos = new ArrayList<>();
                     for (Tuple2<GroupPre, Group> t2 : rt) {
-                        grupos.add(t2.getT1());
-                        groupPreStates.addOrUpdateItem(new GroupPreState(t2.getT1().getGroupId(), idGrupoPai, true, t2.getT1().getHasChildren()));
+                        GroupPre loadedGroup = t2.getT1().changeIsLoaded(true);
+                        grupos.add(loadedGroup);
+                        groupPreStates.addOrUpdateItem(loadedGroup);
                     }
                     gruposPre(idGrupoPai).addOrUpdateItems(grupos);
                 });
@@ -171,8 +176,8 @@ public class GrupoPreRouter extends ModuleActor {
 
     @Override
     public Promise onAsk(Object message) throws Exception {
-        if (message instanceof RouterApplyGruposPre) {
-            RouterApplyGruposPre routerApplyGruposPre = (RouterApplyGruposPre) message;
+        if (message instanceof RouterApplyGroupsPre) {
+            RouterApplyGroupsPre routerApplyGruposPre = (RouterApplyGroupsPre) message;
             return onGruposPreLoaded(routerApplyGruposPre.getIdGrupoPai(), routerApplyGruposPre.getGruposPre());
         } else if (message instanceof RouterGroupPreUpdate) {
             if (isFreezed) {

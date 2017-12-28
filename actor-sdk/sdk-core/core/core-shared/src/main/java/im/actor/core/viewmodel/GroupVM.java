@@ -64,7 +64,6 @@ public class GroupVM extends BaseValueModel<Group> {
     @NotNull
     @Property("nonatomic, readonly")
     private BooleanValueModel isCanViewInfo;
-
     @NotNull
     @Property("nonatomic, readonly")
     private ValueModel<HashSet<GroupMember>> members;
@@ -116,7 +115,6 @@ public class GroupVM extends BaseValueModel<Group> {
     @NotNull
     @Property("nonatomic, readonly")
     private BooleanValueModel isDeleted;
-
     @NotNull
     @Property("nonatomic, readonly")
     private StringValueModel theme;
