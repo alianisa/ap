@@ -141,7 +141,6 @@ public class GroupRouter extends ModuleActor {
         return editGroup(groupId, group -> group.editShortName(shortName));
     }
 
-
     @Verified
     public Promise<Void> onOwnerChanged(int groupId, int updatedOwner) {
         return editGroup(groupId, group -> group.editOwner(updatedOwner));
@@ -165,7 +164,6 @@ public class GroupRouter extends ModuleActor {
     //
     // Wrapper
     //
-
     private Promise<Void> forGroup(int groupId, Function<Group, Promise<Void>> func) {
         freeze();
         return groups().getValueAsync(groupId)
@@ -199,7 +197,6 @@ public class GroupRouter extends ModuleActor {
     //
     // Entities
     //
-
     @Verified
     private Promise<List<ApiGroupOutPeer>> fetchMissingGroups(List<ApiGroupOutPeer> groups) {
         freeze();

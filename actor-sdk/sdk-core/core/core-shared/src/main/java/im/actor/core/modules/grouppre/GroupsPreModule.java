@@ -62,7 +62,6 @@ public class GroupsPreModule extends AbsModule implements BusSubscriber {
 
     public Promise<Void> changeGroupPre(int groupId, boolean isGroupPre) {
        return api(new RequestChangeGroupPre(groupId, isGroupPre))
-
                .flatMap(r -> updates().waitForUpdate(r.getSeq()));
     }
 

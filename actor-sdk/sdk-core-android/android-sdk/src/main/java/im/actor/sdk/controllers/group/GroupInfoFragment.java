@@ -30,6 +30,7 @@ import im.actor.core.viewmodel.CommandCallback;
 import im.actor.core.viewmodel.GroupPreVM;
 import im.actor.core.viewmodel.GroupVM;
 import im.actor.core.viewmodel.UserVM;
+import im.actor.runtime.actors.Actor;
 import im.actor.sdk.ActorSDK;
 import im.actor.sdk.ActorStyle;
 import im.actor.sdk.R;
@@ -389,25 +390,26 @@ public class GroupInfoFragment extends BaseFragment {
     }
 
     private void enableHideSupportUserViews(){
-        messenger().findUsers(ActorSDK.sharedActor().getHelpPhone()).start(new CommandCallback<UserVM[]>() {
-            @Override
-            public void onResult(UserVM[] res) {
-                if(res.length > 0){
-                    UserVM supportUser = res[0];
-                    if(supportUser.getId() == myUid()){
-                        groupPreContainer.setVisibility(View.VISIBLE);
-                        dividerGroupPre.setVisibility(View.VISIBLE);
-                        bindGroupPreItens();
-                    }else{
-                        groupPreContainer.setVisibility(View.GONE);
-                        dividerGroupPre.setVisibility(View.GONE);
-                        unbindGroupPreItens();
+
+        bind(users().get(myUid()).getPhones(), phones -> {
+            boolean isSupport = false;
+            if(!phones.isEmpty()){
+                for(int i = 0; i < phones.size();i++){
+                    String helpPhoneNumber = ActorSDK.sharedActor().getHelpPhone().replaceAll("[^0-9]", "");
+                    if(Long.parseLong(helpPhoneNumber) == phones.get(i).getPhone()){
+                        isSupport = true;
                     }
                 }
             }
-            @Override
-            public void onError(Exception e) {
-                //do nothing
+
+            if(isSupport){
+                groupPreContainer.setVisibility(View.VISIBLE);
+                dividerGroupPre.setVisibility(View.VISIBLE);
+                bindGroupPreItens();
+            }else{
+                groupPreContainer.setVisibility(View.GONE);
+                dividerGroupPre.setVisibility(View.GONE);
+                unbindGroupPreItens();
             }
         });
     }

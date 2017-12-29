@@ -147,7 +147,7 @@ public class Emoji {
             }
             Bitmap bitmap = null;
             try {
-                InputStream is = AndroidContext.getContext().getAssets().open("emoji/" + String.format(Locale.US, "v11_emoji%.01fx_%d_%d.png", scale, page, page2));
+                InputStream is = AndroidContext.getContext().getAssets().open("emoji/" + String.format(Locale.US, "v12_emoji%.01fx_%d_%d.png", scale, page, page2));
                 BitmapFactory.Options opts = new BitmapFactory.Options();
                 opts.inJustDecodeBounds = false;
                 opts.inSampleSize = imageResize;

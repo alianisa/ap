@@ -5,6 +5,7 @@ import im.actor.api.rpc.grouppre.{ApiGroupPre, GrouppreService, ResponseLoadGrou
 import im.actor.api.rpc.misc.ResponseSeq
 import im.actor.api.rpc.{ClientData, _}
 import im.actor.server.grouppre.GroupPreExtension
+import im.actor.server.sequence.SeqState
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -27,7 +28,6 @@ final class GroupsPreServiceImpl()(implicit actorSystem: ActorSystem) extends Gr
     authorized(clientData) { implicit client ⇒
       for {
         gruposPre <- groupPreExt.loadGroupsPre(client.userId, idGrupoPai)
-
         gruposApi = gruposPre map(gp =>  ApiGroupPre(groupId = gp.groupId,
           hasChildrem = gp.possuiFilhos,
           acessHash = gp.acessHash,
@@ -41,7 +41,7 @@ final class GroupsPreServiceImpl()(implicit actorSystem: ActorSystem) extends Gr
   Future[HandlerResult[ResponseSeq]] = {
     authorized(clientData) { implicit client ⇒
       for {
-        ack <- groupPreExt.changeParent(groupId, parentId)
+        ack <- groupPreExt.changeParent(groupId, parentId, client.userId, client.authId)
         seqState = ack.seqState.getOrElse(throw NoSeqStateDate)
       }yield(Ok(ResponseSeq(seqState.seq, seqState.state.toByteArray)))
     }
@@ -53,12 +53,12 @@ final class GroupsPreServiceImpl()(implicit actorSystem: ActorSystem) extends Gr
       authorized(clientData) { implicit client ⇒
         if(isGroupPre){
           for{
-            ack <- groupPreExt.create(groupId)
+            ack <- groupPreExt.create(groupId, client.userId, client.authId)
             seqState = ack.seqState.getOrElse(throw NoSeqStateDate)
           }yield(Ok(ResponseSeq(seqState.seq, seqState.state.toByteArray)))
         }else{
           for{
-            ack <-  groupPreExt.remove(groupId)
+            ack <-  groupPreExt.remove(groupId, client.userId, client.authId)
             seqState = ack.seqState.getOrElse(throw NoSeqStateDate)
           }yield(Ok(ResponseSeq(seqState.seq, seqState.state.toByteArray)))
         }

@@ -1,12 +1,15 @@
 package im.actor.server.grouppre
 
+import java.text.Normalizer
+
 import im.actor.api.rpc.grouppre.{ApiGroupPre, UpdateGroupPreCreated, UpdateGroupPreParentChanged, UpdateGroupPreRemoved}
-import im.actor.api.rpc.groups.ApiGroupType
+import im.actor.api.rpc.groups.{ApiGroup, ApiGroupType}
 import akka.pattern.pipe
 import im.actor.server.GroupPreCommands.{ChangeParent, ChangeParentAck, Create, CreateAck, Remove, RemoveAck}
 import im.actor.server.persist.UserRepo
 import im.actor.server.persist.grouppre.{PublicGroup, PublicGroupRepo}
 import im.actor.server.sequence.SeqState
+import im.actor.util.misc.StringUtils
 import org.joda.time.Instant
 
 import scala.collection.IndexedSeq
@@ -19,10 +22,21 @@ private [grouppre] trait GroupPreCommandHandlers {
 
   this: GroupPreProcessor =>
 
+  private def updateShortName(groupId:Int, name:String, userId:Int, authId:Long, interaction:Int) : Unit ={
+    groupExt.updateShortName(groupId, userId, authId, Some(name)) onFailure {
+      case e ⇒
+        if(interaction < 5)
+          updateShortName(groupId, s"$name$interaction", userId, authId, interaction + 1)
+    }
+  }
+
   protected def create(cmd: Create): Unit = {
     val createdAt = Instant.now
     val result: Future[CreateAck] = for {
       apiGroup <- groupExt.getApiStruct(cmd.groupId, cmd.userId)
+
+      _ = updateShortName(apiGroup.id, StringUtils.createShortName(apiGroup.title), cmd.userId, cmd.authId, 0)
+
       publicGroup = PublicGroup(id = apiGroup.id,
         typ = (apiGroup.groupType match {
           case Some(ApiGroupType.GROUP) => "G"

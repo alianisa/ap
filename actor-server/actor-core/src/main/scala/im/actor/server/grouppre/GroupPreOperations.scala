@@ -22,14 +22,14 @@ private[grouppre] sealed trait Commands extends UserAcl{
   implicit val timeout:Timeout
   implicit val ec: ExecutionContext
 
-  def create(groupId: Int) : Future[CreateAck] =
-    (processorRegion.ref ? Create(groupId=groupId)).mapTo[CreateAck]
+  def create(groupId: Int, userId: Int, authId: Long) : Future[CreateAck] =
+    (processorRegion.ref ? Create(groupId=groupId, userId = userId, authId=authId)).mapTo[CreateAck]
 
-  def remove(groupId: Int) : Future[RemoveAck] =
-    (processorRegion.ref ? Remove(groupId=groupId)).mapTo[RemoveAck]
+  def remove(groupId: Int, userId: Int, authId: Long) : Future[RemoveAck] =
+    (processorRegion.ref ? Remove(groupId=groupId, userId = userId, authId=authId)).mapTo[RemoveAck]
 
-  def changeParent(groupId: Int, parentId: Int) : Future[ChangeParentAck] =
-    (processorRegion.ref ? ChangeParent(groupId=groupId, parentId=parentId)).mapTo[ChangeParentAck]
+  def changeParent(groupId: Int, parentId: Int, userId: Int, authId: Long) : Future[ChangeParentAck] =
+    (processorRegion.ref ? ChangeParent(groupId=groupId, parentId=parentId, userId = userId, authId=authId)).mapTo[ChangeParentAck]
 }
 
 private[grouppre] sealed trait Queries{

@@ -320,7 +320,6 @@ private[group] trait InfoCommandHandlers {
                 update = UpdateGroupShortNameChanged(groupId, newShortName)
               )
             } yield seqState
-
             result pipeTo replyTo
           }
         }
