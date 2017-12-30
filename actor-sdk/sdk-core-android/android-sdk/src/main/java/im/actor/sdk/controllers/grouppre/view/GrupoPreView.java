@@ -51,7 +51,6 @@ public class GrupoPreView extends ListItemBackgroundView<GroupPre, GrupoPreView.
     private static boolean isStylesLoaded = false;
     private static TextPaint titlePaint;
     private static TextPaint textPaint;
-    private static TextPaint counterTextPaint;
 
     private static int[] placeholderColors;
     private static Paint avatarBorder;
@@ -146,14 +145,20 @@ public class GrupoPreView extends ListItemBackgroundView<GroupPre, GrupoPreView.
                 canvas.translate(Screen.dp(72 + 16 + 4), Screen.dp(14));
             }
 
-            if(layout.hasChildren){
+            if(layout.isHasChildren()){
                 canvas.translate(0, Screen.dp(12));
                 layout.getTitleLayout().draw(canvas);
             }else{
                 layout.getTitleLayout().draw(canvas);
             }
-
             canvas.restore();
+
+            if(!layout.isHasChildren()){
+                //second line
+                canvas.translate(Screen.dp(72), Screen.dp(33));
+                layout.getTextLayout().draw(canvas);
+                canvas.restore();
+            }
 
             //
             // Chevron
@@ -199,9 +204,6 @@ public class GrupoPreView extends ListItemBackgroundView<GroupPre, GrupoPreView.
 
             channelIcon = new TintDrawable(context.getResources().getDrawable(im.actor.sdk.R.drawable.ic_megaphone_18dp_black),
                     style.getDialogsTitleColor());
-
-            counterTextPaint = createTextPaint(Fonts.medium(), 14, style.getDialogsCounterTextColor());
-            counterTextPaint.setTextAlign(Paint.Align.CENTER);
 
             fillPaint = createFilledPaint(Color.BLACK);
             placeholderColors = ActorSDK.sharedActor().style.getDefaultAvatarPlaceholders();
@@ -276,6 +278,24 @@ public class GrupoPreView extends ListItemBackgroundView<GroupPre, GrupoPreView.
         maxTitleWidth -= Screen.dp(16 + 4);
         res.setTitleLayout(singleLineText(groupVM.getName().get(), titlePaint, maxTitleWidth));
 
+        if(!groupPre.getHasChildren()){
+            int maxWidth = width - Screen.dp(72) - Screen.dp(8);
+
+            int membersCount = groupVM.getMembersCount().get();
+            String membersStr = membersCount > 1 ? getContext().getString(R.string.members) : getContext().getString(R.string.member);
+
+            StringBuilder secondLineText = new StringBuilder(membersCount+" "+membersStr);
+
+            if(groupVM.isMember().get()){
+                if(membersCount > 1){
+                    secondLineText.append(", " + getContext().getString(R.string.including_you));
+                }else{
+                    secondLineText.append(", " + getContext().getString(R.string.and_its_you));
+                }
+            }
+            res.setTextLayout(singleLineText(secondLineText.toString(), textPaint, maxWidth));
+        }
+
         return res;
     }
 
@@ -334,6 +354,7 @@ public class GrupoPreView extends ListItemBackgroundView<GroupPre, GrupoPreView.
         private int placeholderIndex;
         private CharSequence shortName;
         private Layout titleLayout;
+        private Layout textLayout;
         private Drawable titleIcon;
         private int titleIconTop;
         private boolean hasChildren;
@@ -419,6 +440,14 @@ public class GrupoPreView extends ListItemBackgroundView<GroupPre, GrupoPreView.
 
         public void setChevronTop(int chevronTop) {
             this.chevronTop = chevronTop;
+        }
+
+        public Layout getTextLayout() {
+            return textLayout;
+        }
+
+        public void setTextLayout(Layout textLayout) {
+            this.textLayout = textLayout;
         }
     }
 }
