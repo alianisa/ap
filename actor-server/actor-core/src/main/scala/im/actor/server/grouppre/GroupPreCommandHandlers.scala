@@ -1,6 +1,6 @@
 package im.actor.server.grouppre
 
-import java.text.Normalizer
+
 
 import im.actor.api.rpc.grouppre.{ApiGroupPre, UpdateGroupPreCreated, UpdateGroupPreParentChanged, UpdateGroupPreRemoved}
 import im.actor.api.rpc.groups.{ApiGroup, ApiGroupType}

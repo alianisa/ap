@@ -112,9 +112,7 @@ public class GroupsPreRouter extends ModuleActor {
     }
 
     public Promise<Void> onGroupPreParentChanged(final Integer groupId, final Integer oldParentId, final Integer parentId) {
-
         freeze();
-
         return groupPreStates.getValueAsync(groupId).map(groupPreState -> {
             //atualizando o id do pai no statdo do grupo atual
             groupPreStates.addOrUpdateItem(groupPreState.changeParentId(parentId));
@@ -126,6 +124,7 @@ public class GroupsPreRouter extends ModuleActor {
             //setar o estado do novo pai para que possui filhos
             groupPreStates.getValueAsync(parentId).then(parentState -> {
                 groupPreStates.addOrUpdateItem(parentState.changeHasChildren(true));
+
             });
 
             if (oldParentId > 0) {
@@ -138,7 +137,6 @@ public class GroupsPreRouter extends ModuleActor {
             unfreeze();
             return null;
         });
-
     }
 
     private void freeze() {
