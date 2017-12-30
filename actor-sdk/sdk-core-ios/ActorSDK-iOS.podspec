@@ -27,7 +27,6 @@ Pod::Spec.new do |s|
   s.dependency 'YYCategories'
   s.dependency 'YYWebImage'
   s.dependency 'DZNWebViewController'
-  s.dependency 'AGEmojiKeyboard'
 
   s.dependency 'TTTAttributedLabel'
   s.dependency 'M13ProgressSuite'
