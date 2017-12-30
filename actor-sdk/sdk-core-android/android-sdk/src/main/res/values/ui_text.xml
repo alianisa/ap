@@ -673,4 +673,8 @@
     <string name="making_group_pre">Creating Pre Defined Group</string>
     <string name="entering">Entering</string>
     <string name="you_can_not_enter">You have no permissions to enter</string>
+    <string name="members">members</string>
+    <string name="including_you">including you</string>
+    <string name="member">member</string>
+    <string name="and_its_you">and it\'s you</string>
 </resources>
