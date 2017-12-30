@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
@@ -61,7 +60,6 @@ public class GrupoPreView extends ListItemBackgroundView<GroupPre, GrupoPreView.
 
     private static Drawable groupIcon;
     private static Drawable channelIcon;
-
     private static Drawable chevronIcon;
 
     private long bindedId;
@@ -100,7 +98,6 @@ public class GrupoPreView extends ListItemBackgroundView<GroupPre, GrupoPreView.
 
         setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Screen.dp(72)));
         setDividerPaddingLeft(Screen.dp(72));
-
     }
 
     @Override
@@ -133,6 +130,9 @@ public class GrupoPreView extends ListItemBackgroundView<GroupPre, GrupoPreView.
             if (layout.getTitleIcon() != null) {
                 int left = Screen.dp(72) + (Screen.dp(16) - layout.getTitleIcon().getIntrinsicWidth()) / 2;
                 int bottom = layout.getTitleIconTop();
+                if(layout.hasChildren){
+                    bottom += Screen.dp(12);
+                }
                 layout.getTitleIcon().setBounds(left, bottom - layout.getTitleIcon().getIntrinsicHeight(),
                         left + layout.getTitleIcon().getIntrinsicWidth(), bottom);
                 layout.getTitleIcon().draw(canvas);
@@ -146,7 +146,13 @@ public class GrupoPreView extends ListItemBackgroundView<GroupPre, GrupoPreView.
                 canvas.translate(Screen.dp(72 + 16 + 4), Screen.dp(14));
             }
 
-            layout.getTitleLayout().draw(canvas);
+            if(layout.hasChildren){
+                canvas.translate(0, Screen.dp(12));
+                layout.getTitleLayout().draw(canvas);
+            }else{
+                layout.getTitleLayout().draw(canvas);
+            }
+
             canvas.restore();
 
             //
