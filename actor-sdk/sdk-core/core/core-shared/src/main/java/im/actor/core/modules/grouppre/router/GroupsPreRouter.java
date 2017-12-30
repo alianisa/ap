@@ -64,7 +64,10 @@ public class GroupsPreRouter extends ModuleActor {
                 Arrays.asList(new ApiGroupOutPeer(apiGroupPre.getGroupId(), apiGroupPre.getAcessHash())))
                 .map(r -> groups().getValueAsync(apiGroupPre.getGroupId())
                         .map(group -> {
-                            GroupPre groupPre = new GroupPre(apiGroupPre.getGroupId(), apiGroupPre.getParentId(), apiGroupPre.getOrder(), apiGroupPre.hasChildrem(), true);
+                            GroupPre groupPre = new GroupPre(apiGroupPre.getGroupId(),
+                                    apiGroupPre.getParentId(),
+                                    apiGroupPre.getOrder(),
+                                    apiGroupPre.hasChildrem(), true);
                             gruposPre(apiGroupPre.getParentId()).addOrUpdateItem(groupPre);
                             groupPreStates.addOrUpdateItem(groupPre);
                             return null;
@@ -81,30 +84,33 @@ public class GroupsPreRouter extends ModuleActor {
                                            List<Integer> parentChildren) {
         freeze();
         return new Promise<Void>(resolver -> {
-            Integer parentId = apiGroupPre.getParentId();
-            GroupPre groupRemoved = gruposPre(parentId).getValue(apiGroupPre.getGroupId());
-            gruposPre(parentId).removeItem(groupRemoved.getEngineId());
 
-            for (Integer orphanId : removedChildren) {
-                GroupPre orphan = gruposPre(groupRemoved.getGroupId()).getValue(orphanId);
-                gruposPre(parentId).addOrUpdateItem(orphan);
-                gruposPre(groupRemoved.getGroupId()).removeItem(orphanId);
+            Integer parentId = apiGroupPre.getParentId();//pai do item removido
+
+            GroupPre groupRemoved = gruposPre(parentId).getValue(apiGroupPre.getGroupId()); //obtendo o item removido
+            gruposPre(parentId).removeItem(groupRemoved.getEngineId()); //removendo o item da listagem do pai
+
+            for (Integer orphanId : removedChildren) { //realocando os filhos orfaos para o pai do item removido
+                GroupPre orphan = gruposPre(groupRemoved.getGroupId()).getValue(orphanId); //obtendo o filho removido
+                gruposPre(parentId).addOrUpdateItem(orphan.changeParentId(parentId)); //adicionando ele abaixo do pai
+                groupPreStates.getValueAsync(orphan.getEngineId()) //atualizando o pai dele para o novo pai
+                        .then(v-> groupPreStates.addOrUpdateItem(v.changeParentId(parentId)));
+                gruposPre(groupRemoved.getGroupId()).removeItem(orphanId); //removendo ele da lista de filhos do item removido
             }
 
-            new Promise<GroupPre>(resolver1 -> {
-                if (parentId > GroupPre.DEFAULT_ID) {
-                    groupPreStates.getValueAsync(parentId).then(r -> {
+            new Promise<GroupPre>(res -> {
+                if (parentId > GroupPre.DEFAULT_ID) { //verificando se o pai do item removido ainda possui filhos
+                    groupPreStates.getValueAsync(parentId).then(r -> {//obtendo o estado do pai
                         groupPreStates.addOrUpdateItem(r.changeHasChildren(!parentChildren.isEmpty()));
-                        resolver1.result(groupRemoved);
+                        GroupPre paiListagemAtualizado = gruposPre(r.getParentId()).getValue(r.getEngineId()).changeHasChildren(!parentChildren.isEmpty());
+                        gruposPre(r.getParentId()).addOrUpdateItem(paiListagemAtualizado);
+                        res.result(groupRemoved);
                     });
                 }else{
-                    resolver1.result(groupRemoved);
+                    res.result(groupRemoved);
                 }
-            }).then(r -> {
-                groupPreStates.getValueAsync(r.getEngineId()).then(v -> {
-                    groupPreStates.addOrUpdateItem(v.changeIsLoaded(false).changeParentId(0).changeHasChildren(false));
-                });
-            });
+            }).then(r -> groupPreStates.getValueAsync(r.getEngineId())
+                    .then(v -> groupPreStates.addOrUpdateItem(v.changeIsLoaded(false).changeParentId(0).changeHasChildren(false))));
         }).map(r -> {
             unfreeze();
             return null;
@@ -117,19 +123,23 @@ public class GroupsPreRouter extends ModuleActor {
             //atualizando o id do pai no statdo do grupo atual
             groupPreStates.addOrUpdateItem(groupPreState.changeParentId(parentId));
             //adicionando o grupo ataual abaixo do novo pai
-            gruposPre(parentId).addOrUpdateItem(gruposPre(oldParentId).getValue(groupId));
+            gruposPre(parentId).addOrUpdateItem(gruposPre(oldParentId).getValue(groupId).changeParentId(parentId));
             //removendo o grupo atual do antigo pai
             gruposPre(oldParentId).removeItem(groupId);
 
             //setar o estado do novo pai para que possui filhos
             groupPreStates.getValueAsync(parentId).then(parentState -> {
                 groupPreStates.addOrUpdateItem(parentState.changeHasChildren(true));
-
+                GroupPre paiListagemAtualizado = gruposPre(parentState.getParentId()).getValue(parentState.getEngineId()).changeHasChildren(true);
+                gruposPre(parentState.getParentId()).addOrUpdateItem(paiListagemAtualizado);
             });
 
             if (oldParentId > 0) {
                 groupPreStates.getValueAsync(oldParentId).then(st -> {
                     st.changeHasChildren(!gruposPre(oldParentId).isEmpty());
+                    GroupPre paiListagemAtualizado = gruposPre(st.getParentId()).getValue(st.getEngineId())
+                            .changeHasChildren(!gruposPre(oldParentId).isEmpty());
+                    gruposPre(st.getParentId()).addOrUpdateItem(paiListagemAtualizado);
                 });
             }
             return null;
