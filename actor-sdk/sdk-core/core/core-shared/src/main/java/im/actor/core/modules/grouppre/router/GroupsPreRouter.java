@@ -70,8 +70,10 @@ public class GroupsPreRouter extends ModuleActor {
                                     apiGroupPre.hasChildrem(), true);
                             gruposPre(apiGroupPre.getParentId()).addOrUpdateItem(groupPre);
                             groupPreStates.addOrUpdateItem(groupPre);
+                            context().getGroupsModule().getRouter().onFullGroupNeeded(group.getGroupId());
                             return null;
                         }))
+
                 .map(r -> {
                     unfreeze();
                     return null;
@@ -120,26 +122,30 @@ public class GroupsPreRouter extends ModuleActor {
     public Promise<Void> onGroupPreParentChanged(final Integer groupId, final Integer oldParentId, final Integer parentId) {
         freeze();
         return groupPreStates.getValueAsync(groupId).map(groupPreState -> {
-            //atualizando o id do pai no statdo do grupo atual
+            //atualizando o id do pai no estado do grupo atual
             groupPreStates.addOrUpdateItem(groupPreState.changeParentId(parentId));
+
+            //pega o grupo da listagem do antigo pai, ja atualizando o id do novo pai
+            GroupPre groupPre = gruposPre(oldParentId).getValue(groupId).changeParentId(parentId);
+
             //adicionando o grupo ataual abaixo do novo pai
-            gruposPre(parentId).addOrUpdateItem(gruposPre(oldParentId).getValue(groupId).changeParentId(parentId));
+            gruposPre(parentId).addOrUpdateItem(groupPre);
             //removendo o grupo atual do antigo pai
-            gruposPre(oldParentId).removeItem(groupId);
+            gruposPre(oldParentId).removeItem(groupPre.getEngineId());
 
             //setar o estado do novo pai para que possui filhos
-            groupPreStates.getValueAsync(parentId).then(parentState -> {
-                groupPreStates.addOrUpdateItem(parentState.changeHasChildren(true));
-                GroupPre paiListagemAtualizado = gruposPre(parentState.getParentId()).getValue(parentState.getEngineId()).changeHasChildren(true);
-                gruposPre(parentState.getParentId()).addOrUpdateItem(paiListagemAtualizado);
+            groupPreStates.getValueAsync(parentId).then(newParentState -> {
+                groupPreStates.addOrUpdateItem(newParentState.changeHasChildren(true));
+                GroupPre paiListagemAtualizado = gruposPre(newParentState.getParentId()).getValue(newParentState.getEngineId()).changeHasChildren(true);
+                gruposPre(newParentState.getParentId()).addOrUpdateItem(paiListagemAtualizado);
             });
 
-            if (oldParentId > 0) {
-                groupPreStates.getValueAsync(oldParentId).then(st -> {
-                    st.changeHasChildren(!gruposPre(oldParentId).isEmpty());
-                    GroupPre paiListagemAtualizado = gruposPre(st.getParentId()).getValue(st.getEngineId())
+            if (oldParentId > GroupPre.DEFAULT_ID) {
+                groupPreStates.getValueAsync(oldParentId).then(oldParentState -> {
+                    oldParentState.changeHasChildren(!gruposPre(oldParentId).isEmpty());
+                    GroupPre paiListagemAtualizado = gruposPre(oldParentState.getParentId()).getValue(oldParentState.getEngineId())
                             .changeHasChildren(!gruposPre(oldParentId).isEmpty());
-                    gruposPre(st.getParentId()).addOrUpdateItem(paiListagemAtualizado);
+                    gruposPre(oldParentState.getParentId()).addOrUpdateItem(paiListagemAtualizado);
                 });
             }
             return null;
@@ -169,7 +175,8 @@ public class GroupsPreRouter extends ModuleActor {
     }
 
     private void updateGruposCanais(Integer idGrupoPai, List<GroupPre> gruposPre) {
-        PromisesArray.of(gruposPre).map(r -> Promises.tuple(Promise.success(r), groups().getValueAsync(r.getGroupId())))
+        PromisesArray.of(gruposPre)
+                .map(r -> Promises.tuple(Promise.success(r), groups().getValueAsync(r.getGroupId())))
                 .zip()
                 .then(rt -> {
                     List<GroupPre> grupos = new ArrayList<>();
@@ -177,6 +184,7 @@ public class GroupsPreRouter extends ModuleActor {
                         GroupPre loadedGroup = t2.getT1().changeIsLoaded(true);
                         grupos.add(loadedGroup);
                         groupPreStates.addOrUpdateItem(loadedGroup);
+                        context().getGroupsModule().getRouter().onFullGroupNeeded(t2.getT2().getGroupId());
                     }
                     gruposPre(idGrupoPai).addOrUpdateItems(grupos);
                 });

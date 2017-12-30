@@ -173,7 +173,7 @@ private[group] trait InfoCommandHandlers {
         val pushRules = seqUpdExt.pushRules(isFat = false, Some(PushTexts.topicChanged(newState.groupType)))
 
         //TODO: remove deprecated
-        db.run(GroupRepo.updateTopic(groupId, topic): @silent)
+//        db.run(GroupRepo.updateTopic(groupId, topic): @silent)
 
         val result: Future[SeqStateDate] = for {
 
@@ -237,7 +237,7 @@ private[group] trait InfoCommandHandlers {
         val pushRules = seqUpdExt.pushRules(isFat = false, Some(PushTexts.topicChanged(newState.groupType)))
 
         //TODO: remove deprecated
-        db.run(GroupRepo.updateAbout(groupId, about): @silent)
+//        db.run(GroupRepo.updateAbout(groupId, about): @silent)
 
         val result: Future[SeqStateDate] = for {
 

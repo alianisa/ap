@@ -172,7 +172,7 @@ public class GroupVM extends BaseValueModel<Group> {
         this.isCanJoin = new BooleanValueModel("group." + groupId + ".isCanJoin", rawObj.isCanJoin());
         this.isCanViewInfo = new BooleanValueModel("group." + groupId + ".isCanViewInfo", rawObj.isCanViewInfo());
 
-        this.ownerId = new IntValueModel("group." + groupId + ".membersCount", rawObj.getOwnerId());
+        this.ownerId = new IntValueModel("group." + groupId + ".ownerId", rawObj.getOwnerId());
         this.members = new ValueModel<>("group." + groupId + ".members", new HashSet<>(rawObj.getMembers()));
         this.presence = new ValueModel<>("group." + groupId + ".presence", 0);
         this.theme = new StringValueModel("group." + groupId + ".theme", rawObj.getTopic());

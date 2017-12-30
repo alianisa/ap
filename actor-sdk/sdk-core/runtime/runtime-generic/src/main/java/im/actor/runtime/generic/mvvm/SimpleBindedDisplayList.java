@@ -83,7 +83,12 @@ public class SimpleBindedDisplayList<T extends BserObject & ListEngineItem>{
     private void addOrUpdateItens(List<T> values){
         for (T value : values) {
             if(applyFilter(value)){
-                this.currentList.add(value);
+                int position = findPositionById(value.getEngineId());
+                if(position >= 0){
+                    this.currentList.set(position, value);
+                }else{
+                    this.currentList.add(value);
+                }
             }
         }
         updateListState();
@@ -95,6 +100,7 @@ public class SimpleBindedDisplayList<T extends BserObject & ListEngineItem>{
             if(removedPos >= 0)
                 this.currentList.remove(removedPos);
         }
+
         updateListState();
     }
 

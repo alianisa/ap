@@ -33,6 +33,7 @@ import im.actor.runtime.files.FileSystemReference;
 import im.actor.sdk.ActorSDK;
 import im.actor.sdk.ActorStyle;
 import im.actor.sdk.R;
+import im.actor.sdk.controllers.ActorBinder;
 import im.actor.sdk.util.Fonts;
 import im.actor.sdk.util.Screen;
 import im.actor.sdk.view.ListItemBackgroundView;
@@ -64,6 +65,7 @@ public class GrupoPreView extends ListItemBackgroundView<GroupPre, GrupoPreView.
     private long bindedId;
     private DraweeHolder<GenericDraweeHierarchy> draweeHolder;
     private GroupVM groupVM;
+    private ActorBinder BINDER = new ActorBinder();
 
     public GrupoPreView(Context context) {
         super(context);
@@ -180,6 +182,10 @@ public class GrupoPreView extends ListItemBackgroundView<GroupPre, GrupoPreView.
     //
     public void bind(GroupPre grupoPre) {
         groupVM = groups().get(grupoPre.getGroupId());
+
+        BINDER.bind(groupVM.getMembersCount(), (val, valueModel) -> {
+            requestLayout(grupoPre, bindedId != grupoPre.getEngineId());
+        });
         requestLayout(grupoPre, bindedId != grupoPre.getEngineId());
         bindedId = grupoPre.getEngineId();
     }
@@ -187,6 +193,7 @@ public class GrupoPreView extends ListItemBackgroundView<GroupPre, GrupoPreView.
     public void unbind() {
         cancelLayout();
         bindedId = -1;
+        BINDER.unbindAll();
         draweeHolder.onDetach();
     }
 

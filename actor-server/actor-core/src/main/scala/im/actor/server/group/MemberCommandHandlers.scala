@@ -302,14 +302,14 @@ private[group] trait MemberCommandHandlers extends GroupsImplicits {
             val serviceMessage = GroupServiceMessages.userJoined
 
             //TODO: remove deprecated
-            db.run(GroupUserRepo.create(
-              groupId,
-              userId = cmd.joiningUserId,
-              inviterUserId = inviterUserId,
-              invitedAt = optMember.map(_.invitedAt).getOrElse(date),
-              joinedAt = Some(LocalDateTime.now(ZoneOffset.UTC)),
-              isAdmin = false
-            ): @silent)
+//            db.run(GroupUserRepo.create(
+//              groupId,
+//              userId = cmd.joiningUserId,
+//              inviterUserId = inviterUserId,
+//              invitedAt = optMember.map(_.invitedAt).getOrElse(date),
+//              joinedAt = Some(LocalDateTime.now(ZoneOffset.UTC)),
+//              isAdmin = false
+//            ): @silent)
 
             def joinGROUPUpdates: Future[SeqStateDate] =
               for {
@@ -475,14 +475,6 @@ private[group] trait MemberCommandHandlers extends GroupsImplicits {
 
         val serviceMessage = GroupServiceMessages.userLeft
 
-        //TODO: remove deprecated. GroupInviteTokenRepo don't have replacement yet.
-//        db.run(
-//          for {
-//            _ ← GroupUserRepo.delete(groupId, cmd.userId): @silent
-//            _ ← GroupInviteTokenRepo.revoke(groupId, cmd.userId): @silent
-//          } yield ()
-//        )
-
         val leaveGROUPUpdates: Future[SeqStateDate] =
           for {
             // push updated members list to all group members
@@ -506,7 +498,7 @@ private[group] trait MemberCommandHandlers extends GroupsImplicits {
             }
 
             // push left user that he is no longer a member
-            SeqState(seq, state) ← seqUpdExt.deliverClientUpdate(
+            SeqState(seq, st) ← seqUpdExt.deliverClientUpdate(
               userId = cmd.userId,
               authId = cmd.authId,
               update = UpdateGroupMemberChanged(groupId, isMember = false)
@@ -515,11 +507,11 @@ private[group] trait MemberCommandHandlers extends GroupsImplicits {
             // push left user updates
             // • with empty group members
             // • that he can't view and invite members
-            leftUpdates = updatePermissions :+ UpdateGroupMembersUpdated(groupId, members = Vector.empty)
+            leftUpdates = updatePermissions :+ UpdateGroupMembersUpdated(groupId, members = (state.members - cmd.userId).values.map(_.asStruct).toVector)
             _ ← FutureExt.ftraverse(leftUpdates) { update ⇒
               seqUpdExt.deliverUserUpdate(userId = cmd.userId, update)
             }
-          } yield SeqStateDate(seq, state, date)
+          } yield SeqStateDate(seq, st, date)
 
         val leaveCHANNELUpdates: Future[SeqStateDate] =
           for {
@@ -537,10 +529,10 @@ private[group] trait MemberCommandHandlers extends GroupsImplicits {
             )
 
             // push left user updates that he has no group rights
-            leftUpdates = updatePermissions :+ UpdateGroupMembersCountChanged(groupId, membersCount = 0)
-            _ ← FutureExt.ftraverse(leftUpdates) { update ⇒
-              seqUpdExt.deliverUserUpdate(userId = cmd.userId, update)
-            }
+//            leftUpdates = updatePermissions :+ UpdateGroupMembersCountChanged(groupId, membersCount = 0)
+//            _ ← FutureExt.ftraverse(leftUpdates) { update ⇒
+//              seqUpdExt.deliverUserUpdate(userId = cmd.userId, update)
+//            }
           } yield SeqStateDate(seq, state, dateMillis)
 
         // read this dialog by user that leaves group. don't wait for ack
@@ -610,18 +602,10 @@ private[group] trait MemberCommandHandlers extends GroupsImplicits {
 
         val serviceMessage = GroupServiceMessages.userKicked(cmd.kickedUserId)
 
-        //TODO: remove deprecated. GroupInviteTokenRepo don't have replacement yet.
-        db.run(
-          for {
-            _ ← GroupUserRepo.delete(groupId, cmd.kickedUserId): @silent
-            _ ← GroupInviteTokenRepo.revoke(groupId, cmd.kickedUserId): @silent
-          } yield ()
-        )
-
         val kickGROUPUpdates: Future[SeqStateDate] =
           for {
             // push updated members list to all group members. Don't push to kicked user!
-            SeqState(seq, state) ← seqUpdExt.broadcastClientUpdate(
+            SeqState(seq, stt) ← seqUpdExt.broadcastClientUpdate(
               userId = cmd.kickerUserId,
               authId = cmd.kickerAuthId,
               bcastUserIds = newState.memberIds - cmd.kickerUserId,
@@ -642,13 +626,13 @@ private[group] trait MemberCommandHandlers extends GroupsImplicits {
             // • that he is no longer a member of group
             // • that he can't view and invite members
             kickedUserUpdates = updatePermissions ++ Vector(
-              UpdateGroupMembersUpdated(groupId, members = Vector.empty),
+              UpdateGroupMembersUpdated(groupId, members = (state.members - cmd.kickedUserId).values.map(_.asStruct).toVector),
               UpdateGroupMemberChanged(groupId, isMember = false)
             )
             _ ← FutureExt.ftraverse(kickedUserUpdates) { update ⇒
               seqUpdExt.deliverUserUpdate(userId = cmd.kickedUserId, update)
             }
-          } yield SeqStateDate(seq, state, date)
+          } yield SeqStateDate(seq, stt, date)
 
         val kickCHANNELUpdates: Future[SeqStateDate] =
           for {

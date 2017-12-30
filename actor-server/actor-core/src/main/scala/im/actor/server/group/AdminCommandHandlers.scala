@@ -36,7 +36,7 @@ private[group] trait AdminCommandHandlers extends GroupsImplicits {
         val newState = commit(evt)
 
         //TODO: remove deprecated
-        db.run(GroupBotRepo.updateToken(groupId, newToken): @silent)
+//        db.run(GroupBotRepo.updateToken(groupId, newToken): @silent)
 
         val result: Future[RevokeIntegrationTokenAck] = for {
           _ ← oldToken match {
@@ -77,7 +77,7 @@ private[group] trait AdminCommandHandlers extends GroupsImplicits {
         val updateObsolete = UpdateGroupMembersUpdateObsolete(groupId, members)
 
         //TODO: remove deprecated
-        db.run(GroupUserRepo.makeAdmin(groupId, cmd.candidateUserId): @silent)
+//        db.run(GroupUserRepo.makeAdmin(groupId, cmd.candidateUserId): @silent)
 
         val adminGROUPUpdates: Future[SeqStateDate] =
           for {
@@ -158,7 +158,7 @@ private[group] trait AdminCommandHandlers extends GroupsImplicits {
         val updateObsolete = UpdateGroupMembersUpdateObsolete(groupId, members)
 
         //TODO: remove deprecated
-        db.run(GroupUserRepo.dismissAdmin(groupId, cmd.targetUserId): @silent)
+//        db.run(GroupUserRepo.dismissAdmin(groupId, cmd.targetUserId): @silent)
 
         val result: Future[SeqState] = for {
 
@@ -306,14 +306,14 @@ private[group] trait AdminCommandHandlers extends GroupsImplicits {
           )
 
         //TODO: remove deprecated. GroupInviteTokenRepo don't have replacement yet.
-        exMemberIds foreach { userId ⇒
-          db.run(
-            for {
-              _ ← GroupUserRepo.delete(groupId, userId): @silent
-              _ ← GroupInviteTokenRepo.revoke(groupId, userId): @silent
-            } yield ()
-          )
-        }
+//        exMemberIds foreach { userId ⇒
+//          db.run(
+//            for {
+//              _ ← GroupUserRepo.delete(groupId, userId): @silent
+//              _ ← GroupInviteTokenRepo.revoke(groupId, userId): @silent
+//            } yield ()
+//          )
+//        }
 
         val result: Future[SeqState] = for {
           // release global name of group

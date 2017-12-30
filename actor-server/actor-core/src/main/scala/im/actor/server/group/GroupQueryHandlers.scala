@@ -200,16 +200,11 @@ trait GroupQueryHandlers {
       case (_, m) ⇒
         ApiMember(m.userId, m.inviterUserId, m.invitedAt.toEpochMilli, Some(m.isAdmin))
     }
-
-    if (state.isMember(clientUserId)) {
-      if (state.isAsyncMembers) {
-        // compatibility with old clients
-        apiMembers.find(_.userId == clientUserId).toVector → group.membersCount
-      } else {
-        apiMembers → group.membersCount
-      }
+    if (state.isAsyncMembers) {
+      // compatibility with old clients
+      apiMembers.find(_.userId == clientUserId).toVector → group.membersCount
     } else {
-      Vector.empty[ApiMember] → 0
+      apiMembers → group.membersCount
     }
   }
 
