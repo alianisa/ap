@@ -50,14 +50,14 @@ public class GroupsPreModule extends AbsModule implements BusSubscriber {
 
     @Override
     public void onBusEvent(Event event) {
-        if (event instanceof AppVisibleChanged) {
-            if(((AppVisibleChanged)event).isVisible())
-                getGruposPreLoadActor(GroupPre.DEFAULT_ID);
-        }
+//        if (event instanceof AppVisibleChanged) {
+//            if(((AppVisibleChanged)event).isVisible())
+//                getGruposPreLoadActor(GroupPre.DEFAULT_ID);
+//        }
     }
 
     public void run() {
-        context().getEvents().subscribe(this, AppVisibleChanged.EVENT);
+//        context().getEvents().subscribe(this, AppVisibleChanged.EVENT);
     }
 
     public Promise<Void> changeGroupPre(int groupId, boolean isGroupPre) {

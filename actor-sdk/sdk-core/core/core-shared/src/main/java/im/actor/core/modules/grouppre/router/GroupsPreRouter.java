@@ -68,8 +68,10 @@ public class GroupsPreRouter extends ModuleActor {
                                     apiGroupPre.getParentId(),
                                     apiGroupPre.getOrder(),
                                     apiGroupPre.hasChildrem(), true);
+
                             gruposPre(apiGroupPre.getParentId()).addOrUpdateItem(groupPre);
                             groupPreStates.addOrUpdateItem(groupPre);
+
                             context().getGroupsModule().getRouter().onFullGroupNeeded(group.getGroupId());
                             return null;
                         }))

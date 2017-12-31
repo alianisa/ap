@@ -1,6 +1,7 @@
 package im.actor.sdk.controllers.conversation.view;
 
 import android.content.Context;
+
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 

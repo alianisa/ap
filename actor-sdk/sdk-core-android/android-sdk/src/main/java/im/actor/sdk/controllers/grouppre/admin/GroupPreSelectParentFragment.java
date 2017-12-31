@@ -13,12 +13,14 @@ import android.widget.TextView;
 
 import im.actor.core.entity.GroupPre;
 import im.actor.core.entity.GroupType;
+import im.actor.core.viewmodel.GroupPreVM;
 import im.actor.core.viewmodel.GroupVM;
 import im.actor.runtime.android.view.SimpleBindedListAdapter;
 import im.actor.runtime.generic.mvvm.SimpleBindedDisplayList;
 import im.actor.sdk.ActorSDK;
 import im.actor.sdk.R;
 import im.actor.sdk.controllers.SimpleDisplayListFragment;
+import im.actor.sdk.controllers.activity.BaseFragmentActivity;
 import im.actor.sdk.controllers.grouppre.view.GrupoPreHolder;
 import im.actor.sdk.controllers.grouppre.view.GrupoPreSimpleAdapter;
 import im.actor.sdk.util.Screen;
@@ -32,32 +34,47 @@ import static im.actor.sdk.util.ActorSDKMessenger.messenger;
 
 public class GroupPreSelectParentFragment extends SimpleDisplayListFragment<GroupPre, GrupoPreHolder> {
 
-    private GroupVM groupVM;
-    private Integer parentId = GroupPre.DEFAULT_ID;
+    public static final String ROOT_GROUP_ID_PARAM = "rootGroupId";
+    public static final String GROUP_PARENT_ID_PARAM = "groupParentId";
+    public static final String GROUP_TYPE_PARAM = "groupType";
+
+    private int parentId;
+    private int groupType;
+
+    private int rootGroupId;
+    private GroupPreVM rootGroupPreVM;
+
     private View emptyGroups;
 
-    public static GroupPreSelectParentFragment create(int groupId) {
+    public static GroupPreSelectParentFragment create(int rootGroupId, int parentId, int groupType) {
         Bundle bundle = new Bundle();
-        bundle.putInt("groupId", groupId);
-        GroupPreSelectParentFragment editFragment = new GroupPreSelectParentFragment();
-        editFragment.setArguments(bundle);
-        return editFragment;
+        bundle.putInt(ROOT_GROUP_ID_PARAM, rootGroupId);
+        bundle.putInt(GROUP_PARENT_ID_PARAM, parentId);
+        bundle.putInt(GROUP_TYPE_PARAM, groupType);
+        GroupPreSelectParentFragment fragment = new GroupPreSelectParentFragment();
+        fragment.setArguments(bundle);
+        return fragment;
     }
 
     @Override
     public void onCreate(Bundle saveInstance) {
         super.onCreate(saveInstance);
-        groupVM = messenger().getGroup(getArguments().getInt("groupId"));
-        setTitle(groupVM.getGroupType() == GroupType.CHANNEL ? R.string.select_channel_parent : R.string.select_group_parent);
+        rootGroupId = getArguments().getInt(ROOT_GROUP_ID_PARAM);
+        rootGroupPreVM = messenger().getGroupPreVM(rootGroupId);
+
+        parentId = getArguments().getInt(GROUP_PARENT_ID_PARAM);
+        groupType = getArguments().getInt(GROUP_TYPE_PARAM);
+
+        setTitle(groupType == GroupType.CHANNEL ? R.string.select_channel_parent : R.string.select_group_parent);
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        SimpleBindedDisplayList<GroupPre> displayList = ActorSDK.sharedActor().getMessenger().getGroupsPreSimpleDisplayList(parentId,
-                value -> (value.getGroupId().compareTo(groupVM.getId()) != 0
-                        && groupVM.getGroupType() == messenger().getGroup(value.getGroupId()).getGroupType()));
+        SimpleBindedDisplayList<GroupPre> displayList = ActorSDK.sharedActor().getMessenger()
+                .getGroupsPreSimpleDisplayList(parentId, grouPre -> (grouPre.getGroupId().compareTo(rootGroupId) != 0
+                        && groupType == messenger().getGroup(grouPre.getGroupId()).getGroupType()));
 
         View res = inflate(inflater, container, R.layout.fragment_group_pre_select_parent, displayList);
         res.setBackgroundColor(ActorSDK.sharedActor().style.getMainBackgroundColor());
@@ -97,14 +114,21 @@ public class GroupPreSelectParentFragment extends SimpleDisplayListFragment<Grou
     protected SimpleBindedListAdapter onCreateAdapter(SimpleBindedDisplayList displayList, Activity activity) {
         return new GrupoPreSimpleAdapter(displayList, new OnItemClickedListener<GroupPre>() {
             @Override
-            public void onClicked(GroupPre item) {
-                messenger().changeGroupParent(groupVM.getId(), item.getGroupId(), parentId);
-                finishActivity();
+            public void onClicked(GroupPre groupPre) {
+                if(groupPre.getHasChildren()){
+                    ((BaseFragmentActivity)getActivity()).showFragment(GroupPreSelectParentFragment.create(rootGroupId,
+                            groupPre.getGroupId(), groupType),true);
+                }else{
+                    messenger().changeGroupParent(rootGroupId, groupPre.getGroupId(), rootGroupPreVM.getParentId().get());
+                    finishActivity();
+                }
             }
 
             @Override
-            public boolean onLongClicked(GroupPre item) {
-                return false;
+            public boolean onLongClicked(GroupPre groupPre) {
+                messenger().changeGroupParent(rootGroupId, groupPre.getGroupId(), rootGroupPreVM.getParentId().get());
+                finishActivity();
+                return true;
             }
         }, getActivity());
     }

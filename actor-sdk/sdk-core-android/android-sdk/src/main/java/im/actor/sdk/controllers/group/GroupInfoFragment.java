@@ -450,8 +450,7 @@ public class GroupInfoFragment extends BaseFragment {
         });
 
         groupPreParentAction.setOnClickListener(view -> {
-            startActivity(new Intent(getActivity(), GroupPreSelectParentActivity.class)
-                    .putExtra(Intents.EXTRA_GROUP_ID, chatId));
+            startActivity(GroupPreSelectParentActivity.createIntent(getActivity(), chatId, groupVM.getGroupType()));
         });
     }
 

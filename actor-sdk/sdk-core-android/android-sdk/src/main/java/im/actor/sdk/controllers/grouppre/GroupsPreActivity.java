@@ -20,7 +20,6 @@ public class GroupsPreActivity extends BaseFragmentActivity {
         return i;
     }
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
