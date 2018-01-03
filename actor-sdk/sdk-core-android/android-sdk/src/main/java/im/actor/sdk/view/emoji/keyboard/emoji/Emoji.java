@@ -95,8 +95,6 @@ public class Emoji {
                 scale = 2.0f;
                 imageResize = 2;
             } else if (Screen.getDensity() <= 1.5f) {
-                //scale = 3.0f;
-                //imageResize = 2;
                 scale = 2.0f;
             } else if (Screen.getDensity() <= 2.0f) {
                 scale = 2.0f;
@@ -207,7 +205,7 @@ public class Emoji {
 
     public static Drawable getEmojiBigDrawable(String code) {
         EmojiDrawable ed = getEmojiDrawable(code);
- 	if (ed == null) {
+ 	    if (ed == null) {
             CharSequence newCode = EmojiData.emojiAliasMap.get(code);
             if (newCode != null) {
                 ed = Emoji.getEmojiDrawable(newCode);

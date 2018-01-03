@@ -31,7 +31,6 @@ import im.actor.core.api.updates.UpdateGroupShortNameChanged;
 import im.actor.core.api.updates.UpdateGroupTitleChanged;
 import im.actor.core.api.updates.UpdateGroupTopicChanged;
 import im.actor.core.entity.Group;
-import im.actor.core.entity.GroupType;
 import im.actor.core.modules.ModuleActor;
 import im.actor.core.modules.ModuleContext;
 import im.actor.core.modules.groups.router.entity.RouterApplyGroups;
@@ -264,10 +263,10 @@ public class GroupRouter extends ModuleActor {
 
     @Verified
     private Promise<Void> onGroupDescChanged(Group group) {
-        return getRouter().onGroupChanged(group);
+        return getMessagesRouter().onGroupChanged(group);
     }
 
-    private MessageRouterInt getRouter() {
+    private MessageRouterInt getMessagesRouter() {
         return context().getMessagesModule().getRouter();
     }
 

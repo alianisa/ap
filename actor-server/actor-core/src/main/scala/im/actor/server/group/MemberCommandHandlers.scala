@@ -297,19 +297,9 @@ private[group] trait MemberCommandHandlers extends GroupsImplicits {
               }
 
             // TODO: not sure how it should be in old API
-            val membersUpdateObsolete = UpdateGroupMembersUpdateObsolete(groupId, apiMembers)
+//            val membersUpdateObsolete = UpdateGroupMembersUpdateObsolete(groupId, apiMembers)
 
             val serviceMessage = GroupServiceMessages.userJoined
-
-            //TODO: remove deprecated
-//            db.run(GroupUserRepo.create(
-//              groupId,
-//              userId = cmd.joiningUserId,
-//              inviterUserId = inviterUserId,
-//              invitedAt = optMember.map(_.invitedAt).getOrElse(date),
-//              joinedAt = Some(LocalDateTime.now(ZoneOffset.UTC)),
-//              isAdmin = false
-//            ): @silent)
 
             def joinGROUPUpdates: Future[SeqStateDate] =
               for {
@@ -414,12 +404,12 @@ private[group] trait MemberCommandHandlers extends GroupsImplicits {
                 ///////////////////////////
 
                 // push update about members to all users, except joining user
-                _ ← seqUpdExt.broadcastPeopleUpdate(
-                  memberIds - cmd.joiningUserId,
-                  membersUpdateObsolete,
-                  pushRules = seqUpdExt.pushRules(isFat = true, None),
-                  deliveryId = s"userjoined_obsolete_${groupId}_${randomId}"
-                )
+//                _ ← seqUpdExt.broadcastPeopleUpdate(
+//                  memberIds - cmd.joiningUserId,
+//                  membersUpdateObsolete,
+//                  pushRules = seqUpdExt.pushRules(isFat = true, None),
+//                  deliveryId = s"userjoined_obsolete_${groupId}_${randomId}"
+//                )
 
                 ///////////////////////////
                 // Groups V2 API updates //

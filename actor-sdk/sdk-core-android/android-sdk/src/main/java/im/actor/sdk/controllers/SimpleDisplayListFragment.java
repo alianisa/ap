@@ -96,7 +96,7 @@ public abstract class SimpleDisplayListFragment<T extends BserObject & ListEngin
     protected void onListStateChange(SimpleBindedDisplayList.State state){
         if(state == SimpleBindedDisplayList.State.LOADED){
             getCollection().setVisibility(View.VISIBLE);
-        }else{
+        }else {
             getCollection().setVisibility(View.GONE);
         }
     }

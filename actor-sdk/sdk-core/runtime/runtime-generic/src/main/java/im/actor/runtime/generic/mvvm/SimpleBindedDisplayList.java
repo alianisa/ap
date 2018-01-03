@@ -10,10 +10,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import im.actor.runtime.Log;
+import im.actor.runtime.Runtime;
 import im.actor.runtime.annotations.MainThread;
 import im.actor.runtime.bser.BserObject;
-import im.actor.runtime.collections.ArrayUtils;
 import im.actor.runtime.function.Tuple2;
 import im.actor.runtime.mvvm.ValueModel;
 import im.actor.runtime.storage.ListEngineDisplayExt;
@@ -74,9 +73,11 @@ public class SimpleBindedDisplayList<T extends BserObject & ListEngineItem>{
         };
 
         this.state = new ValueModel<>("simple_display_list.state", State.LOADING_EMPTY);
-
         listEngine.subscribe(engineListener);
-        listEngine.loadForward(Integer.MAX_VALUE, (items, topSortKey, bottomSortKey) -> addOrUpdateItens(items));
+
+        Runtime.dispatch(()->{
+            listEngine.loadForward(Integer.MAX_VALUE, (items, topSortKey, bottomSortKey) -> addOrUpdateItens(items));
+        });
     }
 
 
@@ -100,7 +101,6 @@ public class SimpleBindedDisplayList<T extends BserObject & ListEngineItem>{
             if(removedPos >= 0)
                 this.currentList.remove(removedPos);
         }
-
         updateListState();
     }
 

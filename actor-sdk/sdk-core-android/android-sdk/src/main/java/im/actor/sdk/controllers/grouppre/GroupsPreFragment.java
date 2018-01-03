@@ -7,34 +7,30 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
-
-import im.actor.core.entity.Group;
 import im.actor.core.entity.GroupPre;
 import im.actor.core.entity.GroupType;
 import im.actor.core.viewmodel.GroupVM;
 import im.actor.runtime.Log;
-import im.actor.runtime.android.view.BindedListAdapter;
 import im.actor.runtime.android.view.SimpleBindedListAdapter;
-import im.actor.runtime.generic.mvvm.BindedDisplayList;
 import im.actor.runtime.generic.mvvm.SimpleBindedDisplayList;
 import im.actor.sdk.ActorSDK;
 import im.actor.sdk.R;
-import im.actor.sdk.controllers.DisplayListFragment;
 import im.actor.sdk.controllers.Intents;
 import im.actor.sdk.controllers.SimpleDisplayListFragment;
-import im.actor.sdk.controllers.grouppre.admin.GroupPreSelectParentFragment;
-import im.actor.sdk.controllers.grouppre.view.GrupoPreAdapter;
 import im.actor.sdk.controllers.grouppre.view.GrupoPreHolder;
 import im.actor.sdk.controllers.grouppre.view.GrupoPreSimpleAdapter;
 import im.actor.sdk.util.Screen;
 import im.actor.sdk.util.SnackUtils;
 import im.actor.sdk.view.adapters.OnItemClickedListener;
+import im.actor.sdk.view.drag.OnStartDragListener;
+import im.actor.sdk.view.drag.SimpleItemTouchHelperCallback;
 
 import static im.actor.sdk.util.ActorSDKMessenger.groups;
 import static im.actor.sdk.util.ActorSDKMessenger.messenger;
@@ -43,21 +39,27 @@ import static im.actor.sdk.util.ActorSDKMessenger.messenger;
  * Created by diego on 13/05/17.
  */
 
-public class GroupsPreFragment extends SimpleDisplayListFragment<GroupPre, GrupoPreHolder> {
+public class GroupsPreFragment extends SimpleDisplayListFragment<GroupPre, GrupoPreHolder>
+        implements OnStartDragListener {
 
     private static final String TAG = GroupsPreFragment.class.getName();
+
+    public static final String GROUP_TYPE_PARAM = "groupType";
+    public static final String GROUP_PARENT_ID_PARAM = "groupParentId";
 
     private int parentId = GroupPre.DEFAULT_ID;
     private int groupType = GroupType.GROUP;
     private GroupVM parentVm;
 
     private View emptyGroups;
+    private View loadingGroups;
 
+    private ItemTouchHelper itemTouchHelper;
 
     public static GroupsPreFragment create(int parentId, int groupType) {
         Bundle bundle = new Bundle();
-        bundle.putInt("parentId", parentId);
-        bundle.putInt("groupType", groupType);
+        bundle.putInt(GROUP_PARENT_ID_PARAM, parentId);
+        bundle.putInt(GROUP_TYPE_PARAM, groupType);
         GroupsPreFragment fragment = new GroupsPreFragment();
         fragment.setArguments(bundle);
         return fragment;
@@ -66,8 +68,8 @@ public class GroupsPreFragment extends SimpleDisplayListFragment<GroupPre, Grupo
     @Override
     public void onCreate(Bundle saveInstance) {
         super.onCreate(saveInstance);
-        parentId = getArguments().getInt("parentId", GroupPre.DEFAULT_ID);
-        groupType = getArguments().getInt("groupType", GroupType.GROUP);
+        parentId = getArguments().getInt(GROUP_PARENT_ID_PARAM, GroupPre.DEFAULT_ID);
+        groupType = getArguments().getInt(GROUP_TYPE_PARAM, GroupType.GROUP);
     }
 
     @Nullable
@@ -96,25 +98,33 @@ public class GroupsPreFragment extends SimpleDisplayListFragment<GroupPre, Grupo
         // Empty View
         emptyGroups = res.findViewById(R.id.emptyGroups);
         ((TextView) emptyGroups.findViewById(R.id.empty_groups_text)).setTextColor(ActorSDK.sharedActor().style.getMainColor());
-        emptyGroups.findViewById(R.id.empty_groups_bg).setBackgroundColor(ActorSDK.sharedActor().style.getMainColor());
         emptyGroups.setVisibility(View.GONE);
+
+        loadingGroups = res.findViewById(R.id.loadingGroups);
+
+
+
         return res;
     }
 
     @Override
     protected void onListStateChange(SimpleBindedDisplayList.State state) {
         super.onListStateChange(state);
-
         if(state == SimpleBindedDisplayList.State.LOADED){
             emptyGroups.setVisibility(View.GONE);
-        }else{
+            loadingGroups.setVisibility(View.GONE);
+        }else if(state == SimpleBindedDisplayList.State.LOADED_EMPTY){
             emptyGroups.setVisibility(View.VISIBLE);
+            loadingGroups.setVisibility(View.GONE);
+        }else if(state == SimpleBindedDisplayList.State.LOADING_EMPTY){
+            emptyGroups.setVisibility(View.GONE);
+            loadingGroups.setVisibility(View.VISIBLE);
         }
     }
 
     @Override
     protected SimpleBindedListAdapter onCreateAdapter(SimpleBindedDisplayList displayList, Activity activity) {
-        return new GrupoPreSimpleAdapter(displayList, new OnItemClickedListener<GroupPre>() {
+        GrupoPreSimpleAdapter adapter = new GrupoPreSimpleAdapter(displayList, new OnItemClickedListener<GroupPre>() {
             @Override
             public void onClicked(GroupPre groupPre) {
                 if(groupPre.getHasChildren()){
@@ -129,6 +139,12 @@ public class GroupsPreFragment extends SimpleDisplayListFragment<GroupPre, Grupo
                 return false;
             }
         }, getActivity());
+
+        ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(adapter);
+        itemTouchHelper = new ItemTouchHelper(callback);
+        itemTouchHelper.attachToRecyclerView(getCollection());
+
+        return adapter;
     }
 
     private void enterInGroupById(GroupPre groupPre){
@@ -152,8 +168,7 @@ public class GroupsPreFragment extends SimpleDisplayListFragment<GroupPre, Grupo
     @Override
     public void onResume() {
         super.onResume();
-
-        if(parentId > 0){
+        if(parentId > GroupPre.DEFAULT_ID){
             parentVm = groups().get(parentId);
             bind(parentVm.getName(), val -> setTitle(val));
         }else{
@@ -163,5 +178,10 @@ public class GroupsPreFragment extends SimpleDisplayListFragment<GroupPre, Grupo
                 setTitle(getString(R.string.predefined_group));
             }
         }
+    }
+
+    @Override
+    public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
+
     }
 }

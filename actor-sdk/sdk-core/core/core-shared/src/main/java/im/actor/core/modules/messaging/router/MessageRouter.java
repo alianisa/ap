@@ -711,6 +711,7 @@ public class MessageRouter extends ModuleActor {
         Promise<Void> res = Promise.success(null);
 
         boolean isActiveNeedUpdate = false;
+
         for (User u : users) {
             if (!isActiveNeedUpdate) {
                 for (ActiveDialogGroup g : activeDialogStorage.getGroups()) {
@@ -722,6 +723,7 @@ public class MessageRouter extends ModuleActor {
             }
             res = res.chain(v -> getDialogsRouter().onUserChanged(u));
         }
+
         for (Group group : groups) {
             if (!isActiveNeedUpdate) {
                 for (ActiveDialogGroup g : activeDialogStorage.getGroups()) {

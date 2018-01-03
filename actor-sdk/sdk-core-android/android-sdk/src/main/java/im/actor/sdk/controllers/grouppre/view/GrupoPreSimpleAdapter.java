@@ -4,13 +4,14 @@ import android.content.Context;
 import android.view.ViewGroup;
 
 import im.actor.core.entity.GroupPre;
-import im.actor.runtime.android.view.BindedListAdapter;
+import im.actor.runtime.Log;
 import im.actor.runtime.android.view.SimpleBindedListAdapter;
-import im.actor.runtime.generic.mvvm.BindedDisplayList;
 import im.actor.runtime.generic.mvvm.SimpleBindedDisplayList;
+import im.actor.sdk.view.adapters.ItemTouchHelperAdapter;
 import im.actor.sdk.view.adapters.OnItemClickedListener;
 
-public class GrupoPreSimpleAdapter extends SimpleBindedListAdapter<GroupPre, GrupoPreHolder> {
+public class GrupoPreSimpleAdapter extends SimpleBindedListAdapter<GroupPre, GrupoPreHolder>
+        implements ItemTouchHelperAdapter {
 
     private OnItemClickedListener<GroupPre> onItemClicked;
     private Context context;
@@ -36,5 +37,17 @@ public class GrupoPreSimpleAdapter extends SimpleBindedListAdapter<GroupPre, Gru
     @Override
     public void onViewRecycled(GrupoPreHolder holder) {
         holder.unbind();
+    }
+
+    @Override
+    public boolean onItemMove(int fromPosition, int toPosition) {
+
+        Log.d("fasd","fasdfas");
+        return false;
+    }
+
+    @Override
+    public void onItemDismiss(int position) {
+
     }
 }

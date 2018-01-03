@@ -23,10 +23,11 @@ import im.actor.runtime.promise.PromisesArray;
 public class GroupsPreActor extends ModuleActor {
 
     private static final String KEY_VERSION = "_1";
+
     private final String KEY_LOADED;
     private final String KEY_LOADED_INIT;
+    private final Integer idGrupoPai;
 
-    private Integer idGrupoPai;
     private boolean isLoading = false;
     private boolean isLoaded = false;
 
@@ -40,10 +41,11 @@ public class GroupsPreActor extends ModuleActor {
     @Override
     public void preStart() {
         isLoaded = preferences().getBool(KEY_LOADED, false);
+
         if (!preferences().getBool(KEY_LOADED_INIT, false)) {
             self().send(new GroupsPreActor.LoadGruposPre());
         } else {
-            context().getConductor().getConductor().onGruposPreLoaded(null);
+            context().getConductor().getConductor().onGruposPreLoaded(idGrupoPai);
         }
     }
 

@@ -179,6 +179,7 @@ public class DialogView extends ListItemBackgroundView<Dialog, DialogView.Dialog
             if (isTyping) {
                 canvas.drawText(typingText, Screen.dp(72), Screen.dp(54), textActivePaint);
             } else {
+
                 if (layout.getTextLayout() != null) {
                     canvas.save();
                     canvas.translate(Screen.dp(72), Screen.dp(40));
@@ -403,9 +404,9 @@ public class DialogView extends ListItemBackgroundView<Dialog, DialogView.Dialog
                     String senderName = messenger().getFormatter().formatPerformerName(arg.getSenderId()) + ": ";
                     if (arg.getMessageType() == ContentType.TEXT) {
                         SpannableStringBuilder builder = new SpannableStringBuilder();
-                        builder.append(senderName);
+                        builder.append(Emoji.replaceEmoji(senderName, textPaint.getFontMetricsInt(), Screen.dp(17), false));
                         builder.setSpan(new ForegroundColorSpan(senderTextColor), 0, senderName.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-                        builder.append(contentText);
+                        builder.append(Emoji.replaceEmoji(contentText, textPaint.getFontMetricsInt(), Screen.dp(17), false));
                         res.setTextLayout(singleLineText(builder, textPaint, maxWidth));
                     } else {
                         CharSequence contentResult = new StringBuilder(Emoji.replaceEmoji(senderName, textActivePaint.getFontMetricsInt(), Screen.dp(17), false))

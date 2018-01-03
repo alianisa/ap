@@ -677,4 +677,5 @@
     <string name="including_you">including you</string>
     <string name="member">member</string>
     <string name="and_its_you">and it\'s you</string>
+    <string name="loading">loading...</string>
 </resources>

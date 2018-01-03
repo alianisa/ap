@@ -16,18 +16,17 @@ public class GroupsPreActivity extends BaseFragmentActivity {
 
     public static Intent createIntent(Context ctx, int groupType){
         Intent i = new Intent(ctx, GroupsPreActivity.class);
-        i.putExtra("groupType", groupType);
+        i.putExtra(GroupsPreFragment.GROUP_TYPE_PARAM, groupType);
         return i;
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         if (savedInstanceState == null) {
             showFragment(GroupsPreFragment.create(
-                    getIntent().getIntExtra("parentId", GroupPre.DEFAULT_ID),
-                    getIntent().getIntExtra("groupType", GroupType.GROUP)),
+                    getIntent().getIntExtra(GroupsPreFragment.GROUP_PARENT_ID_PARAM, GroupPre.DEFAULT_ID),
+                    getIntent().getIntExtra(GroupsPreFragment.GROUP_TYPE_PARAM, GroupType.GROUP)),
                     false);
         }
     }

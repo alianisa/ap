@@ -45,6 +45,7 @@ public class GroupPreSelectParentFragment extends SimpleDisplayListFragment<Grou
     private GroupPreVM rootGroupPreVM;
 
     private View emptyGroups;
+    private View loadingGroups;
 
     public static GroupPreSelectParentFragment create(int rootGroupId, int parentId, int groupType) {
         Bundle bundle = new Bundle();
@@ -94,8 +95,10 @@ public class GroupPreSelectParentFragment extends SimpleDisplayListFragment<Grou
         // Empty View
         emptyGroups = res.findViewById(R.id.emptyGroups);
         ((TextView) emptyGroups.findViewById(R.id.empty_groups_text)).setTextColor(ActorSDK.sharedActor().style.getMainColor());
-        emptyGroups.findViewById(R.id.empty_groups_bg).setBackgroundColor(ActorSDK.sharedActor().style.getMainColor());
         emptyGroups.setVisibility(View.GONE);
+
+        loadingGroups = res.findViewById(R.id.loadingGroups);
+
         return res;
     }
 
@@ -105,8 +108,13 @@ public class GroupPreSelectParentFragment extends SimpleDisplayListFragment<Grou
 
         if(state == SimpleBindedDisplayList.State.LOADED){
             emptyGroups.setVisibility(View.GONE);
-        }else{
+            loadingGroups.setVisibility(View.GONE);
+        }else if(state == SimpleBindedDisplayList.State.LOADED_EMPTY){
             emptyGroups.setVisibility(View.VISIBLE);
+            loadingGroups.setVisibility(View.GONE);
+        }else if(state == SimpleBindedDisplayList.State.LOADING_EMPTY){
+            emptyGroups.setVisibility(View.GONE);
+            loadingGroups.setVisibility(View.VISIBLE);
         }
     }
 
