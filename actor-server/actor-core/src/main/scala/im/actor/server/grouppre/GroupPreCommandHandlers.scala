@@ -37,12 +37,22 @@ private [grouppre] trait GroupPreCommandHandlers {
 
       _ = updateShortName(apiGroup.id, StringUtils.createShortName(apiGroup.title), cmd.userId, cmd.authId, 0)
 
+      nextOrder <- db.run(PublicGroupRepo.nextPosition(0))
+
       publicGroup = PublicGroup(id = apiGroup.id,
         typ = (apiGroup.groupType match {
           case Some(ApiGroupType.GROUP) => "G"
           case Some(ApiGroupType.CHANNEL) => "C"
           case _ => "G"
         }),
+        order = nextOrder match {
+          case Some(v) => {
+            v+1
+          }
+          case None => {
+            0
+          }
+        },
         accessHash = apiGroup.accessHash
       )
 
@@ -56,7 +66,7 @@ private [grouppre] trait GroupPreCommandHandlers {
         groupId = apiGroup.id,
         hasChildrem = false,
         acessHash = apiGroup.accessHash,
-        order = 0,
+        order = publicGroup.order,
         parentId = Option(publicGroup.parentId)
       ))
 
@@ -89,7 +99,7 @@ private [grouppre] trait GroupPreCommandHandlers {
               _ <- PublicGroupRepo.updateHasChildrenByParent(pg.parentId, parentHasChildren)
 
               parentChildrens <- PublicGroupRepo.childrenIds(pg.parentId)
-            } yield (removedChildrens,parentChildrens))
+            } yield (removedChildrens, parentChildrens))
 
             update = UpdateGroupPreRemoved(ApiGroupPre(
               groupId = apiGroup.id,

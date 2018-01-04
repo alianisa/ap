@@ -8,6 +8,8 @@ import com.google.j2objc.annotations.ObjectiveCName;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import im.actor.runtime.Runtime;
@@ -80,7 +82,6 @@ public class SimpleBindedDisplayList<T extends BserObject & ListEngineItem>{
         });
     }
 
-
     private void addOrUpdateItens(List<T> values){
         for (T value : values) {
             if(applyFilter(value)){
@@ -128,8 +129,15 @@ public class SimpleBindedDisplayList<T extends BserObject & ListEngineItem>{
         return -1;
     }
 
+    public void itensMoved(int fromPosition, int toPosition){
+        Collections.swap(currentList, fromPosition, toPosition);
+    }
+
 
     private void updateListState(){
+        Collections.sort(this.currentList, (t, t1) -> Long.valueOf(t.getEngineSort())
+                .compareTo(Long.valueOf(t1.getEngineSort())));
+
         if(!this.currentList.isEmpty()){
             getState().change(State.LOADED);
         }else{

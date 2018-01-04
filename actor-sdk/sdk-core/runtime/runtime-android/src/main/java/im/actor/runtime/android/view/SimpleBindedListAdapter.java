@@ -11,10 +11,12 @@ import im.actor.runtime.Runtime;
 import im.actor.runtime.bser.BserObject;
 import im.actor.runtime.generic.mvvm.SimpleBindedDisplayList;
 import im.actor.runtime.storage.ListEngineItem;
+import im.actor.sdk.view.drag.ItemTouchHelperAdapter;
 
 public abstract class SimpleBindedListAdapter<V extends BserObject & ListEngineItem,
         T extends RecyclerView.ViewHolder>
-        extends RecyclerView.Adapter<T>{
+        extends RecyclerView.Adapter<T>
+        implements ItemTouchHelperAdapter {
 
     private SimpleBindedDisplayList<V> displayList;
 
@@ -74,5 +76,17 @@ public abstract class SimpleBindedListAdapter<V extends BserObject & ListEngineI
 
     public void dispose() {
         pause();
+    }
+
+    @Override
+    public boolean onItemMove(int fromPosition, int toPosition) {
+        displayList.itensMoved(fromPosition-1, toPosition-1);
+        notifyItemMoved(fromPosition-1, toPosition-1);
+        return true;
+    }
+
+    @Override
+    public void onItemDismiss(int position) {
+
     }
 }

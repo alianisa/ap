@@ -104,13 +104,6 @@ public class AudioHolder extends MessageHolder {
         progressView = (CircularView) itemView.findViewById(R.id.progressView);
         progressView.setColor(context.getResources().getColor(R.color.primary));
         progressView.setMaxValue(100);
-//        seekBar.setOnTouchListener(new View.OnTouchListener() {
-//            @Override
-//            public boolean onTouch(View v, MotionEvent event) {
-//                return true;
-//            }
-//        });
-//        seekBar.setEnabled(false);
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {

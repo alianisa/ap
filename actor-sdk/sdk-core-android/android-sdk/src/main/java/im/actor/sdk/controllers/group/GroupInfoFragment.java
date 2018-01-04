@@ -390,7 +390,6 @@ public class GroupInfoFragment extends BaseFragment {
     }
 
     private void enableHideSupportUserViews(){
-
         bind(users().get(myUid()).getPhones(), phones -> {
             boolean isSupport = false;
             if(!phones.isEmpty()){
@@ -401,7 +400,6 @@ public class GroupInfoFragment extends BaseFragment {
                     }
                 }
             }
-
             if(isSupport){
                 groupPreContainer.setVisibility(View.VISIBLE);
                 dividerGroupPre.setVisibility(View.VISIBLE);

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package im.actor.sdk.view.adapters;
+package im.actor.sdk.view.drag;
 
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;

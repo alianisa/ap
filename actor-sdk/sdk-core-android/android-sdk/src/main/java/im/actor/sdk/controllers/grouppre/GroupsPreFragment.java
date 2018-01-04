@@ -34,6 +34,8 @@ import im.actor.sdk.view.drag.SimpleItemTouchHelperCallback;
 
 import static im.actor.sdk.util.ActorSDKMessenger.groups;
 import static im.actor.sdk.util.ActorSDKMessenger.messenger;
+import static im.actor.sdk.util.ActorSDKMessenger.myUid;
+import static im.actor.sdk.util.ActorSDKMessenger.users;
 
 /**
  * Created by diego on 13/05/17.
@@ -124,7 +126,7 @@ public class GroupsPreFragment extends SimpleDisplayListFragment<GroupPre, Grupo
 
     @Override
     protected SimpleBindedListAdapter onCreateAdapter(SimpleBindedDisplayList displayList, Activity activity) {
-        GrupoPreSimpleAdapter adapter = new GrupoPreSimpleAdapter(displayList, new OnItemClickedListener<GroupPre>() {
+        return new GrupoPreSimpleAdapter(displayList, new OnItemClickedListener<GroupPre>() {
             @Override
             public void onClicked(GroupPre groupPre) {
                 if(groupPre.getHasChildren()){
@@ -138,14 +140,37 @@ public class GroupsPreFragment extends SimpleDisplayListFragment<GroupPre, Grupo
             public boolean onLongClicked(GroupPre item) {
                 return false;
             }
-        }, getActivity());
-
-        ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(adapter);
-        itemTouchHelper = new ItemTouchHelper(callback);
-        itemTouchHelper.attachToRecyclerView(getCollection());
-
-        return adapter;
+        }, this, getActivity());
     }
+
+
+    @Override
+    protected void afterAdapterCreated() {
+        super.afterAdapterCreated();
+        configureDrag();
+    }
+
+    private void configureDrag(){
+        bind(users().get(myUid()).getPhones(), phones -> {
+            boolean isSupport = false;
+            if(!phones.isEmpty()){
+                for(int i = 0; i < phones.size();i++){
+                    String helpPhoneNumber = ActorSDK.sharedActor().getHelpPhone().replaceAll("[^0-9]", "");
+                    if(Long.parseLong(helpPhoneNumber) == phones.get(i).getPhone()){
+                        isSupport = true;
+                    }
+                }
+            }
+
+            if(isSupport){
+                SimpleItemTouchHelperCallback callback = new SimpleItemTouchHelperCallback(getAdapter());
+                callback.setItemViewSwipeEnabled(false);
+                itemTouchHelper = new ItemTouchHelper(callback);
+                itemTouchHelper.attachToRecyclerView(getCollection());
+            }
+        });
+    }
+
 
     private void enterInGroupById(GroupPre groupPre){
         GroupVM groupVM = groups().get(groupPre.getGroupId());
@@ -182,6 +207,7 @@ public class GroupsPreFragment extends SimpleDisplayListFragment<GroupPre, Grupo
 
     @Override
     public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
-
+        if(itemTouchHelper != null)
+            itemTouchHelper.startDrag(viewHolder);
     }
 }

@@ -44,7 +44,10 @@ public abstract class SimpleDisplayListFragment<T extends BserObject & ListEngin
         configureRecyclerView(collection);
         adapter = onCreateAdapter(displayList, getActivity());
         collection.setAdapter(adapter);
+        afterAdapterCreated();
     }
+
+    protected void afterAdapterCreated(){}
 
     public void setAnimationsEnabled(boolean isEnabled) {
         if (isEnabled) {

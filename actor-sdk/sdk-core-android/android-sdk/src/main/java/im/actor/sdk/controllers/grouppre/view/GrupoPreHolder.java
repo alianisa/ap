@@ -1,9 +1,17 @@
 package im.actor.sdk.controllers.grouppre.view;
 
+import android.graphics.Color;
+import android.support.v4.view.MotionEventCompat;
+import android.view.MotionEvent;
+import android.view.View;
+
 import im.actor.core.entity.GroupPre;
+import im.actor.runtime.Log;
 import im.actor.runtime.android.view.BindedViewHolder;
+import im.actor.sdk.ActorSDK;
 import im.actor.sdk.view.drag.ItemTouchHelperViewHolder;
 import im.actor.sdk.view.adapters.OnItemClickedListener;
+import im.actor.sdk.view.drag.OnStartDragListener;
 
 /**
  * Created by diego on 06/06/17.
@@ -14,22 +22,35 @@ public class GrupoPreHolder extends BindedViewHolder implements
 
     private GroupPre bindedItem;
     private GrupoPreView grupoPreView;
+    private OnStartDragListener onStartDragListener;
 
-    public GrupoPreHolder(GrupoPreView grupoPreView, final OnItemClickedListener<GroupPre> onClickListener) {
+    public GrupoPreHolder(final GrupoPreView grupoPreView,
+                          final OnItemClickedListener<GroupPre> onClickListener,
+                          final OnStartDragListener onStartDragListener) {
         super(grupoPreView);
         this.grupoPreView = grupoPreView;
+        this.onStartDragListener = onStartDragListener;
 
-        grupoPreView.setOnClickListener(v -> {
+        if(this.onStartDragListener != null){
+            this.grupoPreView.setOnTouchListener((v, event) -> {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    this.onStartDragListener.onStartDrag(this);
+                }else if(event.getAction() == MotionEvent.ACTION_UP){
+                    Log.d("GrupoPreHolder","MotionEvent.ACTION_UP");
+                }
+                return false;
+            });
+        }
+
+        this.grupoPreView.setOnClickListener(v -> {
             if (bindedItem != null) {
                 onClickListener.onClicked(bindedItem);
             }
         });
-
-        grupoPreView.setOnLongClickListener(v->{
+        this.grupoPreView.setOnLongClickListener(v->{
             if (bindedItem != null) {
                 return onClickListener.onLongClicked(bindedItem);
             }
-
             return false;
         });
     }
@@ -47,11 +68,13 @@ public class GrupoPreHolder extends BindedViewHolder implements
 
     @Override
     public void onItemSelected() {
-
+        if(onStartDragListener != null)
+            grupoPreView.setBackgroundColor(Color.LTGRAY);
     }
 
     @Override
     public void onItemClear() {
-
+        if(onStartDragListener != null)
+            grupoPreView.setBackgroundColor(0);
     }
 }
