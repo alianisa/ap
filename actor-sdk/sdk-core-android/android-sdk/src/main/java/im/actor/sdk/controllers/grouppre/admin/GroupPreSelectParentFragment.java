@@ -138,6 +138,6 @@ public class GroupPreSelectParentFragment extends SimpleDisplayListFragment<Grou
                 finishActivity();
                 return true;
             }
-        }, null, getActivity());
+        }, getActivity());
     }
 }

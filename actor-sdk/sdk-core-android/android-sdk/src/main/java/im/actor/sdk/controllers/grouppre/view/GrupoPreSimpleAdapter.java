@@ -8,12 +8,10 @@ import im.actor.runtime.android.view.SimpleBindedListAdapter;
 import im.actor.runtime.generic.mvvm.SimpleBindedDisplayList;
 import im.actor.sdk.util.ActorSDKMessenger;
 import im.actor.sdk.view.adapters.OnItemClickedListener;
-import im.actor.sdk.view.drag.OnStartDragListener;
 
 public class GrupoPreSimpleAdapter extends SimpleBindedListAdapter<GroupPre, GrupoPreHolder>{
 
     private OnItemClickedListener<GroupPre> onItemClicked;
-    private OnStartDragListener onStartDragListener;
     private Context context;
 
     private GroupPre dragFrom = null;
@@ -21,17 +19,15 @@ public class GrupoPreSimpleAdapter extends SimpleBindedListAdapter<GroupPre, Gru
 
     public GrupoPreSimpleAdapter(SimpleBindedDisplayList<GroupPre> displayList,
                                  OnItemClickedListener<GroupPre> onItemClicked,
-                                 OnStartDragListener onStartDragListener,
                                  Context context) {
         super(displayList);
         this.context = context;
         this.onItemClicked = onItemClicked;
-        this.onStartDragListener = onStartDragListener;
     }
 
     @Override
     public GrupoPreHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-        return new GrupoPreHolder(new GrupoPreView(context), onItemClicked, onStartDragListener);
+        return new GrupoPreHolder(new GrupoPreView(context), onItemClicked);
     }
 
     @Override

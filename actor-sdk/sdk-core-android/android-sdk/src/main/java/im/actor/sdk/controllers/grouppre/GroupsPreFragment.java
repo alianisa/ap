@@ -29,7 +29,6 @@ import im.actor.sdk.controllers.grouppre.view.GrupoPreSimpleAdapter;
 import im.actor.sdk.util.Screen;
 import im.actor.sdk.util.SnackUtils;
 import im.actor.sdk.view.adapters.OnItemClickedListener;
-import im.actor.sdk.view.drag.OnStartDragListener;
 import im.actor.sdk.view.drag.SimpleItemTouchHelperCallback;
 
 import static im.actor.sdk.util.ActorSDKMessenger.groups;
@@ -41,8 +40,7 @@ import static im.actor.sdk.util.ActorSDKMessenger.users;
  * Created by diego on 13/05/17.
  */
 
-public class GroupsPreFragment extends SimpleDisplayListFragment<GroupPre, GrupoPreHolder>
-        implements OnStartDragListener {
+public class GroupsPreFragment extends SimpleDisplayListFragment<GroupPre, GrupoPreHolder>{
 
     private static final String TAG = GroupsPreFragment.class.getName();
 
@@ -138,7 +136,7 @@ public class GroupsPreFragment extends SimpleDisplayListFragment<GroupPre, Grupo
             public boolean onLongClicked(GroupPre item) {
                 return false;
             }
-        }, this, getActivity());
+        }, getActivity());
     }
 
 
@@ -159,7 +157,6 @@ public class GroupsPreFragment extends SimpleDisplayListFragment<GroupPre, Grupo
                     }
                 }
             }
-
             if(isSupport){
                 SimpleItemTouchHelperCallback callback = new SimpleItemTouchHelperCallback(getAdapter());
                 callback.setItemViewSwipeEnabled(false);
@@ -200,13 +197,6 @@ public class GroupsPreFragment extends SimpleDisplayListFragment<GroupPre, Grupo
             }else {
                 setTitle(getString(R.string.predefined_group));
             }
-        }
-    }
-
-    @Override
-    public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
-        if(itemTouchHelper != null) {
-            itemTouchHelper.startDrag(viewHolder);
         }
     }
 }

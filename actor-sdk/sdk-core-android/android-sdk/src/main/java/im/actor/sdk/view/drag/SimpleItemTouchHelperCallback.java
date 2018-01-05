@@ -59,7 +59,6 @@ public class SimpleItemTouchHelperCallback extends ItemTouchHelper.Callback {
 
     @Override
     public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
-        // Set movement flags based on the layout manager
         if (recyclerView.getLayoutManager() instanceof GridLayoutManager) {
             final int dragFlags = ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT;
             final int swipeFlags = 0;
@@ -76,14 +75,12 @@ public class SimpleItemTouchHelperCallback extends ItemTouchHelper.Callback {
         if (source.getItemViewType() != target.getItemViewType()) {
             return false;
         }
-
         mAdapter.onItemMove(source.getAdapterPosition(), target.getAdapterPosition());
         return true;
     }
 
     @Override
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int i) {
-        // Notify the adapter of the dismissal
         mAdapter.onItemDismiss(viewHolder.getAdapterPosition());
     }
 
@@ -101,10 +98,8 @@ public class SimpleItemTouchHelperCallback extends ItemTouchHelper.Callback {
 
     @Override
     public void onSelectedChanged(RecyclerView.ViewHolder viewHolder, int actionState) {
-        // We only want the active item to change
         if (actionState != ItemTouchHelper.ACTION_STATE_IDLE) {
             if (viewHolder instanceof ItemTouchHelperViewHolder) {
-                // Let the view holder know that this item is being moved or dragged
                 ItemTouchHelperViewHolder itemViewHolder = (ItemTouchHelperViewHolder) viewHolder;
                 itemViewHolder.onItemSelected();
             }
@@ -115,15 +110,11 @@ public class SimpleItemTouchHelperCallback extends ItemTouchHelper.Callback {
     @Override
     public void clearView(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
         super.clearView(recyclerView, viewHolder);
-
         viewHolder.itemView.setAlpha(ALPHA_FULL);
-
         if (viewHolder instanceof ItemTouchHelperViewHolder) {
-            // Tell the view holder it's time to restore the idle state
             ItemTouchHelperViewHolder itemViewHolder = (ItemTouchHelperViewHolder) viewHolder;
             itemViewHolder.onItemClear();
         }
-
         mAdapter.onClear();
     }
 }

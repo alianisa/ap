@@ -52,8 +52,6 @@ import static im.actor.sdk.util.ActorSDKMessenger.users;
 import static im.actor.sdk.util.ViewUtils.goneView;
 import static im.actor.sdk.util.ViewUtils.showView;
 
-//import uk.co.senab.photoview.PhotoView;
-
 public class ViewAvatarActivity extends BaseActivity {
 
     private static final int REQUEST_GALLERY = 1;
@@ -121,26 +119,11 @@ public class ViewAvatarActivity extends BaseActivity {
         super.onResume();
 
         if (peer.getPeerType() == PeerType.PRIVATE && peer.getPeerId() == myUid()) {
-            bind(getAvatar(), messenger().getOwnAvatarVM().getUploadState(), new ValueDoubleChangedListener<Avatar, AvatarUploadState>() {
-                @Override
-                public void onChanged(Avatar val, Value<Avatar> Value, AvatarUploadState val2, Value<AvatarUploadState> Value2) {
-                    performBind(val, val2);
-                }
-            });
+            bind(getAvatar(), messenger().getOwnAvatarVM().getUploadState(), (val, Value, val2, Value2) -> performBind(val, val2));
         } else if (peer.getPeerType() == PeerType.GROUP) {
-            bind(getAvatar(), messenger().getGroupAvatarVM(peer.getPeerId()).getUploadState(), new ValueDoubleChangedListener<Avatar, AvatarUploadState>() {
-                @Override
-                public void onChanged(Avatar val, Value<Avatar> Value, AvatarUploadState val2, Value<AvatarUploadState> Value2) {
-                    performBind(val, val2);
-                }
-            });
+            bind(getAvatar(), messenger().getGroupAvatarVM(peer.getPeerId()).getUploadState(), (val, Value, val2, Value2) -> performBind(val, val2));
         } else if (peer.getPeerType() == PeerType.PRIVATE) {
-            bind(getAvatar(), new ValueChangedListener<Avatar>() {
-                @Override
-                public void onChanged(Avatar val, Value<Avatar> Value) {
-                    performBind(val, null);
-                }
-            });
+            bind(getAvatar(), (val, Value) -> performBind(val, null));
         } else {
             throw new RuntimeException("Unknown peer type:" + peer.getPeerType());
         }
@@ -204,7 +187,7 @@ public class ViewAvatarActivity extends BaseActivity {
                     photoView.setZoomable(false);
                     isAppliedPreview = true;
                 } catch (ImageLoadException e) {
-                    e.printStackTrace();
+                    Log.e(ViewAvatarActivity.class.getName(),e);
                 }
             }
             if (!isAppliedPreview) {
