@@ -156,23 +156,19 @@ public class GrupoPreView extends ListItemBackgroundView<GroupPre, GrupoPreView.
             canvas.restore();
 
             if(!layout.isHasChildren()){
-                //second line
                 canvas.translate(Screen.dp(72), Screen.dp(33));
                 layout.getTextLayout().draw(canvas);
-                canvas.restore();
             }
 
             //
             // Chevron
             //
-
             if (layout.isHasChildren()) {
                 layout.getChevronIcon().setBounds(layout.chevronLeft, layout.chevronTop,
                         layout.chevronLeft + layout.getChevronIcon().getIntrinsicWidth(),
                         layout.chevronTop + layout.getChevronIcon().getIntrinsicHeight());
                 layout.getChevronIcon().draw(canvas);
             }
-
             canvas.save();
         }
     }
