@@ -18,7 +18,7 @@ trait GroupPreQueryHandlers {
 
       gruposApi = groupsPre map(gp => GroupPre(groupId = gp.id,
         tipo = gp.typ,
-        ordem = gp.order,
+        ordem = gp.position,
         possuiFilhos = gp.hasChildrem,
         idPai = gp.parentId,
         acessHash = gp.accessHash))

@@ -32,7 +32,7 @@ private[grouppre] sealed trait Commands extends UserAcl{
     (processorRegion.ref ? ChangeParent(groupId=groupId, parentId=parentId, userId = userId, authId=authId)).mapTo[ChangeParentAck]
 
   def changeOrder(fromGroupId: Int, toGroupId: Int, userId: Int, authId: Long) : Future[ChangeOrderAck] =
-    (processorRegion.ref ? ChangeOrder(fromId=fromGroupId, toId=toGroupId, userId = userId, authId=authId)).mapTo[ChangeOrderAck]
+    (processorRegion.ref ? ChangeOrder(groupId=fromGroupId, toId=toGroupId, userId = userId, authId=authId)).mapTo[ChangeOrderAck]
 }
 
 private[grouppre] sealed trait Queries{

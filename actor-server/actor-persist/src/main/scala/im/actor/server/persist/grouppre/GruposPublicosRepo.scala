@@ -8,7 +8,7 @@ import slick.dbio.Effect.Read
 import slick.driver.PostgresDriver.api._
 import slick.profile.SqlAction
 
-case class PublicGroup(id: Int, typ: String, order: Int = 0, hasChildrem: Boolean = false, parentId:Int = 0, accessHash: Long)
+case class PublicGroup(id: Int, typ: String, position: Int = 0, hasChildrem: Boolean = false, parentId:Int = 0, accessHash: Long)
 /**
  * Created by diego on 09/08/16.
  */
@@ -51,6 +51,10 @@ object PublicGroupRepo {
 
   def updateParent(groupId: Int, parentId:Int) = {
     publicGroups.filter(_.id === groupId).map(_.parentId).update(parentId)
+  }
+
+  def updatePosition(groupId: Int, newPosition:Int) = {
+    publicGroups.filter(_.id === groupId).map(_.position).update(newPosition)
   }
 
   def possuiFilhos(parentId: Int): SqlAction[Boolean, NoStream, Read] = {

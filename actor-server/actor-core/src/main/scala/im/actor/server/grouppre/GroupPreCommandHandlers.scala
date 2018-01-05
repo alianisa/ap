@@ -2,8 +2,8 @@ package im.actor.server.grouppre
 
 
 
-import im.actor.api.rpc.grouppre.{ApiGroupPre, UpdateGroupPreCreated, UpdateGroupPreParentChanged, UpdateGroupPreRemoved}
-import im.actor.api.rpc.groups.{ApiGroup, ApiGroupType}
+import im.actor.api.rpc.grouppre._
+import im.actor.api.rpc.groups.{ApiGroupType}
 import akka.pattern.pipe
 import im.actor.server.GroupPreCommands.{ChangeOrder, ChangeOrderAck, ChangeParent, ChangeParentAck, Create, CreateAck, Remove, RemoveAck}
 import im.actor.server.persist.UserRepo
@@ -45,7 +45,7 @@ private [grouppre] trait GroupPreCommandHandlers {
           case Some(ApiGroupType.CHANNEL) => "C"
           case _ => "G"
         }),
-        order = nextOrder match {
+        position = nextOrder match {
           case Some(v) => {
             v+1
           }
@@ -66,7 +66,7 @@ private [grouppre] trait GroupPreCommandHandlers {
         groupId = apiGroup.id,
         hasChildrem = false,
         acessHash = apiGroup.accessHash,
-        order = publicGroup.order,
+        order = publicGroup.position,
         parentId = Option(publicGroup.parentId)
       ))
 
@@ -105,7 +105,7 @@ private [grouppre] trait GroupPreCommandHandlers {
               groupId = apiGroup.id,
               hasChildrem = pg.hasChildrem,
               acessHash = apiGroup.accessHash,
-              order = pg.order,
+              order = pg.position,
               parentId = Option(pg.parentId)
             ), removedChildrens.toIndexedSeq, parentChildrens.toIndexedSeq)
 
@@ -163,6 +163,23 @@ private [grouppre] trait GroupPreCommandHandlers {
   protected def changeOrder(cmd: ChangeOrder): Unit = {
     val result: Future[ChangeOrderAck] = for{
 
+      (from,to) <- db.run(for{
+        fromGroup <- PublicGroupRepo.findById(cmd.groupId) map (_.get)
+        toGroup <- PublicGroupRepo.findById(cmd.toId) map (_.get)
+        _ <- PublicGroupRepo.updatePosition(fromGroup.id, toGroup.position)
+        _ <- PublicGroupRepo.updatePosition(toGroup.id, fromGroup.position)
+      } yield(fromGroup, toGroup))
+
+      update = UpdateGroupPreOrderChanged(from.id, to.position, to.id, from.position)
+
+      activeUsersIds <- db.run(UserRepo.activeUsersIds)
+      seqState <- seqUpdExt.broadcastClientUpdate(cmd.userId, cmd.authId, activeUsersIds.toSet, update)
+
+    } yield (ChangeOrderAck(Some(seqState)))
+
+    result pipeTo sender() onFailure{
+      case e =>
+        log.error(e, "Failed to change order")
     }
   }
 
