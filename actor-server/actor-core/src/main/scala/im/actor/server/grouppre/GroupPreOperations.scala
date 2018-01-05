@@ -2,8 +2,8 @@ package im.actor.server.grouppre
 
 import akka.pattern.ask
 import akka.util.Timeout
-import im.actor.server.GroupPre
-import im.actor.server.GroupPreCommands.{ChangeParent, ChangeParentAck, Create, CreateAck, Remove, RemoveAck}
+import im.actor.server.{GroupPre}
+import im.actor.server.GroupPreCommands.{ChangeOrder, ChangeOrderAck, ChangeParent, ChangeParentAck, Create, CreateAck, Remove, RemoveAck}
 import im.actor.server.GroupPreQueries.{GetGroupsPre, GetGroupsPreResponse}
 import im.actor.server.dialog.UserAcl
 
@@ -30,6 +30,9 @@ private[grouppre] sealed trait Commands extends UserAcl{
 
   def changeParent(groupId: Int, parentId: Int, userId: Int, authId: Long) : Future[ChangeParentAck] =
     (processorRegion.ref ? ChangeParent(groupId=groupId, parentId=parentId, userId = userId, authId=authId)).mapTo[ChangeParentAck]
+
+  def changeOrder(fromGroupId: Int, toGroupId: Int, userId: Int, authId: Long) : Future[ChangeOrderAck] =
+    (processorRegion.ref ? ChangeOrder(fromId=fromGroupId, toId=toGroupId, userId = userId, authId=authId)).mapTo[ChangeOrderAck]
 }
 
 private[grouppre] sealed trait Queries{

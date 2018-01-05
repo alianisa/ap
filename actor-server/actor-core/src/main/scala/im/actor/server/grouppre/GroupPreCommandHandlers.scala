@@ -5,7 +5,7 @@ package im.actor.server.grouppre
 import im.actor.api.rpc.grouppre.{ApiGroupPre, UpdateGroupPreCreated, UpdateGroupPreParentChanged, UpdateGroupPreRemoved}
 import im.actor.api.rpc.groups.{ApiGroup, ApiGroupType}
 import akka.pattern.pipe
-import im.actor.server.GroupPreCommands.{ChangeParent, ChangeParentAck, Create, CreateAck, Remove, RemoveAck}
+import im.actor.server.GroupPreCommands.{ChangeOrder, ChangeOrderAck, ChangeParent, ChangeParentAck, Create, CreateAck, Remove, RemoveAck}
 import im.actor.server.persist.UserRepo
 import im.actor.server.persist.grouppre.{PublicGroup, PublicGroupRepo}
 import im.actor.server.sequence.SeqState
@@ -138,7 +138,6 @@ private [grouppre] trait GroupPreCommandHandlers {
   }
 
   protected def changeParent(cmd: ChangeParent): Unit = {
-
     val result: Future[ChangeParentAck] = for{
 
       previous <- db.run(for{
@@ -158,6 +157,12 @@ private [grouppre] trait GroupPreCommandHandlers {
     result pipeTo sender() onFailure {
       case e ⇒
         log.error(e, "Failed to Change GroupPre parent")
+    }
+  }
+
+  protected def changeOrder(cmd: ChangeOrder): Unit = {
+    val result: Future[ChangeOrderAck] = for{
+
     }
   }
 

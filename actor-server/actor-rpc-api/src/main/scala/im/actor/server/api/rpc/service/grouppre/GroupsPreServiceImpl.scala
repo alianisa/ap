@@ -64,5 +64,14 @@ final class GroupsPreServiceImpl()(implicit actorSystem: ActorSystem) extends Gr
         }
     }
 
+  /** Change group order */
+  override protected def doHandleChangeOrder(fromGroupId: Int, toGroupId: Int, clientData: ClientData):
+  Future[HandlerResult[ResponseSeq]] =
+    authorized(clientData) { implicit client ⇒
+      for{
+        ack <- groupPreExt.changeOrder(fromGroupId, toGroupId, client.userId, client.authId)
+        seqState = ack.seqState.getOrElse(throw NoSeqStateDate)
+      }yield(Ok(ResponseSeq(seqState.seq, seqState.state.toByteArray)))
+    }
 
 }

@@ -18,6 +18,7 @@ public abstract class SimpleBindedListAdapter<V extends BserObject & ListEngineI
         extends RecyclerView.Adapter<T>
         implements ItemTouchHelperAdapter {
 
+
     private SimpleBindedDisplayList<V> displayList;
 
     public SimpleBindedListAdapter(SimpleBindedDisplayList<V> displayList) {
@@ -78,15 +79,7 @@ public abstract class SimpleBindedListAdapter<V extends BserObject & ListEngineI
         pause();
     }
 
-    @Override
-    public boolean onItemMove(int fromPosition, int toPosition) {
-        displayList.itensMoved(fromPosition-1, toPosition-1);
-        notifyItemMoved(fromPosition-1, toPosition-1);
-        return true;
-    }
-
-    @Override
-    public void onItemDismiss(int position) {
-
+    public SimpleBindedDisplayList<V> getDisplayList() {
+        return displayList;
     }
 }

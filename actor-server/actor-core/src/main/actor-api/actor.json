@@ -4379,6 +4379,15 @@
 {"type":"int32","id":1,"name":"groupId"}
 ,{"type":"int32","id":2,"name":"parentId"}
 ,{"type":"int32","id":3,"name":"oldParentId"}
+]}},{"type":"update","content":{
+"name":"GroupPreOrderChanged",
+"header":89,
+"doc":[
+"GroupPre order changed"],"attributes":[
+{"type":"int32","id":1,"name":"fromGroupId"}
+,{"type":"int32","id":2,"name":"fromOrder"}
+,{"type":"int32","id":3,"name":"toGroupId"}
+,{"type":"int32","id":4,"name":"toOrder"}
 ]}},{"type":"rpc","content":{
 "name":"LoadGroupsPre",
 "header":23,
@@ -4404,4 +4413,12 @@
 "Change group parent"],"attributes":[
 {"type":"int32","id":1,"name":"groupId"}
 ,{"type":"int32","id":2,"name":"parentId"}
+]}},{"type":"rpc","content":{
+"name":"ChangeOrder",
+"header":35,
+"response":{"type":"reference","name":"Seq"},
+"doc":[
+"Change group order"],"attributes":[
+{"type":"int32","id":1,"name":"fromGroupId"}
+,{"type":"int32","id":2,"name":"toGroupId"}
 ]}}]}]}

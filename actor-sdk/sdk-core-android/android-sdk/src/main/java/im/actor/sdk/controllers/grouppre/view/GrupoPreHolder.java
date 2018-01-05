@@ -33,13 +33,14 @@ public class GrupoPreHolder extends BindedViewHolder implements
 
         if(this.onStartDragListener != null){
             this.grupoPreView.setOnTouchListener((v, event) -> {
+                Log.d("GrupoPreHolder","Event: "+event.getAction());
+
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     this.onStartDragListener.onStartDrag(this);
-                }else if(event.getAction() == MotionEvent.ACTION_UP){
-                    Log.d("GrupoPreHolder","MotionEvent.ACTION_UP");
                 }
                 return false;
             });
+
         }
 
         this.grupoPreView.setOnClickListener(v -> {

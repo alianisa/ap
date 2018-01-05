@@ -7,6 +7,7 @@ import java.util.List;
 import im.actor.core.api.ApiGroupOutPeer;
 import im.actor.core.api.ApiGroupPre;
 import im.actor.core.api.updates.UpdateGroupPreCreated;
+import im.actor.core.api.updates.UpdateGroupPreOrderChanged;
 import im.actor.core.api.updates.UpdateGroupPreParentChanged;
 import im.actor.core.api.updates.UpdateGroupPreRemoved;
 import im.actor.core.entity.Group;
@@ -53,6 +54,9 @@ public class GroupsPreRouter extends ModuleActor {
         } else if (update instanceof UpdateGroupPreParentChanged) {
             UpdateGroupPreParentChanged upd = (UpdateGroupPreParentChanged) update;
             return onGroupPreParentChanged(upd.getGroupId(), upd.getOldParentId(), upd.getParentId());
+        } else if (update instanceof UpdateGroupPreOrderChanged){
+            UpdateGroupPreOrderChanged upd = (UpdateGroupPreOrderChanged) update;
+            return onGroupPreOrderChanged(upd.getFromGroupId(), upd.getFromOrder(), upd.getToGroupId(), upd.getToOrder());
         }
         return Promise.success(null);
     }
@@ -171,6 +175,17 @@ public class GroupsPreRouter extends ModuleActor {
             return null;
         });
 
+    }
+
+    public Promise<Void> onGroupPreOrderChanged(final Integer fromGroupId, final Integer fromNewOrder,
+                                                final Integer toGroupId, final Integer toNewOrder) {
+        freeze();
+        return editGroupPre(fromGroupId, groupPre -> groupPre.changeSortOrder(fromNewOrder))
+                .map(gp -> editGroupPre(toGroupId, groupPre -> groupPre.changeSortOrder(toNewOrder)))
+                .map(r -> {
+                    unfreeze();
+                    return null;
+                });
     }
 
     private void freeze() {

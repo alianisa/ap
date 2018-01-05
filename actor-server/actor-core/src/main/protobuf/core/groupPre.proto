@@ -40,6 +40,9 @@ message GroupPreEnvelope {
 
     oneof command {
         GroupPreCommands.Create create = 2;
+        GroupPreCommands.Remove remove = 4;
+        GroupPreCommands.ChangeParent changeParent = 5;
+        GroupPreCommands.ChangeOrder changeOrder = 6;
     }
 
     oneof query {
@@ -79,6 +82,18 @@ message GroupPreCommands {
     }
 
     message ChangeParentAck {
+        im.actor.server.SeqState seq_state = 1;
+    }
+
+    message ChangeOrder {
+        option (scalapb.message).extends = "im.actor.server.grouppre.GroupPreCommand";
+        int32 from_id = 1;
+        int32 to_id = 2;
+        int32 userId = 3;
+        int64 authId = 4;
+    }
+
+    message ChangeOrderAck {
         im.actor.server.SeqState seq_state = 1;
     }
 }

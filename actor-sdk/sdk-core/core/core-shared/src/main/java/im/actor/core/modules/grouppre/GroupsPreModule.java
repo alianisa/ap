@@ -4,7 +4,9 @@ import java.util.HashMap;
 
 import im.actor.core.api.rpc.RequestChangeGroupParent;
 import im.actor.core.api.rpc.RequestChangeGroupPre;
+import im.actor.core.api.rpc.RequestChangeOrder;
 import im.actor.core.api.rpc.ResponseVoid;
+import im.actor.core.api.updates.UpdateGroupPreOrderChanged;
 import im.actor.core.api.updates.UpdateGroupPreParentChanged;
 import im.actor.core.entity.GroupPre;
 import im.actor.core.events.AppVisibleChanged;
@@ -69,6 +71,16 @@ public class GroupsPreModule extends AbsModule implements BusSubscriber {
         return api(new RequestChangeGroupParent(groupId, parentId))
                 .map(r ->{
                     updates().applyUpdate(r.getSeq(), r.getState(), new UpdateGroupPreParentChanged(groupId, parentId, oldParentId));
+                    return null;
+                });
+    }
+
+    public Promise<Void> changeOrder(GroupPre fromGroup, GroupPre toGroup){
+        return api(new RequestChangeOrder(fromGroup.getGroupId(), toGroup.getGroupId()))
+                .map(r -> {
+                    updates().applyUpdate(r.getSeq(), r.getState(),
+                            new UpdateGroupPreOrderChanged(fromGroup.getGroupId(), toGroup.getSortOrder(),
+                            toGroup.getGroupId(), fromGroup.getSortOrder()));
                     return null;
                 });
     }

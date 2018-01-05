@@ -22,6 +22,7 @@ import im.actor.core.entity.FileReference;
 import im.actor.core.entity.Group;
 import im.actor.core.entity.GroupMembersSlice;
 import im.actor.core.entity.GroupPermissions;
+import im.actor.core.entity.GroupPre;
 import im.actor.core.entity.MentionFilterResult;
 import im.actor.core.entity.MessageSearchEntity;
 import im.actor.core.entity.Peer;
@@ -1575,6 +1576,12 @@ public class Messenger {
     @ObjectiveCName("changeGroupParentWithGroupId:withParentId:withOldParentId:")
     public Promise<Void> changeGroupParent(int groupId, int parentId, int oldParentId) {
         return modules.getGrupoPreModule().changeParent(groupId, parentId, oldParentId);
+    }
+
+    @NotNull
+    @ObjectiveCName("changeGroupPreOrderWithFromGroup:withToGroup:")
+    public Promise<Void> changeGroupPreOrder(GroupPre fromGroup, GroupPre toGroup) {
+        return modules.getGrupoPreModule().changeOrder(fromGroup, toGroup);
     }
 
     /**

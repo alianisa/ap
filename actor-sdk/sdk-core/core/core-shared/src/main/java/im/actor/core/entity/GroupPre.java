@@ -129,6 +129,10 @@ public class GroupPre extends BserObject implements ListEngineItem, KeyValueItem
         return new GroupPre(this.groupId, parentId, this.sortOrder, this.hasChildren, this.isLoaded);
     }
 
+    public GroupPre changeSortOrder(Integer sortOrder){
+        return new GroupPre(this.groupId, this.parentId, sortOrder, this.hasChildren, this.isLoaded);
+    }
+
     @Override
     public void parse(BserValues values) throws IOException {
         groupId = values.getInt(1);

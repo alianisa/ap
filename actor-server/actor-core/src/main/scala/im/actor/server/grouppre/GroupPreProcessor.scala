@@ -4,7 +4,7 @@ import java.time.Instant
 
 import akka.actor.{ActorSystem, Props}
 import im.actor.serialization.ActorSerializer
-import im.actor.server.GroupPreCommands.{ChangeParent, Create, Remove}
+import im.actor.server.GroupPreCommands.{ChangeOrder, ChangeParent, Create, Remove}
 import im.actor.server.GroupPreQueries.GetGroupsPre
 import im.actor.server.{GroupPreCommands, GroupPreQueries}
 import im.actor.server.cqrs.{Processor, TaggedEvent}
@@ -36,11 +36,14 @@ object GroupPreProcessor {
     ActorSerializer.register(
       300001 → classOf[GroupPreCommands.Create],
       300002 → classOf[GroupPreCommands.CreateAck],
-      //300003 → classOf[GroupPreQueries.GetApiStruct],
-      //300004 → classOf[GroupPreQueries.GetApiStructResponse],
+      300003 → classOf[GroupPreCommands.ChangeParent],
+      300004 → classOf[GroupPreCommands.ChangeParentAck],
+      300007 → classOf[GroupPreCommands.ChangeOrder],
+      300008 → classOf[GroupPreCommands.ChangeOrderAck],
+      300009 → classOf[GroupPreCommands.Remove],
+      300010 → classOf[GroupPreCommands.RemoveAck],
       300005 → classOf[GroupPreQueries.GetGroupsPre],
-      300006 → classOf[GroupPreQueries.GetGroupsPreResponse]//,
-//      300007 → classOf[GroupPreEvents.Created]
+      300006 → classOf[GroupPreQueries.GetGroupsPreResponse]
     )
 
   def persistenceIdFor(groupPreId: Int): String = s"Grouppre-${groupPreId}"
@@ -70,6 +73,7 @@ private[grouppre] final class GroupPreProcessor
     case c: Create => create(c)
     case r: Remove => remove(r)
     case cp: ChangeParent => changeParent(cp)
+    case co: ChangeOrder => changeOrder(co)
   }
 
   override protected def handleQuery: PartialFunction[Any, Future[Any]] = {

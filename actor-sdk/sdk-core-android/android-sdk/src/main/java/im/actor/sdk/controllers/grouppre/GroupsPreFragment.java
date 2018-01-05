@@ -104,8 +104,6 @@ public class GroupsPreFragment extends SimpleDisplayListFragment<GroupPre, Grupo
 
         loadingGroups = res.findViewById(R.id.loadingGroups);
 
-
-
         return res;
     }
 
@@ -207,7 +205,8 @@ public class GroupsPreFragment extends SimpleDisplayListFragment<GroupPre, Grupo
 
     @Override
     public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
-        if(itemTouchHelper != null)
+        if(itemTouchHelper != null) {
             itemTouchHelper.startDrag(viewHolder);
+        }
     }
 }
