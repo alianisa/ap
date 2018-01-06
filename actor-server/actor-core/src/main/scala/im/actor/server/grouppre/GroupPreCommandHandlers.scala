@@ -37,7 +37,7 @@ private [grouppre] trait GroupPreCommandHandlers {
 
       _ = updateShortName(apiGroup.id, StringUtils.createShortName(apiGroup.title), cmd.userId, cmd.authId, 0)
 
-      nextOrder <- db.run(PublicGroupRepo.nextPosition(0))
+      nextOrder <- db.run(PublicGroupRepo.nextPosition())
 
       publicGroup = PublicGroup(id = apiGroup.id,
         typ = (apiGroup.groupType match {

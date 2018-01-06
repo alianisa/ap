@@ -15,7 +15,6 @@ import scala.concurrent.{ExecutionContext, Future}
 final class GroupsPreServiceImpl()(implicit actorSystem: ActorSystem) extends GrouppreService {
 
   case object NoSeqStateDate extends RuntimeException("No SeqStateDate in response from group found")
-
   case object NoGroupPre extends RuntimeException("No GroupPre in response from group found")
 
   override implicit val ec: ExecutionContext = actorSystem.dispatcher

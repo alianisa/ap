@@ -4,12 +4,14 @@ import android.content.Context;
 import android.view.ViewGroup;
 
 import im.actor.core.entity.GroupPre;
+import im.actor.sdk.view.drag.ItemTouchHelperAdapter;
 import im.actor.runtime.android.view.SimpleBindedListAdapter;
 import im.actor.runtime.generic.mvvm.SimpleBindedDisplayList;
 import im.actor.sdk.util.ActorSDKMessenger;
 import im.actor.sdk.view.adapters.OnItemClickedListener;
 
-public class GrupoPreSimpleAdapter extends SimpleBindedListAdapter<GroupPre, GrupoPreHolder>{
+public class GrupoPreSimpleAdapter extends SimpleBindedListAdapter<GroupPre, GrupoPreHolder>
+        implements ItemTouchHelperAdapter {
 
     private OnItemClickedListener<GroupPre> onItemClicked;
     private Context context;

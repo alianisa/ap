@@ -61,8 +61,8 @@ object PublicGroupRepo {
     byIdPai(parentId).exists.result
   }
 
-  def nextPosition(parentId: Int): SqlAction[Option[Int], NoStream, Read] = {
-    byIdPai(parentId).map(_.position).max.result
+  def nextPosition(): SqlAction[Option[Int], NoStream, Read] = {
+    publicGroups.map(_.position).max.result
   }
 
   def childrenIds(parentId: Int) : SqlAction[Seq[Int], NoStream, Read] = {

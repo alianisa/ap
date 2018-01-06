@@ -11,12 +11,10 @@ import im.actor.runtime.Runtime;
 import im.actor.runtime.bser.BserObject;
 import im.actor.runtime.generic.mvvm.SimpleBindedDisplayList;
 import im.actor.runtime.storage.ListEngineItem;
-import im.actor.sdk.view.drag.ItemTouchHelperAdapter;
 
 public abstract class SimpleBindedListAdapter<V extends BserObject & ListEngineItem,
         T extends RecyclerView.ViewHolder>
-        extends RecyclerView.Adapter<T>
-        implements ItemTouchHelperAdapter {
+        extends RecyclerView.Adapter<T>{
 
 
     private SimpleBindedDisplayList<V> displayList;

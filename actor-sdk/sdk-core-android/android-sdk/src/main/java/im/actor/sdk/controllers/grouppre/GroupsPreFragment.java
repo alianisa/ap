@@ -158,7 +158,7 @@ public class GroupsPreFragment extends SimpleDisplayListFragment<GroupPre, Grupo
                 }
             }
             if(isSupport){
-                SimpleItemTouchHelperCallback callback = new SimpleItemTouchHelperCallback(getAdapter());
+                SimpleItemTouchHelperCallback callback = new SimpleItemTouchHelperCallback((GrupoPreSimpleAdapter)getAdapter());
                 callback.setItemViewSwipeEnabled(false);
                 itemTouchHelper = new ItemTouchHelper(callback);
                 itemTouchHelper.attachToRecyclerView(getCollection());
