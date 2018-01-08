@@ -52,7 +52,8 @@ public class MapPickerActivity extends AppCompatActivity
         GoogleMap.OnMyLocationChangeListener,
         AdapterView.OnItemClickListener,
         GoogleMap.OnMapLongClickListener,
-        GoogleMap.OnMarkerClickListener, AbsListView.OnScrollListener {
+        GoogleMap.OnMarkerClickListener,
+        AbsListView.OnScrollListener {
 
     private static final int PERMISSION_REQ_LOCATION = 0;
 
