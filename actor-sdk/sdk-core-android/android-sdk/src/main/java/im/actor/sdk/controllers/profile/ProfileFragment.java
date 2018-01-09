@@ -13,6 +13,7 @@ import android.graphics.drawable.Drawable;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -33,9 +34,6 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.google.i18n.phonenumbers.NumberParseException;
-import com.google.i18n.phonenumbers.PhoneNumberUtil;
-import com.google.i18n.phonenumbers.Phonenumber;
 
 import java.util.ArrayList;
 
@@ -43,6 +41,7 @@ import im.actor.core.entity.Peer;
 import im.actor.core.viewmodel.UserEmail;
 import im.actor.core.viewmodel.UserPhone;
 import im.actor.core.viewmodel.UserVM;
+import im.actor.runtime.Log;
 import im.actor.runtime.mvvm.Value;
 import im.actor.runtime.mvvm.ValueChangedListener;
 import im.actor.sdk.ActorSDK;
@@ -55,6 +54,9 @@ import im.actor.sdk.controllers.fragment.preview.ViewAvatarActivity;
 import im.actor.sdk.util.Screen;
 import im.actor.sdk.util.ViewUtils;
 import im.actor.sdk.view.avatar.AvatarView;
+import io.michaelrocks.libphonenumber.android.NumberParseException;
+import io.michaelrocks.libphonenumber.android.PhoneNumberUtil;
+import io.michaelrocks.libphonenumber.android.Phonenumber;
 
 import static im.actor.sdk.util.ActorSDKMessenger.messenger;
 import static im.actor.sdk.util.ActorSDKMessenger.users;
@@ -311,10 +313,11 @@ public class ProfileFragment extends BaseFragment {
                 // Formatting Phone Number
                 String _phoneNumber;
                 try {
-                    Phonenumber.PhoneNumber number = PhoneNumberUtil.getInstance().parse("+" + userPhone.getPhone(), "us");
-                    _phoneNumber = PhoneNumberUtil.getInstance().format(number, PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL);
+                    PhoneNumberUtil phoneNumberUtil = PhoneNumberUtil.createInstance(getContext());
+                    Phonenumber.PhoneNumber number = phoneNumberUtil.parse("+" + userPhone.getPhone(), "us");
+                    _phoneNumber = phoneNumberUtil.format(number, PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL);
                 } catch (NumberParseException e) {
-                    e.printStackTrace();
+                    Log.e("ProfileFragment", e);
                     _phoneNumber = "+" + userPhone.getPhone();
                 }
                 final String phoneNumber = _phoneNumber;

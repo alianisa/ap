@@ -33,9 +33,6 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.i18n.phonenumbers.NumberParseException;
-import com.google.i18n.phonenumbers.PhoneNumberUtil;
-import com.google.i18n.phonenumbers.Phonenumber;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -60,6 +57,9 @@ import im.actor.sdk.util.Screen;
 import im.actor.sdk.view.TintImageView;
 import im.actor.sdk.view.adapters.HeaderViewRecyclerAdapter;
 import im.actor.sdk.view.avatar.AvatarView;
+import io.michaelrocks.libphonenumber.android.NumberParseException;
+import io.michaelrocks.libphonenumber.android.PhoneNumberUtil;
+import io.michaelrocks.libphonenumber.android.Phonenumber;
 
 import static im.actor.sdk.util.ActorSDKMessenger.messenger;
 import static im.actor.sdk.util.ActorSDKMessenger.myUid;
@@ -220,8 +220,9 @@ public abstract class BaseActorSettingsFragment extends BaseFragment implements 
 
                         String _phoneNumber;
                         try {
-                            Phonenumber.PhoneNumber number = PhoneNumberUtil.getInstance().parse("+" + record.getPhone(), "us");
-                            _phoneNumber = PhoneNumberUtil.getInstance().format(number, PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL);
+                            PhoneNumberUtil phoneNumberUtil = PhoneNumberUtil.createInstance(getContext());
+                            Phonenumber.PhoneNumber number = phoneNumberUtil.parse("+" + record.getPhone(), "us");
+                            _phoneNumber = phoneNumberUtil.format(number, PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL);
                         } catch (NumberParseException e) {
                             e.printStackTrace();
                             _phoneNumber = "+" + record.getPhone();

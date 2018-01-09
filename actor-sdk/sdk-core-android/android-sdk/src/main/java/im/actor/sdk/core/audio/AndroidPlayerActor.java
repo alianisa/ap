@@ -7,7 +7,9 @@ import android.net.Uri;
 
 import java.io.File;
 
+import im.actor.runtime.Log;
 import im.actor.runtime.actors.Actor;
+import im.actor.sdk.controllers.calls.view.AudioActorEx;
 
 /**
  * Created by ex3ndr on 18.03.14.
@@ -50,6 +52,7 @@ public class AndroidPlayerActor extends Actor {
                 return false;
             });
         } catch (Exception e) {
+            Log.e(AndroidPlayerActor.class.getName(), e);
             destroyPlayer();
             callback.onError(currentFileName);
             return;

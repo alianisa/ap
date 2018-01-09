@@ -86,13 +86,7 @@ public class AudioHolder extends MessageHolder {
         errorColor = ActorSDK.sharedActor().style.getConvStateErrorColor();
 
         if (audioActor == null) {
-            audioActor = ActorSystem.system().actorOf(Props.create(new ActorCreator() {
-                @Override
-                public AudioPlayerActor create() {
-                    return new AudioPlayerActor(context);
-                }
-            }), "actor/audio_player");
-
+            audioActor = ActorSystem.system().actorOf(Props.create(() -> new AudioPlayerActor(context)), "actor/audio_player");
         }
 
         stateIcon = (TintImageView) itemView.findViewById(R.id.stateIcon);
@@ -132,57 +126,38 @@ public class AudioHolder extends MessageHolder {
         callback = new AudioPlayerActor.AudioPlayerCallback() {
             @Override
             public void onStart(final String fileName) {
-                mainThread.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        play(fileName);
-                    }
-                });
+                mainThread.post(() -> play(fileName));
             }
 
             @Override
             public void onStop(final String fileName) {
-                mainThread.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        stop();
-                    }
-                });
+                mainThread.post(() -> stop());
             }
 
             @Override
             public void onPause(final String fileName, float progress) {
-                mainThread.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (currentAudio != null && currentAudio.equals(fileName)) {
-                            pause();
-                        }
+                mainThread.post(() -> {
+                    if (currentAudio != null && currentAudio.equals(fileName)) {
+                        pause();
                     }
                 });
             }
 
             @Override
             public void onProgress(final String fileName, final float progress) {
-                mainThread.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (currentAudio != null && currentAudio.equals(fileName) && currentPlayingAudio.equals(currentAudio)) {
-                            if (!treckingTouch) progress(progress);
-                        }
+                mainThread.post(() -> {
+                    if (currentAudio != null && currentAudio.equals(fileName) && currentPlayingAudio.equals(currentAudio)) {
+                        if (!treckingTouch) progress(progress);
                     }
                 });
             }
 
             @Override
             public void onError(final String fileName) {
-                mainThread.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (currentAudio != null && currentAudio.equals(fileName)) {
-                            Toast.makeText(context, "error playing this file", Toast.LENGTH_SHORT).show();
-                            keepScreenOn(false);
-                        }
+                mainThread.post(() -> {
+                    if (currentAudio != null && currentAudio.equals(fileName)) {
+                        Toast.makeText(context, "error playing this file", Toast.LENGTH_SHORT).show();
+                        keepScreenOn(false);
                     }
                 });
             }
@@ -289,7 +264,6 @@ public class AudioHolder extends MessageHolder {
 
         if (needRebind) {
             // Resetting progress state
-
             if (audioMsg.getSource() instanceof FileRemoteSource) {
                 boolean autoDownload = false;
                 if (audioMsg instanceof VoiceContent) {
@@ -346,8 +320,6 @@ public class AudioHolder extends MessageHolder {
         @Override
         public void onNotUploaded() {
             goneView(progressView);
-//            playBtn.setImageResource(R.drawable.msg_audio_download_selector);
-//            playBtn.setOnClickListener(null);
             stop();
             bindPlayButton();
         }
@@ -359,7 +331,8 @@ public class AudioHolder extends MessageHolder {
         }
 
         @Override
-        public void onUploaded() {
+        public void onUploaded(FileSystemReference reference) {
+            currentAudio = reference.getDescriptor();
             goneView(progressView);
             stop();
             bindPlayButton();
@@ -367,19 +340,15 @@ public class AudioHolder extends MessageHolder {
     }
 
     private void bindPlayButton() {
-        playBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                audioActor.send(new AudioPlayerActor.Toggle(currentAudio));
-                currentPlayingAudio = currentAudio;
-            }
+        playBtn.setOnClickListener(v -> {
+            audioActor.send(new AudioPlayerActor.Toggle(currentAudio));
+            currentPlayingAudio = currentAudio;
         });
     }
 
     @Override
     public void unbind() {
         super.unbind();
-
         // Unbinding model
         if (downloadFileVM != null) {
             downloadFileVM.detach();
@@ -392,7 +361,6 @@ public class AudioHolder extends MessageHolder {
         }
 
         audioActor.send(new AudioPlayerActor.RemoveCallback(callback));
-
         messageBubble.getBackground().setColorFilter(null);
     }
 

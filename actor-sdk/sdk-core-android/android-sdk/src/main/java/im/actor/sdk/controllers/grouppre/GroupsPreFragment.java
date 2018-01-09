@@ -101,6 +101,7 @@ public class GroupsPreFragment extends SimpleDisplayListFragment<GroupPre, Grupo
         emptyGroups.setVisibility(View.GONE);
 
         loadingGroups = res.findViewById(R.id.loadingGroups);
+        loadingGroups.setVisibility(View.VISIBLE);
 
         return res;
     }

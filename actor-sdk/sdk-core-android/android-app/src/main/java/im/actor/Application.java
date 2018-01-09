@@ -1,5 +1,6 @@
 package im.actor;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Build;
@@ -49,12 +50,17 @@ public class Application extends ActorSDKApplication {
 
     @Override
     public void onCreate() {
-        MultiDex.install(this);
         super.onCreate();
 
         if (Build.VERSION.SDK_INT < 18) {
             System.loadLibrary("vclibrary");
         }
+    }
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
     }
 
     @Override
@@ -84,7 +90,7 @@ public class Application extends ActorSDKApplication {
         ActorSDK.sharedActor().setTosUrl("http://actor.im");
         ActorSDK.sharedActor().setPrivacyText("bla bla bla");
 
-        ActorSDK.sharedActor().setVideoCallsEnabled(false);
+        ActorSDK.sharedActor().setVideoCallsEnabled(true);
 
         ActorSDK.sharedActor().setHelpPhone("+55 (55) 55555-5555");
         ActorSDK.sharedActor().setAutoJoinGroups(new String[]{

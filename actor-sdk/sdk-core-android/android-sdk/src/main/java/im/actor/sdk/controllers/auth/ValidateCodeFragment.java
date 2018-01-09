@@ -13,9 +13,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.google.i18n.phonenumbers.NumberParseException;
-import com.google.i18n.phonenumbers.PhoneNumberUtil;
-import com.google.i18n.phonenumbers.Phonenumber;
 
 import im.actor.runtime.Log;
 import im.actor.sdk.ActorSDK;
@@ -23,6 +20,9 @@ import im.actor.sdk.R;
 import im.actor.sdk.util.Fonts;
 import im.actor.sdk.util.KeyboardHelper;
 import im.actor.sdk.view.SelectorFactory;
+import io.michaelrocks.libphonenumber.android.NumberParseException;
+import io.michaelrocks.libphonenumber.android.PhoneNumberUtil;
+import io.michaelrocks.libphonenumber.android.Phonenumber;
 
 public class ValidateCodeFragment extends BaseAuthFragment {
 
@@ -57,8 +57,9 @@ public class ValidateCodeFragment extends BaseAuthFragment {
         if (authType.equals(AUTH_TYPE_PHONE)) {
             String phoneNumber = "+" + authId;
             try {
-                Phonenumber.PhoneNumber number = PhoneNumberUtil.getInstance().parse(phoneNumber, null);
-                phoneNumber = PhoneNumberUtil.getInstance().format(number, PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL);
+                PhoneNumberUtil phoneNumberUtil = PhoneNumberUtil.createInstance(getContext());
+                Phonenumber.PhoneNumber number = phoneNumberUtil.parse(phoneNumber, null);
+                phoneNumber = phoneNumberUtil.format(number, PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL);
             } catch (NumberParseException e) {
                 Log.e(TAG, e);
             }

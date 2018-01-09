@@ -8,10 +8,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.i18n.phonenumbers.NumberParseException;
-import com.google.i18n.phonenumbers.PhoneNumberUtil;
-import com.google.i18n.phonenumbers.Phonenumber;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -33,6 +29,9 @@ import im.actor.sdk.util.Screen;
 import im.actor.sdk.view.adapters.HolderAdapter;
 import im.actor.sdk.view.adapters.ViewHolder;
 import im.actor.sdk.view.avatar.AvatarView;
+import io.michaelrocks.libphonenumber.android.NumberParseException;
+import io.michaelrocks.libphonenumber.android.PhoneNumberUtil;
+import io.michaelrocks.libphonenumber.android.Phonenumber;
 
 import static im.actor.sdk.util.ActorSDKMessenger.messenger;
 import static im.actor.sdk.util.ActorSDKMessenger.users;
@@ -221,8 +220,9 @@ public class MembersAdapter extends HolderAdapter<GroupMember> {
                     CharSequence[] sequences = new CharSequence[phones.size()];
                     for (int i = 0; i < sequences.length; i++) {
                         try {
-                            Phonenumber.PhoneNumber number = PhoneNumberUtil.getInstance().parse("+" + phones.get(i).getPhone(), "us");
-                            sequences[i] = phones.get(i).getTitle() + ": " + PhoneNumberUtil.getInstance().format(number, PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL);
+                            PhoneNumberUtil phoneNumberUtil = PhoneNumberUtil.createInstance(context);
+                            Phonenumber.PhoneNumber number = phoneNumberUtil.parse("+" + phones.get(i).getPhone(), "us");
+                            sequences[i] = phones.get(i).getTitle() + ": " + phoneNumberUtil.format(number, PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL);
                         } catch (NumberParseException e) {
                             e.printStackTrace();
                             sequences[i] = phones.get(i).getTitle() + ": +" + phones.get(i).getPhone();

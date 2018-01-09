@@ -352,7 +352,7 @@ public class DocHolder extends MessageHolder {
                 }
 
                 @Override
-                public void onUploaded() {
+                public void onUploaded(FileSystemReference reference) {
                     // Nothing to do
                 }
             });
@@ -462,7 +462,7 @@ public class DocHolder extends MessageHolder {
         }
 
         @Override
-        public void onUploaded() {
+        public void onUploaded(FileSystemReference reference) {
             onUploading(1);
         }
     }

@@ -397,7 +397,7 @@ public class PhotoHolder extends MessageHolder {
                     }
 
                     @Override
-                    public void onUploaded() {
+                    public void onUploaded(FileSystemReference reference) {
                         // Nothing to do
                     }
                 });
@@ -491,7 +491,7 @@ public class PhotoHolder extends MessageHolder {
         }
 
         @Override
-        public void onUploaded() {
+        public void onUploaded(FileSystemReference reference) {
             progressValue.setText(100 + "");
             progressView.setValue(100);
 

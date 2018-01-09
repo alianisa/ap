@@ -9,9 +9,6 @@ import android.os.SystemClock;
 import android.provider.ContactsContract;
 import android.support.v4.content.ContextCompat;
 
-import com.google.i18n.phonenumbers.NumberParseException;
-import com.google.i18n.phonenumbers.PhoneNumberUtil;
-import com.google.i18n.phonenumbers.Phonenumber;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,6 +21,9 @@ import im.actor.core.providers.PhoneBookProvider;
 import im.actor.runtime.Log;
 import im.actor.runtime.android.AndroidContext;
 import im.actor.sdk.util.Devices;
+import io.michaelrocks.libphonenumber.android.NumberParseException;
+import io.michaelrocks.libphonenumber.android.PhoneNumberUtil;
+import io.michaelrocks.libphonenumber.android.Phonenumber;
 
 public class AndroidPhoneBook implements PhoneBookProvider {
 
@@ -163,7 +163,7 @@ public class AndroidPhoneBook implements PhoneBookProvider {
             if (PHONE_UTIL == null) {
                 synchronized (initSync) {
                     if (PHONE_UTIL == null) {
-                        PHONE_UTIL = PhoneNumberUtil.getInstance();
+                        PHONE_UTIL = PhoneNumberUtil.createInstance(context);
                     }
                 }
             }

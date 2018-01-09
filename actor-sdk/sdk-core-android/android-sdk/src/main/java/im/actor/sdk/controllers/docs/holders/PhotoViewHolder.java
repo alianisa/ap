@@ -253,7 +253,7 @@ public class PhotoViewHolder extends AbsDocsViewHolder {
                     }
 
                     @Override
-                    public void onUploaded() {
+                    public void onUploaded(FileSystemReference reference) {
                         // Nothing to do
                     }
                 });

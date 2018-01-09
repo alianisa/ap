@@ -242,9 +242,10 @@ public class UploadManager extends ModuleActor {
                 fileReference.getFileSize(), reference.getDescriptor()));
 
         ArrayList<UploadFileCallback> clist = callbacks.get(rid);
+
         if (clist != null) {
             for (final UploadFileCallback callback : clist) {
-                im.actor.runtime.Runtime.dispatch(() -> callback.onUploaded());
+                im.actor.runtime.Runtime.dispatch(() -> callback.onUploaded(reference));
             }
         }
 
