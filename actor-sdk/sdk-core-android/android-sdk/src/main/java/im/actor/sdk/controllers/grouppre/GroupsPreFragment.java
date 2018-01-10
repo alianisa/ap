@@ -21,7 +21,6 @@ import im.actor.runtime.Log;
 import im.actor.runtime.android.view.SimpleBindedListAdapter;
 import im.actor.runtime.generic.mvvm.SimpleBindedDisplayList;
 import im.actor.sdk.ActorSDK;
-import im.actor.sdk.R;
 import im.actor.sdk.controllers.Intents;
 import im.actor.sdk.controllers.SimpleDisplayListFragment;
 import im.actor.sdk.controllers.grouppre.view.GrupoPreHolder;
@@ -79,8 +78,11 @@ public class GroupsPreFragment extends SimpleDisplayListFragment<GroupPre, Grupo
         SimpleBindedDisplayList<GroupPre> displayList = ActorSDK.sharedActor().getMessenger().getGroupsPreSimpleDisplayList(parentId,
                 value -> (groupType == messenger().getGroup(value.getGroupId()).getGroupType()));
 
-        View res = inflate(inflater, container, R.layout.fragment_grupos_pre, displayList);
+        View res = inflate(inflater, container, im.actor.sdk.R.layout.fragment_grupos_pre, displayList);
         res.setBackgroundColor(ActorSDK.sharedActor().style.getMainBackgroundColor());
+
+        loadingGroups = res.findViewById(im.actor.sdk.R.id.loading_groups_ct);
+        loadingGroups.setVisibility(View.VISIBLE);
 
         // Footer
         FrameLayout footer = new FrameLayout(getActivity());
@@ -96,12 +98,9 @@ public class GroupsPreFragment extends SimpleDisplayListFragment<GroupPre, Grupo
         addHeaderView(header);
 
         // Empty View
-        emptyGroups = res.findViewById(R.id.emptyGroups);
-        ((TextView) emptyGroups.findViewById(R.id.empty_groups_text)).setTextColor(ActorSDK.sharedActor().style.getMainColor());
+        emptyGroups = res.findViewById(im.actor.sdk.R.id.emptyGroups);
+        ((TextView) emptyGroups.findViewById(im.actor.sdk.R.id.empty_groups_text)).setTextColor(ActorSDK.sharedActor().style.getMainColor());
         emptyGroups.setVisibility(View.GONE);
-
-        loadingGroups = res.findViewById(R.id.loadingGroups);
-        loadingGroups.setVisibility(View.VISIBLE);
 
         return res;
     }
@@ -173,15 +172,15 @@ public class GroupsPreFragment extends SimpleDisplayListFragment<GroupPre, Grupo
         if (groupVM.isMember().get()) {
             startActivity(Intents.openGroupDialog(groupPre.getGroupId(), true, getActivity()));
         } else {
-            final ProgressDialog dialog = ProgressDialog.show(getContext(), "", getString(R.string.entering), true, false);
+            final ProgressDialog dialog = ProgressDialog.show(getContext(), "", getString(im.actor.sdk.R.string.entering), true, false);
             messenger().joinGroupById(groupPre.getGroupId()).then(aVoid -> {
                 dialog.dismiss();
                 startActivity(Intents.openGroupDialog(groupPre.getGroupId(), true, getActivity()));
             }).failure(e -> {
                 dialog.dismiss();
                 Log.e(TAG, e);
-                SnackUtils.showError(getView(), getString(R.string.you_can_not_enter), Snackbar.LENGTH_INDEFINITE,
-                        view -> enterInGroupById(groupPre), getString(R.string.dialog_try_again));
+                SnackUtils.showError(getView(), getString(im.actor.sdk.R.string.you_can_not_enter), Snackbar.LENGTH_INDEFINITE,
+                        view -> enterInGroupById(groupPre), getString(im.actor.sdk.R.string.dialog_try_again));
             });
         }
     }
@@ -194,9 +193,9 @@ public class GroupsPreFragment extends SimpleDisplayListFragment<GroupPre, Grupo
             bind(parentVm.getName(), val -> setTitle(val));
         }else{
             if(groupType == GroupType.CHANNEL){
-                setTitle(getString(R.string.predefined_channel));
+                setTitle(getString(im.actor.sdk.R.string.predefined_channel));
             }else {
-                setTitle(getString(R.string.predefined_group));
+                setTitle(getString(im.actor.sdk.R.string.predefined_group));
             }
         }
     }
