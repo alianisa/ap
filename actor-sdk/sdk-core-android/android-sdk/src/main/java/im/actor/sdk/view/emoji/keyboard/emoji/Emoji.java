@@ -68,6 +68,7 @@ public class Emoji {
         } else {
             emojiFullSize = 64;
         }
+
         drawImgSize = Screen.dp(20);
         bigImgSize = Screen.dp(AndroidUtils.isTablet() ? 40 : 32);
 
@@ -144,7 +145,6 @@ public class Emoji {
 
             emojiBmp[page][page2] = finalBitmap;
             loadingEmoji[page][page2] = false;
-
         } catch (Throwable x) {
             Log.e(Emoji.class.getName(), x);
         }
@@ -250,6 +250,7 @@ public class Emoji {
                 if (loadingEmoji[info.page][info.page2]) {
                     return;
                 }
+
                 loadingEmoji[info.page][info.page2] = true;
 
                 loadEmoji(info.page, info.page2);
@@ -260,6 +261,7 @@ public class Emoji {
             }
 
             Rect b;
+
             if (fullSize) {
                 b = getDrawRect();
             } else {

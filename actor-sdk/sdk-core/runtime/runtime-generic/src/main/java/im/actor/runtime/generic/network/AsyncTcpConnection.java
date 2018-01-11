@@ -299,7 +299,7 @@ public class AsyncTcpConnection extends AsyncConnection {
             byte[] res = new byte[count];
             int offset = 0;
             while (offset < res.length) {
-                int readed = inputStream.read(res, offset, res.length - offset);
+                int readed = inputStream != null ? inputStream.read(res, offset, res.length - offset) : 0;
                 if (readed > 0) {
                     offset += readed;
                 } else if (readed < 0) {

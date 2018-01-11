@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import im.actor.core.entity.Peer;
 import im.actor.core.entity.PeerType;
 import im.actor.core.entity.content.AbsContent;
+import im.actor.runtime.Log;
 import im.actor.sdk.ActorSDK;
 import im.actor.sdk.R;
 import im.actor.sdk.controllers.BaseFragment;
@@ -152,7 +153,7 @@ public class ShareFragment extends BaseFragment implements DialogsFragmentDelega
                         try {
                             messenger().forwardContent(peer, AbsContent.parse(shareAction.getDocContent()));
                         } catch (IOException e) {
-                            e.printStackTrace();
+                            Log.e(ShareFragment.class.getName(), e);
                         }
                     }
 

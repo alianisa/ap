@@ -30,6 +30,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.droidkit.progress.CircularView;
+import com.github.chrisbanes.photoview.PhotoView;
 import com.github.chrisbanes.photoview.PhotoViewAttacher;
 
 import java.io.File;
@@ -51,9 +52,6 @@ import im.actor.sdk.view.MaterialInterpolator;
 import im.actor.sdk.view.avatar.AvatarView;
 
 import static im.actor.sdk.util.ActorSDKMessenger.users;
-
-//import uk.co.senab.photoview.DefaultOnDoubleTapListener;
-//import uk.co.senab.photoview.PhotoViewAttacher;
 
 public class PictureActivity extends BaseActivity {
 
@@ -121,6 +119,7 @@ public class PictureActivity extends BaseActivity {
         actionBar.setTitle(R.string.media_picture);
 
         int statbarHeight = Screen.getStatusBarHeight();
+
         if (Build.VERSION.SDK_INT >= 19) {
             toolbar.setPadding(0, statbarHeight, 0, 0);
         }
@@ -245,7 +244,7 @@ public class PictureActivity extends BaseActivity {
 
     public static class PictureFragment extends Fragment {
 
-        private ImageView imageView;
+        private PhotoView imageView;
         private boolean uiIsHidden = true;
         private AvatarView ownerAvatarView;
         private TextView ownerNameView;
@@ -286,7 +285,7 @@ public class PictureActivity extends BaseActivity {
             circularView = (CircularView) rootView.findViewById(R.id.progress);
             circularView.setValue(50);
             circularView.setVisibility(View.GONE);
-            imageView = (ImageView) rootView.findViewById(R.id.image);
+            imageView = (PhotoView) rootView.findViewById(R.id.image);
 
             Bitmap bitmap = null;
             try {

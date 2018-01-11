@@ -102,7 +102,7 @@ public class Application extends ActorSDKApplication {
 //        ActorSDK.sharedActor().setEndpoints(new String[]{"tcp://api-mtproto.actor.diegosilva.com.br:9070"});
         // ActorSDK.sharedActor().setAuthType(AuthActivity.AUTH_TYPE_PHONE);
 
-        ActorSDK.sharedActor().setStickersEnabled(false);
+        ActorSDK.sharedActor().setStickersEnabled(true);
 
 //        ActorSDK.sharedActor().setTwitter("");
 //        ActorSDK.sharedActor().setHomePage("http://www.foo.com");
@@ -233,15 +233,12 @@ public class Application extends ActorSDKApplication {
 
         @Override
         public View.OnClickListener getMenuFieldOnClickListener() {
-            return new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    switch (v.getId()) {
-                        case R.id.terminateSessions:
-                            Toast.makeText(v.getContext(), "hey", Toast.LENGTH_LONG).show();
-                            blablaCheckBox.toggle();
-                            break;
-                    }
+            return v -> {
+                switch (v.getId()) {
+                    case R.id.terminateSessions:
+                        Toast.makeText(v.getContext(), "hey", Toast.LENGTH_LONG).show();
+                        blablaCheckBox.toggle();
+                        break;
                 }
             };
         }
