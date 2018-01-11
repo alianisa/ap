@@ -73,7 +73,6 @@ dependencies {
     api 'com.github.chrisbanes:PhotoView:2.1.3'
 
     api 'com.droidkit:progress:0.5'
-    api 'com.getbase:floatingactionbutton:1.9.1'
 
     // Phone parser
     api 'io.michaelrocks:libphonenumber-android:8.8.5'
