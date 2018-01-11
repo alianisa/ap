@@ -84,12 +84,13 @@ public class MediaPickerFragment extends BaseFragment {
         //
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-        if (Build.VERSION.SDK_INT >= 23) {
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, Files.getUri(getContext(), pendingFile));
-            intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-        } else {
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(pendingFile)));
-        }
+        Uri photoUri = Files.getUri(getContext(), pendingFile);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+
+//        intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+//        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+        Files.grandExternalPermissions(getActivity(), intent, photoUri);
 
         startActivityForResult(intent, REQUEST_PHOTO);
     }
@@ -111,12 +112,12 @@ public class MediaPickerFragment extends BaseFragment {
         //
         Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
 
-        if (Build.VERSION.SDK_INT >= 23) {
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, Files.getUri(getContext(), pendingFile));
-            intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-        } else {
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(pendingFile)));
-        }
+        Uri videoUri = Files.getUri(getContext(), pendingFile);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, videoUri);
+//        intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+//        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+        Files.grandExternalPermissions(getActivity(), intent, videoUri);
 
         startActivityForResult(intent, REQUEST_VIDEO);
     }
@@ -178,7 +179,7 @@ public class MediaPickerFragment extends BaseFragment {
                 if (data.getData() != null) {
                     if (pickCropped) {
                         pendingFile = generateRandomFile(".jpg");
-                        Crop.of(data.getData(), Uri.fromFile(new File(pendingFile)))
+                        Crop.of(data.getData(), Files.getUri(getContext(), pendingFile)  /*Uri.fromFile(new File(pendingFile))*/)
                                 .asSquare()
                                 .start(getContext(), this);
                     } else {
@@ -197,7 +198,8 @@ public class MediaPickerFragment extends BaseFragment {
 
                     if (pickCropped) {
                         pendingFile = generateRandomFile(".jpg");
-                        Crop.of(Uri.fromFile(new File(sourceFileName)), Uri.fromFile(new File(pendingFile)))
+                        Crop.of(/*Uri.fromFile(new File(sourceFileName))*/ Files.getUri(getContext(), sourceFileName),
+                                /*Uri.fromFile(new File(pendingFile))*/ Files.getUri(getContext(), pendingFile))
                                 .asSquare()
                                 .start(getContext(), this);
                     } else {

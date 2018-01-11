@@ -39,6 +39,7 @@ import im.actor.sdk.ActorSDK;
 import im.actor.sdk.R;
 import im.actor.sdk.controllers.tools.MediaPickerCallback;
 import im.actor.sdk.controllers.tools.MediaPickerFragment;
+import im.actor.sdk.util.Files;
 import im.actor.sdk.util.SDKFeatures;
 import im.actor.sdk.util.Screen;
 import im.actor.sdk.view.ShareMenuButtonFactory;
@@ -228,7 +229,7 @@ public class AttachFragment extends AbsAttachFragment implements MediaPickerCall
             Set<String> paths = fastAttachAdapter.getSelectedVM().get();
             if (paths.size() > 0) {
                 List<Uri> uris = ManagedList.of(paths)
-                        .map((x) -> Uri.fromFile(new File(x)));
+                        .map((x) -> Files.getUri(getContext(), x)/* Uri.fromFile(new File(x))*/);
                 onUrisPicked(uris);
             }
             hide();

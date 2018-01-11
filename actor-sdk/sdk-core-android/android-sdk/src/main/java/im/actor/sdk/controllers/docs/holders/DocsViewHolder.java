@@ -92,7 +92,7 @@ public class DocsViewHolder extends AbsDocsViewHolder {
                             public void onDownloaded(FileSystemReference reference) {
                                 Context activity = itemView.getContext();
                                 activity.startActivity(Intents.shareDoc(documentContent.getName(),
-                                        reference.getDescriptor()));
+                                        reference.getDescriptor(), itemView.getContext()));
                             }
                         });
                     }

@@ -481,7 +481,7 @@ public class PictureActivity extends BaseActivity {
         @Override
         public boolean onOptionsItemSelected(MenuItem item) {
             if (item.getItemId() == R.id.share) {
-                startActivity(Intents.shareDoc("picture.jpeg", path));
+                startActivity(Intents.shareDoc("picture.jpeg", path, getContext()));
             /*startActivity(new Intent(Intent.ACTION_SEND)
                     .setType("image/jpeg")
                     .putExtra(Intent.EXTRA_STREAM,Uri.parse(path)));*/

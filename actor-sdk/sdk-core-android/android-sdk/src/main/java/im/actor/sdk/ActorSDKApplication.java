@@ -2,7 +2,12 @@ package im.actor.sdk;
 
 import android.app.ActivityManager;
 import android.app.Application;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
+
+import java.util.List;
 
 import im.actor.runtime.Log;
 import im.actor.runtime.android.AndroidContext;

@@ -20,6 +20,7 @@ import im.actor.core.viewmodel.FileVM;
 import im.actor.core.viewmodel.FileVMCallback;
 import im.actor.runtime.files.FileSystemReference;
 import im.actor.sdk.ActorSDK;
+import im.actor.sdk.util.Files;
 
 import static im.actor.sdk.util.ActorSDKMessenger.messenger;
 
@@ -113,7 +114,7 @@ public class CoverAvatarView extends SimpleDraweeView {
                 public void onDownloaded(FileSystemReference reference) {
                     if (!isLoaded) {
                         smallDescriptor = reference.getDescriptor();
-                        setImageURI(Uri.fromFile(new File(smallDescriptor)));
+                        setImageURI(Files.getUri(getContext(), smallDescriptor) /*Uri.fromFile(new File(smallDescriptor))*/);
                     }
                 }
             });
@@ -133,10 +134,10 @@ public class CoverAvatarView extends SimpleDraweeView {
 
                         PipelineDraweeControllerBuilder dController = Fresco.newDraweeControllerBuilder();
                         if (smallDescriptor != null) {
-                            dController.setLowResImageRequest(ImageRequest.fromUri(Uri.fromFile(new File(smallDescriptor))));
+                            dController.setLowResImageRequest(ImageRequest.fromUri(Files.getUri(getContext(), smallDescriptor) /*Uri.fromFile(new File(smallDescriptor))*/));
                         }
                         dController.setOldController(getController());
-                        dController.setImageRequest(ImageRequest.fromUri(Uri.fromFile(new File(reference.getDescriptor()))));
+                        dController.setImageRequest(ImageRequest.fromUri(Files.getUri(getContext(), reference.getDescriptor()) /*Uri.fromFile(new File(reference.getDescriptor()))*/));
 
                         setController(dController.build());
                     }
@@ -149,7 +150,7 @@ public class CoverAvatarView extends SimpleDraweeView {
         if (avatar != null && avatar.getFullImage() != null) {
             String downloadedDescriptor = messenger().findDownloadedDescriptor(avatar.getFullImage().getFileReference().getFileId());
             if (downloadedDescriptor != null) {
-                setImageURI(Uri.fromFile(new File(downloadedDescriptor)));
+                setImageURI(Files.getUri(getContext(), downloadedDescriptor) /*Uri.fromFile(new File(downloadedDescriptor))*/);
                 return true;
             }
         }

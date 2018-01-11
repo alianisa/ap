@@ -26,6 +26,7 @@ import im.actor.runtime.mvvm.ValueModel;
 import im.actor.sdk.ActorSDK;
 import im.actor.sdk.R;
 import im.actor.sdk.controllers.ActorBinder;
+import im.actor.sdk.util.Files;
 import im.actor.sdk.util.Screen;
 
 import static im.actor.sdk.util.ActorSDKMessenger.messenger;
@@ -109,7 +110,7 @@ public class FastAttachAdapter extends RecyclerView.Adapter<FastAttachAdapter.Fa
 
         public void bind(String path) {
             data = path;
-            ImageRequest request = ImageRequestBuilder.newBuilderWithSource(Uri.fromFile(new File(path)))
+            ImageRequest request = ImageRequestBuilder.newBuilderWithSource(Files.getUri(context, path) /*Uri.fromFile(new File(path))*/)
                     .setResizeOptions(new ResizeOptions(v.getLayoutParams().width,
                             v.getLayoutParams().height))
                     .build();

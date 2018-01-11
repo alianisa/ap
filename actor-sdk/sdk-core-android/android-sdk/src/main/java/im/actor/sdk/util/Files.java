@@ -1,6 +1,9 @@
 package im.actor.sdk.util;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.support.v4.content.FileProvider;
 
@@ -10,6 +13,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.List;
 
 import im.actor.runtime.android.AndroidContext;
 
@@ -63,5 +67,17 @@ public class Files {
 
     public static Uri getUri(Context ctx, String filePath) {
         return FileProvider.getUriForFile(ctx, ctx.getPackageName() + ".provider", new File(filePath));
+    }
+
+    public static Uri getUri(Context ctx, File file) {
+        return FileProvider.getUriForFile(ctx, ctx.getPackageName() + ".provider", file);
+    }
+
+    public static void grandExternalPermissions(Context context, Intent intent, Uri uri){
+        List<ResolveInfo> resInfoList = context.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+        for (ResolveInfo resolveInfo : resInfoList) {
+            String packageName = resolveInfo.activityInfo.packageName;
+            context.grantUriPermission(packageName, uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        }
     }
 }

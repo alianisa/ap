@@ -54,6 +54,7 @@ import im.actor.sdk.controllers.conversation.messages.MessagesAdapter;
 import im.actor.sdk.controllers.conversation.messages.content.preprocessor.PreprocessedData;
 import im.actor.sdk.controllers.conversation.view.FastBitmapDrawable;
 import im.actor.sdk.controllers.conversation.view.FastThumbLoader;
+import im.actor.sdk.util.Files;
 import im.actor.sdk.util.Screen;
 import im.actor.sdk.view.TintImageView;
 
@@ -310,8 +311,7 @@ public class PhotoHolder extends MessageHolder {
                 uploadFileVM = messenger().bindUpload(message.getRid(), new UploadVMCallback());
 
                 if (isPhoto) {
-                    Uri uri = Uri.fromFile(
-                            new File(((FileLocalSource) fileMessage.getSource()).getFileDescriptor()));
+                    Uri uri = Files.getUri(context, ((FileLocalSource) fileMessage.getSource()).getFileDescriptor());
                     bindImage(uri);
                 } else {
                     if (!updated) {
@@ -603,7 +603,8 @@ public class PhotoHolder extends MessageHolder {
                         previewView.getHierarchy().setPlaceholderImage(new FastBitmapDrawable(drawingCache));
                     }
                 }
-                Uri uri = Uri.fromFile(new File(reference.getDescriptor()));
+//                Uri uri = Uri.fromFile(new File(reference.getDescriptor()));
+                Uri uri = Files.getUri(context, reference.getDescriptor());
                 bindImage(uri);
                 if (isAnimation && !updated) {
                     checkFastThumb();

@@ -143,7 +143,7 @@ public class ViewAvatarActivity extends BaseActivity {
 
         if (uploadState != null && uploadState.isUploading()) {
             if (uploadState.getDescriptor() != null) {
-                photoView.setImageURI(Uri.fromFile(new File(uploadState.getDescriptor())));
+                photoView.setImageURI(Files.getUri(this, uploadState.getDescriptor()) /*Uri.fromFile(new File(uploadState.getDescriptor()))*/);
             } else {
                 photoView.setImageURI(null);
             }
@@ -311,7 +311,7 @@ public class ViewAvatarActivity extends BaseActivity {
         } else {
             startActivityForResult(
                     new Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                            .putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(externalFile))),
+                            .putExtra(MediaStore.EXTRA_OUTPUT, Files.getUri(this, externalFile) /*Uri.fromFile(new File(externalFile))*/),
                     REQUEST_PHOTO);
         }
     }
@@ -320,12 +320,12 @@ public class ViewAvatarActivity extends BaseActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_GALLERY && resultCode == Activity.RESULT_OK) {
             avatarPath = Files.getInternalTempFile("avatar", "jpg");
-            Crop.of(data.getData(), Uri.fromFile(new File(avatarPath)))
+            Crop.of(data.getData(), Files.getUri(this, avatarPath))
                     .asSquare()
                     .start(this);
         } else if (requestCode == REQUEST_PHOTO && resultCode == Activity.RESULT_OK) {
             avatarPath = Files.getInternalTempFile("avatar", "jpg");
-            Crop.of(Uri.fromFile(new File(externalFile)), Uri.fromFile(new File(avatarPath)))
+            Crop.of(Files.getUri(this, externalFile), Files.getUri(this, avatarPath))
                     .asSquare()
                     .start(this);
         } else if (requestCode == Crop.REQUEST_CROP && resultCode == Activity.RESULT_OK) {

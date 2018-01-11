@@ -34,6 +34,7 @@ import im.actor.sdk.ActorSDK;
 import im.actor.sdk.ActorStyle;
 import im.actor.sdk.R;
 import im.actor.sdk.controllers.ActorBinder;
+import im.actor.sdk.util.Files;
 import im.actor.sdk.util.Fonts;
 import im.actor.sdk.util.Screen;
 import im.actor.sdk.view.ListItemBackgroundView;
@@ -234,7 +235,7 @@ public class GrupoPreView extends ListItemBackgroundView<GroupPre, GrupoPreView.
                 String desc = messenger().findDownloadedDescriptor(image.getFileReference().getFileId());
                 if (desc != null) {
                     ImageRequest request = ImageRequestBuilder.newBuilderWithSource(
-                            Uri.fromFile(new File(desc)))
+                            Files.getUri(getContext(), desc) /*Uri.fromFile(new File(desc))*/)
                             .setResizeOptions(new ResizeOptions(Screen.dp(52), Screen.dp(52)))
                             .build();
                     res.setImageRequest(request);

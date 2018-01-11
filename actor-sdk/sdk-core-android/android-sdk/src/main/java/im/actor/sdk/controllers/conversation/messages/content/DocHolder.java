@@ -114,7 +114,7 @@ public class DocHolder extends MessageHolder {
                             public void onDownloaded(FileSystemReference reference) {
                                 Activity activity = getAdapter().getMessagesFragment().getActivity();
                                 activity.startActivity(Intents.shareDoc(documentContent.getName(),
-                                        reference.getDescriptor()));
+                                        reference.getDescriptor(), itemView.getContext()));
                             }
                         });
                     }

@@ -10,6 +10,7 @@ import java.io.File;
 import im.actor.runtime.Log;
 import im.actor.runtime.actors.Actor;
 import im.actor.sdk.controllers.calls.view.AudioActorEx;
+import im.actor.sdk.util.Files;
 
 /**
  * Created by ex3ndr on 18.03.14.
@@ -42,7 +43,7 @@ public class AndroidPlayerActor extends Actor {
         try {
             mplayer = new MediaPlayer();
             mplayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            mplayer.setDataSource(context, Uri.fromFile(new File(currentFileName)));
+            mplayer.setDataSource(context, Files.getUri(context, currentFileName));
             mplayer.prepare();
             mplayer.setLooping(false);
             mplayer.start();
