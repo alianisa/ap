@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Environment;
+import android.support.v4.content.FileProvider;
 import android.view.View;
 import android.webkit.MimeTypeMap;
 
@@ -155,7 +156,8 @@ public class Intents {
 
         Uri fileUri = Files.getUri(ctx, downloadFileName);
         Intent intent = new Intent(Intent.ACTION_VIEW).setDataAndType(fileUri, mimeType);
-        Files.grandExternalPermissions(ctx, intent, fileUri);
+
+        Files.grantExternalPermissions(ctx, intent, fileUri);
 
         return intent;
     }
@@ -218,7 +220,7 @@ public class Intents {
             Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
             Uri contentUri = Files.getUri(context, pictureFile);
 
-            Files.grandExternalPermissions(context, mediaScanIntent, contentUri);
+            Files.grantExternalPermissions(context, mediaScanIntent, contentUri);
 
             mediaScanIntent.setData(contentUri);
             context.sendBroadcast(mediaScanIntent);

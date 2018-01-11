@@ -83,15 +83,9 @@ public class MediaPickerFragment extends BaseFragment {
         // Requesting Photo
         //
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
         Uri photoUri = Files.getUri(getContext(), pendingFile);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
-
-//        intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-//        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-
-        Files.grandExternalPermissions(getActivity(), intent, photoUri);
-
+        Files.grantExternalPermissions(getActivity(), intent, photoUri);
         startActivityForResult(intent, REQUEST_PHOTO);
     }
 
@@ -102,6 +96,7 @@ public class MediaPickerFragment extends BaseFragment {
         // Generating Temporary File Name
         //
         pendingFile = generateRandomFile(".mp4");
+
         if (pendingFile == null) {
             return;
         }
@@ -111,13 +106,10 @@ public class MediaPickerFragment extends BaseFragment {
         // Requesting Video
         //
         Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
-
         Uri videoUri = Files.getUri(getContext(), pendingFile);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, videoUri);
-//        intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-//        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
-        Files.grandExternalPermissions(getActivity(), intent, videoUri);
+        Files.grantExternalPermissions(getActivity(), intent, videoUri);
 
         startActivityForResult(intent, REQUEST_VIDEO);
     }

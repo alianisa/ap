@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.support.v4.content.FileProvider;
 
 import java.io.File;
@@ -66,18 +67,29 @@ public class Files {
     }
 
     public static Uri getUri(Context ctx, String filePath) {
-        return FileProvider.getUriForFile(ctx, ctx.getPackageName() + ".provider", new File(filePath));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return FileProvider.getUriForFile(ctx, ctx.getPackageName() + ".provider", new File(filePath));
+        } else {
+            return Uri.fromFile(new File(filePath));
+        }
     }
 
     public static Uri getUri(Context ctx, File file) {
-        return FileProvider.getUriForFile(ctx, ctx.getPackageName() + ".provider", file);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return FileProvider.getUriForFile(ctx, ctx.getPackageName() + ".provider", file);
+        } else {
+            return Uri.fromFile(file);
+        }
     }
 
-    public static void grandExternalPermissions(Context context, Intent intent, Uri uri){
-        List<ResolveInfo> resInfoList = context.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
-        for (ResolveInfo resolveInfo : resInfoList) {
-            String packageName = resolveInfo.activityInfo.packageName;
-            context.grantUriPermission(packageName, uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        }
+    public static void grantExternalPermissions(Context context, Intent intent, Uri uri){
+//        List<ResolveInfo> resInfoList = context.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+//        for (ResolveInfo resolveInfo : resInfoList) {
+//            String packageName = resolveInfo.activityInfo.packageName;
+//            context.grantUriPermission(packageName, uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+//        }
+
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
     }
 }
