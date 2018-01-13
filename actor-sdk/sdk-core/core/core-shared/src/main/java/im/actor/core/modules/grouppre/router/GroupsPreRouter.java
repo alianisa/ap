@@ -160,7 +160,7 @@ public class GroupsPreRouter extends ModuleActor {
 
     public Promise<Void> onGroupPreParentChanged(final Integer groupId, final Integer oldParentId, final Integer parentId) {
 
-        freeze();
+       freeze();
 
        return onParentIdChanged(groupId, parentId).map(groupPre -> {
             groupsPre(oldParentId).removeItem(groupPre.getEngineId());

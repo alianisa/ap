@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.Locale;
 
 import im.actor.runtime.Log;
+import im.actor.runtime.Runtime;
 import im.actor.runtime.android.AndroidContext;
 import im.actor.sdk.util.AndroidUtils;
 import im.actor.sdk.util.Screen;
@@ -76,9 +77,6 @@ public class Emoji {
             int count2 = (int) Math.ceil(EmojiData.data[j].length / (float) splitCount);
             int position;
             for (int i = 0; i < EmojiData.data[j].length; i++) {
-
-                Log.d(Emoji.class.getName(), "For static j: "+j+", i: "+i);
-
                 int page = i / count2;
                 position = i - page * count2;
                 int row = position % cols[j][page];
@@ -93,8 +91,6 @@ public class Emoji {
 
     private static void loadEmoji(final int page, final int page2) {
         try {
-
-            Log.d(Emoji.class.getName(), "Loading emoji page: "+page+", page2: "+page2);
             float scale;
             int imageResize = 1;
             if (Screen.getDensity() <= 1.0f) {
@@ -147,9 +143,8 @@ public class Emoji {
             }
 
             final Bitmap finalBitmap = bitmap;
-
             emojiBmp[page][page2] = finalBitmap;
-            loadingEmoji[page][page2] = false;
+
         } catch (Throwable x) {
             Log.e(Emoji.class.getName(), x);
         }
@@ -259,6 +254,7 @@ public class Emoji {
                 loadingEmoji[info.page][info.page2] = true;
 
                 loadEmoji(info.page, info.page2);
+
                 loadingEmoji[info.page][info.page2] = false;
 
                 canvas.drawRect(getBounds(), placeholderPaint);

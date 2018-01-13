@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.display.DisplayManager;
+import android.media.ExifInterface;
 import android.media.MediaMetadataRetriever;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -18,11 +19,13 @@ import android.os.Environment;
 import android.os.PowerManager;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
+import android.provider.OpenableColumns;
 import android.view.Display;
 import android.webkit.MimeTypeMap;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.concurrent.Executor;
@@ -339,25 +342,25 @@ public class AndroidMessenger extends im.actor.core.Messenger {
 
     public Command<Boolean> sendUri(final Peer peer, final Uri uri, String appName) {
         return callback -> fileDownloader.execute(() -> {
-            String[] filePathColumn = {MediaStore.Images.Media.DATA, MediaStore.Video.Media.MIME_TYPE,
-                    MediaStore.Video.Media.TITLE};
-            String picturePath;
+
+            String filePath;
             String mimeType;
             String fileName;
 
             String ext = "";
 
-            Cursor cursor = context.getContentResolver().query(uri, filePathColumn, null, null, null);
-            if (cursor != null) {
-                cursor.moveToFirst();
-                picturePath = cursor.getString(cursor.getColumnIndex(filePathColumn[0]));
-                mimeType = cursor.getString(cursor.getColumnIndex(filePathColumn[1]));
-                fileName = cursor.getString(cursor.getColumnIndex(filePathColumn[2]));
+            Cursor cursor = context.getContentResolver().query(uri, null, null, null, null);
+
+            if (cursor != null && cursor.moveToFirst()) {
+                filePath = uri.getPath();
+                mimeType = context.getContentResolver().getType(uri);
+                fileName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
                 cursor.close();
             } else {
-                picturePath = uri.getPath();
+                filePath = uri.getPath();
                 fileName = new File(uri.getPath()).getName();
                 int index = fileName.lastIndexOf(".");
+
                 if (index > 0) {
                     ext = fileName.substring(index + 1);
                     mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(ext);
@@ -370,11 +373,10 @@ public class AndroidMessenger extends im.actor.core.Messenger {
                 mimeType = "?/?";
             }
 
-            if (picturePath == null || !uri.getScheme().equals("file")) {
+            if (filePath == null || !uri.getScheme().equals("file")) {
 
                 File externalFile = Environment.getExternalStorageDirectory();
 
-                // File externalFile = context.getExternalFilesDir(null);
                 if (externalFile == null) {
                     callback.onError(new NullPointerException());
                     return;
@@ -385,15 +387,16 @@ public class AndroidMessenger extends im.actor.core.Messenger {
 
                 dest.mkdirs();
 
-                if (ext.isEmpty() && picturePath != null) {
-                    int index = picturePath.lastIndexOf(".");
-                    ext = picturePath.substring(index + 1);
+                if (ext.isEmpty() && filePath != null) {
+                    int index = filePath.lastIndexOf(".");
+                    ext = filePath.substring(index + 1);
                 }
+
                 File outputFile = new File(dest, "upload_" + random.nextLong() + "." + ext);
-                picturePath = outputFile.getAbsolutePath();
+                filePath = outputFile.getAbsolutePath();
 
                 try {
-                    IOUtils.copy(context.getContentResolver().openInputStream(uri), new File(picturePath));
+                    IOUtils.copy(context.getContentResolver().openInputStream(uri), new File(filePath));
                 } catch (IOException e) {
                     Log.e(TAG, e);
                     callback.onError(e);
@@ -402,17 +405,17 @@ public class AndroidMessenger extends im.actor.core.Messenger {
             }
 
             if (fileName == null) {
-                fileName = picturePath;
+                fileName = filePath;
             }
 
             if (!ext.isEmpty() && !fileName.endsWith(ext))
                 fileName += "." + ext;
             if (mimeType.startsWith("video/")) {
-                sendVideo(peer, picturePath, fileName, false);
+                sendVideo(peer, filePath, fileName, false);
             } else if (mimeType.startsWith("image/")) {
-                sendPhoto(peer, picturePath, new File(fileName).getName());
+                sendPhoto(peer, filePath, new File(fileName).getName());
             } else {
-                sendDocument(peer, picturePath, new File(fileName).getName());
+                sendDocument(peer, filePath, new File(fileName).getName());
             }
             callback.onResult(true);
         });

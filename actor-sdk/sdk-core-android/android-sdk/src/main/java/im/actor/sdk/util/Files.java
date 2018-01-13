@@ -83,12 +83,6 @@ public class Files {
     }
 
     public static void grantExternalPermissions(Context context, Intent intent, Uri uri){
-//        List<ResolveInfo> resInfoList = context.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
-//        for (ResolveInfo resolveInfo : resInfoList) {
-//            String packageName = resolveInfo.activityInfo.packageName;
-//            context.grantUriPermission(packageName, uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
-//        }
-
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
     }
