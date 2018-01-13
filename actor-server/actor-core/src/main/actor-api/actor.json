@@ -4398,6 +4398,14 @@
 "LoadGroupsPre"],"attributes":[
 {"type":{"type":"opt","childType":"int32"},"id":1,"name":"idParent"}
 ]}},{"type":"rpc","content":{
+"name":"LoadGroupPre",
+"header":36,
+"response":{"type":"anonymous","header":21, "attributes":[{"type":{"type":"struct","childType":"GroupPre"},"id":1,"name":"groupPre"}
+]},
+"doc":[
+"LoadGroupPre"],"attributes":[
+{"type":"int32","id":1,"name":"groupPreId"}
+]}},{"type":"rpc","content":{
 "name":"ChangeGroupPre",
 "header":24,
 "response":{"type":"reference","name":"Seq"},

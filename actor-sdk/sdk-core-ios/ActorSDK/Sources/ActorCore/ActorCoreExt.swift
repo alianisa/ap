@@ -226,7 +226,7 @@ class AAUploadFileCallback : NSObject, ACUploadFileCallback {
         self.notUploaded?()
     }
     
-    func onUploaded() {
+    func onUploaded(_ reference: ARFileSystemReference!) {
         self.onUploadedClosure?()
     }
     

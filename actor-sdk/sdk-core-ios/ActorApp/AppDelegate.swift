@@ -48,7 +48,7 @@ open class AppDelegate : ActorApplicationDelegate {
         
         ActorSDK.sharedActor().enableCalls = true
         
-        ActorSDK.sharedActor().enableVideoCalls = false
+        ActorSDK.sharedActor().enableVideoCalls = true
         
         // Setting Development Push Id
         ActorSDK.sharedActor().apiPushId = 868547
@@ -59,17 +59,17 @@ open class AppDelegate : ActorApplicationDelegate {
         
        // ActorSDK.sharedActor().autoJoinGroups = ["canalxloto"]
         
-       // ActorSDK.sharedActor().endpoints = ["tcp://api-mtproto.im.xloto.com.br:9070"]
+        ActorSDK.sharedActor().endpoints = ["tcp://api-mtproto.im.xloto.com.br:9070"]
         
         // ActorSDK.sharedActor().endpoints = ["tcp://10.29.16.133:9070"]
         
-        ActorSDK.sharedActor().endpoints = ["tcp://192.168.1.101:9070"]
+//        ActorSDK.sharedActor().endpoints = ["tcp://192.168.1.101:9070"]
         
         // ActorSDK.sharedActor().endpoints = ["tcp://192.168.1.100:9070"]
         
-        // ActorSDK.sharedActor().endpoints = ["tcp://192.168.31.226:9070"]
+//         ActorSDK.sharedActor().endpoints = ["tcp://192.168.31.226:9070"]
         
-        //ActorSDK.sharedActor().endpoints = ["tcp://api-mtproto.actor.diegosilva.com.br:9070"]
+//        ActorSDK.sharedActor().endpoints = ["tcp://api-mtproto.actor.diegosilva.com.br:9070"]
         
         //AppCocoaHttpRuntime.getMethod("")
         
