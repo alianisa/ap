@@ -1,5 +1,6 @@
 package im.actor.core.modules.grouppre.router;
 
+import java.util.Arrays;
 import java.util.List;
 
 import im.actor.core.entity.GroupPre;
@@ -21,6 +22,10 @@ public class GroupsPreRouterInt extends ActorInterface {
 
     public Promise<Void> onGruposPreLoaded(Integer idGrupoPai, List<GroupPre> grupos) {
         return ask(new RouterApplyGroupsPre(idGrupoPai, grupos));
+    }
+
+    public Promise<Void> onGroupPreLoaded(GroupPre groupPre) {
+        return ask(new RouterApplyGroupsPre(groupPre.getParentId(), Arrays.asList(groupPre)));
     }
 
     public Promise<Void> onUpdate(Update update) {

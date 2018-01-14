@@ -10,6 +10,7 @@ import im.actor.core.api.updates.UpdateGroupPreCreated;
 import im.actor.core.api.updates.UpdateGroupPreOrderChanged;
 import im.actor.core.api.updates.UpdateGroupPreParentChanged;
 import im.actor.core.api.updates.UpdateGroupPreRemoved;
+import im.actor.core.api.updates.UpdateResetGroupPre;
 import im.actor.core.entity.Group;
 import im.actor.core.entity.GroupPre;
 import im.actor.core.modules.ModuleActor;
@@ -57,6 +58,9 @@ public class GroupsPreRouter extends ModuleActor {
         } else if (update instanceof UpdateGroupPreOrderChanged){
             UpdateGroupPreOrderChanged upd = (UpdateGroupPreOrderChanged) update;
             return onGroupPreOrderChanged(upd.getFromGroupId(), upd.getFromOrder(), upd.getToGroupId(), upd.getToOrder());
+        }else if (update instanceof UpdateResetGroupPre){
+            UpdateResetGroupPre upd = (UpdateResetGroupPre) update;
+            return reset();
         }
         return Promise.success(null);
     }
@@ -146,7 +150,14 @@ public class GroupsPreRouter extends ModuleActor {
     private Promise<GroupPre> forGroupPre(int groupId, Function<GroupPre, Promise<GroupPre>> func) {
         freeze();
         return groupPreStates.getValueAsync(groupId)
-                .fallback(e -> null)
+                .flatMap(groupPre -> {
+                    if(groupPre.getLoaded()){
+                        return Promise.success(groupPre);
+                    }else {
+                        return context().getGrupoPreModule()
+                                .loadGroupPre(groupPre.getGroupId());
+                    }
+                })
                 .flatMap(g -> {
                     if (g != null) {
                         return func.apply(g);
@@ -174,7 +185,6 @@ public class GroupsPreRouter extends ModuleActor {
             unfreeze();
             return null;
         });
-
     }
 
     public Promise<Void> onGroupPreOrderChanged(final Integer fromGroupId, final Integer fromNewOrder,
@@ -198,13 +208,17 @@ public class GroupsPreRouter extends ModuleActor {
     }
 
     private Promise<Void> onGruposPreLoaded(Integer idGrupoPai, List<GroupPre> grupos) {
-        Log.d(TAG, "Groups pre Loaded");
         updateGruposCanais(idGrupoPai, grupos);
         return Promise.success(null);
     }
 
     private ListEngine<GroupPre> groupsPre(Integer idGrupoPai) {
         return context().getGrupoPreModule().getGrupospreEngine(idGrupoPai);
+    }
+
+    private Promise<Void> reset(){
+        context().getGrupoPreModule().reset();
+        return Promise.success(null);
     }
 
     private void updateGruposCanais(Integer idGrupoPai, List<GroupPre> gruposPre) {

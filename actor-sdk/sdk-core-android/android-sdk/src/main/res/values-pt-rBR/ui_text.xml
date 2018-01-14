@@ -676,4 +676,9 @@
     <string name="member">membro</string>
     <string name="and_its_you">e é você</string>
     <string name="loading">carregando...</string>
+
+    <string name="grupo_pre_action">GroupPre</string>
+    <string name="channel_pre_admin_title">Canal pre-definido</string>
+    <string name="select_group_parent">Selecionar Grupo Pai</string>
+    <string name="select_channel_parent">Selecionar Canal Pai</string>
 </resources>

@@ -19,4 +19,8 @@ public class GrupoPreActorInt extends ActorInterface {
         send(new GroupsPreActor.LoadGruposPre());
     }
 
+    public void clear() {
+        send(new GroupsPreActor.Clear());
+    }
+
 }

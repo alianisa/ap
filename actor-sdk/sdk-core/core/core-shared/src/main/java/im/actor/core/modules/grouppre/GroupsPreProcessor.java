@@ -4,6 +4,7 @@ import im.actor.core.api.updates.UpdateGroupPreCreated;
 import im.actor.core.api.updates.UpdateGroupPreOrderChanged;
 import im.actor.core.api.updates.UpdateGroupPreParentChanged;
 import im.actor.core.api.updates.UpdateGroupPreRemoved;
+import im.actor.core.api.updates.UpdateResetGroupPre;
 import im.actor.core.modules.AbsModule;
 import im.actor.core.modules.ModuleContext;
 import im.actor.core.modules.sequence.processor.SequenceProcessor;
@@ -25,7 +26,8 @@ public class GroupsPreProcessor extends AbsModule implements SequenceProcessor {
         if (update instanceof UpdateGroupPreCreated ||
                 update instanceof UpdateGroupPreRemoved ||
                 update instanceof UpdateGroupPreParentChanged ||
-                update instanceof UpdateGroupPreOrderChanged) {
+                update instanceof UpdateGroupPreOrderChanged ||
+                update instanceof UpdateResetGroupPre) {
             return context().getGrupoPreModule().getRouter().onUpdate(update);
         }
         return null;
