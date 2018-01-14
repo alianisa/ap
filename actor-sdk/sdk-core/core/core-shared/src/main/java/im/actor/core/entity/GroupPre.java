@@ -59,7 +59,11 @@ public class GroupPre extends BserObject implements ListEngineItem, KeyValueItem
     @Property("readonly, nonatomic")
     private Boolean isLoaded;
 
-    public GroupPre(@NotNull Integer groupId, @NotNull Integer parentId, @NotNull Integer sortOrder, @NotNull Boolean hasChildren, @NotNull Boolean isLoaded) {
+    public GroupPre(@NotNull Integer groupId,
+                    @NotNull Integer parentId,
+                    @NotNull Integer sortOrder,
+                    @NotNull Boolean hasChildren,
+                    @NotNull Boolean isLoaded) {
         this.groupId = groupId;
         this.parentId = parentId;
         this.sortOrder = sortOrder;

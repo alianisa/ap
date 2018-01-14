@@ -16,6 +16,7 @@ import im.actor.runtime.promise.Promise;
 import im.actor.runtime.promise.Promises;
 import im.actor.runtime.promise.PromisesArray;
 
+
 /**
  * Created by diego on 31/05/17.
  */
@@ -26,6 +27,7 @@ public class GroupsPreActor extends ModuleActor {
 
     private final String KEY_LOADED;
     private final String KEY_LOADED_INIT;
+
     private final Integer idGrupoPai;
 
     private boolean isLoading = false;
@@ -41,7 +43,6 @@ public class GroupsPreActor extends ModuleActor {
     @Override
     public void preStart() {
         isLoaded = preferences().getBool(KEY_LOADED, false);
-
         if (!preferences().getBool(KEY_LOADED_INIT, false)) {
             self().send(new GroupsPreActor.LoadGruposPre());
         } else {
@@ -87,10 +88,18 @@ public class GroupsPreActor extends ModuleActor {
                 });
     }
 
+    private void clear(){
+        isLoaded = false;
+        preferences().putBool(KEY_LOADED, isLoaded);
+        preferences().putBool(KEY_LOADED_INIT, false);
+    }
+
     @Override
     public void onReceive(Object message) {
         if (message instanceof LoadGruposPre) {
             onLoadGruposPre();
+        }else if(message instanceof Clear){
+            clear();
         }
     }
 
@@ -98,5 +107,10 @@ public class GroupsPreActor extends ModuleActor {
         public LoadGruposPre() {
         }
     }
+
+    public static class Clear{
+
+    }
+
 
 }

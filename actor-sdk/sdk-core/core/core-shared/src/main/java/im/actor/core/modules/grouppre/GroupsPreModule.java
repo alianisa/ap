@@ -1,10 +1,12 @@
 package im.actor.core.modules.grouppre;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import im.actor.core.api.rpc.RequestChangeGroupParent;
 import im.actor.core.api.rpc.RequestChangeGroupPre;
 import im.actor.core.api.rpc.RequestChangeOrder;
+import im.actor.core.api.rpc.RequestLoadGroupPre;
 import im.actor.core.api.rpc.ResponseVoid;
 import im.actor.core.api.updates.UpdateGroupPreOrderChanged;
 import im.actor.core.api.updates.UpdateGroupPreParentChanged;
@@ -35,10 +37,9 @@ public class GroupsPreModule extends AbsModule implements BusSubscriber {
     private static final String STORAGE_GRUPOSPRE = "grupospre";
     private static final String STORAGE_GRUPOSPRE_STATES = "grupospre_states";
 
-    private final HashMap<Integer, ListEngine<GroupPre>> gruposPreEngine = new HashMap<>();
-    private final MVVMCollection<GroupPre, GroupPreVM> groupsPreStates;
-
-    private final HashMap<Integer, GrupoPreActorInt> gruposPreLoadActor = new HashMap<>();
+    private HashMap<Integer, ListEngine<GroupPre>> gruposPreEngine = new HashMap<>();
+    private MVVMCollection<GroupPre, GroupPreVM> groupsPreStates;
+    private HashMap<Integer, GrupoPreActorInt> gruposPreLoadActor = new HashMap<>();
     private final GroupsPreRouterInt router;
 
     public GroupsPreModule(ModuleContext context) {
@@ -52,14 +53,9 @@ public class GroupsPreModule extends AbsModule implements BusSubscriber {
 
     @Override
     public void onBusEvent(Event event) {
-//        if (event instanceof AppVisibleChanged) {
-//            if(((AppVisibleChanged)event).isVisible())
-//                getGruposPreLoadActor(GroupPre.DEFAULT_ID);
-//        }
     }
 
     public void run() {
-//        context().getEvents().subscribe(this, AppVisibleChanged.EVENT);
     }
 
     public Promise<Void> changeGroupPre(int groupId, boolean isGroupPre) {
@@ -85,6 +81,21 @@ public class GroupsPreModule extends AbsModule implements BusSubscriber {
                 });
     }
 
+    public Promise<GroupPre> loadGroupPre(int groupPreId){
+        return api(new RequestLoadGroupPre(groupPreId))
+                .flatMap(r -> {
+                    final GroupPre grupoPre = new GroupPre(r.getGroupPre().getGroupId(),
+                            r.getGroupPre().getParentId(),
+                            r.getGroupPre().getOrder(),
+                            r.getGroupPre().hasChildrem(),
+                            true);
+
+                    return getRouter()
+                            .onGroupPreLoaded(grupoPre)
+                            .flatMap(r2 -> Promise.success(grupoPre));
+                });
+    }
+
     public ListEngine<GroupPre> getGrupospreEngine(Integer idGrupoPai) {
         synchronized (gruposPreEngine) {
             if (!gruposPreEngine.containsKey(idGrupoPai)) {
@@ -107,6 +118,23 @@ public class GroupsPreModule extends AbsModule implements BusSubscriber {
             }
             return gruposPreLoadActor.get(idGrupoPai);
         }
+    }
+
+    public void reset(){
+        this.groupsPreStates.getEngine().clear();
+
+        for(Map.Entry<Integer, ListEngine<GroupPre>> entry: gruposPreEngine.entrySet()){
+            entry.getValue().clear();
+        }
+
+        this.gruposPreEngine = new HashMap<>();
+
+        for(Map.Entry<Integer, GrupoPreActorInt> entry: gruposPreLoadActor.entrySet()){
+            entry.getValue().clear();
+        }
+        this.gruposPreLoadActor = new HashMap<>();
+
+
     }
 
     public MVVMCollection<GroupPre, GroupPreVM> getGroupsPreStates() {
