@@ -2,10 +2,9 @@ package im.actor.server.grouppre
 
 
 
-import im.actor.api.rpc.grouppre.{UpdateResetGroupPre, _}
+import im.actor.api.rpc.grouppre.{_}
 import im.actor.api.rpc.groups.ApiGroupType
 import akka.pattern.pipe
-import im.actor.api.rpc.messaging.UpdateChatClear
 import im.actor.server.GroupPreCommands.{ChangeOrder, ChangeOrderAck, ChangeParent, ChangeParentAck, Create, CreateAck, Remove, RemoveAck, ResetGroupPreAck}
 import im.actor.server.persist.UserRepo
 import im.actor.server.persist.grouppre.{PublicGroup, PublicGroupRepo}
@@ -185,11 +184,11 @@ private [grouppre] trait GroupPreCommandHandlers {
   }
 
   protected def resetGroupPre() : Unit = {
-    val result: Future[ResetGroupPreAck] = (for {
-      update <- UpdateResetGroupPre
+    val result: Future[ResetGroupPreAck] = for {
+      update <- new UpdateResetGroupPre(Instant.now.getMillis)
       activeUsersIds <- db.run(UserRepo.activeUsersIds)
-      seqUpdExt.broadcastPeopleUpdate(activeUsersIds.toSet, update)
-    } yield (ResetGroupPreAck()))
+      _ <- seqUpdExt.broadcastPeopleUpdate(activeUsersIds.toSet, update)
+    } yield (ResetGroupPreAck())
 
     result pipeTo sender()
   }

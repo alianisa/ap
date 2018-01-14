@@ -4,7 +4,7 @@ import akka.pattern.ask
 import akka.util.Timeout
 import im.actor.api.rpc.misc.ResponseVoid
 import im.actor.server.GroupPre
-import im.actor.server.GroupPreCommands.{ChangeOrder, ChangeOrderAck, ChangeParent, ChangeParentAck, Clear, Create, CreateAck, Remove, RemoveAck, ResetGroupPre}
+import im.actor.server.GroupPreCommands.{ChangeOrder, ChangeOrderAck, ChangeParent, ChangeParentAck, Create, CreateAck, Remove, RemoveAck, ResetGroupPre}
 import im.actor.server.GroupPreQueries.{GetGroupPre, GetGroupPreResponse, GetGroupsPre, GetGroupsPreResponse}
 import im.actor.server.dialog.UserAcl
 

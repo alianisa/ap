@@ -4393,6 +4393,7 @@
 "header":96,
 "doc":[
 "Reset module groupPre"],"attributes":[
+{"type":{"type":"alias","childType":"date"},"id":1,"name":"resetDate"}
 ]}},{"type":"rpc","content":{
 "name":"LoadGroupsPre",
 "header":23,
