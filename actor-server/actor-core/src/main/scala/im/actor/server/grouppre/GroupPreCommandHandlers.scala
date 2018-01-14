@@ -185,8 +185,8 @@ private [grouppre] trait GroupPreCommandHandlers {
 
   protected def resetGroupPre() : Unit = {
     val result: Future[ResetGroupPreAck] = for {
-      update <- new UpdateResetGroupPre(Instant.now.getMillis)
       activeUsersIds <- db.run(UserRepo.activeUsersIds)
+      update = UpdateResetGroupPre(Instant.now.getMillis)
       _ <- seqUpdExt.broadcastPeopleUpdate(activeUsersIds.toSet, update)
     } yield (ResetGroupPreAck())
 

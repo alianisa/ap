@@ -1,7 +1,7 @@
 package im.actor.server.grouppre.http
 
 import akka.actor.ActorSystem
-import akka.http.scaladsl.model.StatusCodes.OK
+import akka.http.scaladsl.model.StatusCodes.{ OK}
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import de.heikoseeberger.akkahttpcirce.CirceSupport
@@ -15,10 +15,13 @@ private[grouppre] final class GroupPreHttpHandler()(implicit system: ActorSystem
 
   private val groupPreExt = GroupPreExtension(system)
 
-  def routes: Route = path("reset") {
-    get {
-      groupPreExt.resetGroupPre()
-      complete(OK)
+  override def routes: Route =
+    defaultVersion {
+      path("grouppre" / "reset" ) {
+        get {
+          groupPreExt.resetGroupPre()
+          complete(OK)
+        }
+      }
     }
-  }
 }
