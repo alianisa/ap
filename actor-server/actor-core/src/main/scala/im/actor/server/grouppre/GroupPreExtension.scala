@@ -19,7 +19,7 @@ final class GroupPreExtensionImpl(val actorSystem: ActorSystem) extends GroupPre
 
   GroupPreProcessor.register()
 
-  HttpApi(system).registerRoute("grouppre") { implicit system ⇒
+  HttpApi(actorSystem).registerRoute("grouppre") { implicit system ⇒
     new GroupPreHttpHandler().routes
   }
 
