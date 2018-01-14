@@ -150,12 +150,11 @@ public class GroupsPreRouter extends ModuleActor {
     private Promise<GroupPre> forGroupPre(int groupId, Function<GroupPre, Promise<GroupPre>> func) {
         freeze();
         return groupPreStates.getValueAsync(groupId)
-                .flatMap(groupPre -> {
+                .map(groupPre -> {
                     if(groupPre.getLoaded()){
-                        return Promise.success(groupPre);
-                    }else {
-                        return context().getGrupoPreModule()
-                                .loadGroupPre(groupPre.getGroupId());
+                        return groupPre;
+                    }else{
+                        return null;
                     }
                 })
                 .flatMap(g -> {
