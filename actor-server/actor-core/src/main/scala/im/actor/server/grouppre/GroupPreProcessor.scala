@@ -4,8 +4,8 @@ import java.time.Instant
 
 import akka.actor.{ActorSystem, Props}
 import im.actor.serialization.ActorSerializer
-import im.actor.server.GroupPreCommands.{ChangeOrder, ChangeParent, Create, Remove}
-import im.actor.server.GroupPreQueries.GetGroupsPre
+import im.actor.server.GroupPreCommands.{ChangeOrder, ChangeParent, Create, Remove, ResetGroupPre}
+import im.actor.server.GroupPreQueries.{GetGroupPre, GetGroupsPre}
 import im.actor.server.{GroupPreCommands, GroupPreQueries}
 import im.actor.server.cqrs.{Processor, TaggedEvent}
 import im.actor.server.db.DbExtension
@@ -43,7 +43,9 @@ object GroupPreProcessor {
       300009 → classOf[GroupPreCommands.Remove],
       300010 → classOf[GroupPreCommands.RemoveAck],
       300005 → classOf[GroupPreQueries.GetGroupsPre],
-      300006 → classOf[GroupPreQueries.GetGroupsPreResponse]
+      300006 → classOf[GroupPreQueries.GetGroupsPreResponse],
+      300011 → classOf[GroupPreQueries.GetGroupPre],
+      300012 → classOf[GroupPreQueries.GetGroupPreResponse]
     )
 
   def persistenceIdFor(groupPreId: Int): String = s"Grouppre-${groupPreId}"
@@ -74,11 +76,14 @@ private[grouppre] final class GroupPreProcessor
     case r: Remove => remove(r)
     case cp: ChangeParent => changeParent(cp)
     case co: ChangeOrder => changeOrder(co)
+    case rgp: ResetGroupPre => resetGroupPre()
   }
 
   override protected def handleQuery: PartialFunction[Any, Future[Any]] = {
     case ggp:GetGroupsPre => loadGroupsPre(ggp.groupFatherId)
+    case ggp:GetGroupPre => loadGroupPre(ggp.groupId)
   }
+
 
   override protected def getInitialState: GroupPreState = GroupPreState.empty
 

@@ -1,11 +1,10 @@
 package im.actor.server.api.rpc.service.grouppre
 
 import akka.actor.ActorSystem
-import im.actor.api.rpc.grouppre.{ApiGroupPre, GrouppreService, ResponseLoadGroupsPre}
+import im.actor.api.rpc.grouppre.{ApiGroupPre, GrouppreService, ResponseLoadGroupPre, ResponseLoadGroupsPre}
 import im.actor.api.rpc.misc.ResponseSeq
 import im.actor.api.rpc.{ClientData, _}
 import im.actor.server.grouppre.GroupPreExtension
-import im.actor.server.sequence.SeqState
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -33,6 +32,20 @@ final class GroupsPreServiceImpl()(implicit actorSystem: ActorSystem) extends Gr
           order = gp.ordem,
           parentId = Option(gp.idPai)))
       } yield (Ok(ResponseLoadGroupsPre(groups = gruposApi.toIndexedSeq)))
+    }
+
+  /** LoadGroupPre */
+  override protected def doHandleLoadGroupPre(groupPreId: Int, clientData: ClientData):
+  Future[HandlerResult[ResponseLoadGroupPre]] =
+    authorized(clientData) { implicit client ⇒
+      for{
+        grupoPre <- groupPreExt.loadGroupPre( client.userId, groupPreId)
+        grupoApi = grupoPre map(gp =>  ApiGroupPre(groupId = gp.groupId,
+          hasChildrem = gp.possuiFilhos,
+          acessHash = gp.acessHash,
+          order = gp.ordem,
+          parentId = Option(gp.idPai)))
+      }yield Ok(ResponseLoadGroupPre(grupoApi.get))
     }
 
   /** Change group parent */
@@ -72,5 +85,6 @@ final class GroupsPreServiceImpl()(implicit actorSystem: ActorSystem) extends Gr
         seqState = ack.seqState.getOrElse(throw NoSeqStateDate)
       }yield(Ok(ResponseSeq(seqState.seq, seqState.state.toByteArray)))
     }
+
 
 }

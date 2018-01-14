@@ -2,10 +2,11 @@ package im.actor.server.grouppre
 
 
 
-import im.actor.api.rpc.grouppre._
-import im.actor.api.rpc.groups.{ApiGroupType}
+import im.actor.api.rpc.grouppre.{UpdateResetGroupPre, _}
+import im.actor.api.rpc.groups.ApiGroupType
 import akka.pattern.pipe
-import im.actor.server.GroupPreCommands.{ChangeOrder, ChangeOrderAck, ChangeParent, ChangeParentAck, Create, CreateAck, Remove, RemoveAck}
+import im.actor.api.rpc.messaging.UpdateChatClear
+import im.actor.server.GroupPreCommands.{ChangeOrder, ChangeOrderAck, ChangeParent, ChangeParentAck, Create, CreateAck, Remove, RemoveAck, ResetGroupPreAck}
 import im.actor.server.persist.UserRepo
 import im.actor.server.persist.grouppre.{PublicGroup, PublicGroupRepo}
 import im.actor.server.sequence.SeqState
@@ -181,6 +182,16 @@ private [grouppre] trait GroupPreCommandHandlers {
       case e =>
         log.error(e, "Failed to change order")
     }
+  }
+
+  protected def resetGroupPre() : Unit = {
+    val result: Future[ResetGroupPreAck] = (for {
+      update <- UpdateResetGroupPre
+      activeUsersIds <- db.run(UserRepo.activeUsersIds)
+      seqUpdExt.broadcastPeopleUpdate(activeUsersIds.toSet, update)
+    } yield (ResetGroupPreAck()))
+
+    result pipeTo sender()
   }
 
 }

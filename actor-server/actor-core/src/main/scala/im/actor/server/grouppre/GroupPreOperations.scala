@@ -2,9 +2,10 @@ package im.actor.server.grouppre
 
 import akka.pattern.ask
 import akka.util.Timeout
-import im.actor.server.{GroupPre}
-import im.actor.server.GroupPreCommands.{ChangeOrder, ChangeOrderAck, ChangeParent, ChangeParentAck, Create, CreateAck, Remove, RemoveAck}
-import im.actor.server.GroupPreQueries.{GetGroupsPre, GetGroupsPreResponse}
+import im.actor.api.rpc.misc.ResponseVoid
+import im.actor.server.GroupPre
+import im.actor.server.GroupPreCommands.{ChangeOrder, ChangeOrderAck, ChangeParent, ChangeParentAck, Clear, Create, CreateAck, Remove, RemoveAck, ResetGroupPre}
+import im.actor.server.GroupPreQueries.{GetGroupPre, GetGroupPreResponse, GetGroupsPre, GetGroupsPreResponse}
 import im.actor.server.dialog.UserAcl
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -33,6 +34,10 @@ private[grouppre] sealed trait Commands extends UserAcl{
 
   def changeOrder(fromGroupId: Int, toGroupId: Int, userId: Int, authId: Long) : Future[ChangeOrderAck] =
     (processorRegion.ref ? ChangeOrder(groupId=fromGroupId, toId=toGroupId, userId = userId, authId=authId)).mapTo[ChangeOrderAck]
+
+  def resetGroupPre() : Future[Unit] =
+    (processorRegion.ref ? ResetGroupPre) map (_ ⇒ ())
+
 }
 
 private[grouppre] sealed trait Queries{
@@ -44,5 +49,8 @@ private[grouppre] sealed trait Queries{
 
   def loadGroupsPre(clientUserId: Int, idGrupoPai:Option[Int]): Future[Seq[GroupPre]] =
       (viewRegion.ref ? GetGroupsPre(groupFatherId = idGrupoPai.getOrElse(0))).mapTo[GetGroupsPreResponse].map(_.groups)
+
+  def loadGroupPre(clientUserId: Int, groupId:Int): Future[Option[GroupPre]] =
+    (viewRegion.ref ? GetGroupPre(userId = clientUserId, groupId = groupId)).mapTo[GetGroupPreResponse].map(_.group)
 
 }
