@@ -152,7 +152,6 @@ public class PictureActivity extends BaseActivity {
             bitmapWidth = bitmap.getWidth();
             bitmapHeight = bitmap.getHeight();
         } catch (ImageLoadException e) {
-            e.printStackTrace();
             return;
         }
         transitionView.setImageBitmap(bitmap);
@@ -191,14 +190,6 @@ public class PictureActivity extends BaseActivity {
                         .commit();
                 containerView.setVisibility(View.GONE);
 
-//                Bitmap bitmap;
-//                try {
-//                    bitmap = ImageLoading.loadBitmapOptimized(path);
-//                } catch (ImageLoadException e) {
-//                    e.printStackTrace();
-//                    return;
-//                }
-
                 MediaFullscreenAnimationUtils.animateBack(transitionView, bitmapWidth, bitmapHeight, transitionLeft, transitionTop, transitionWidth, transitionHeight,
                         new AnimatorListenerAdapter() {
                             @Override
@@ -210,24 +201,6 @@ public class PictureActivity extends BaseActivity {
                 MediaFullscreenAnimationUtils.animateBackgroundBack(backgroundView, null);
             }
         }, 50);
-        /*
-        transitionView.setExtraReceiverCallback(new ReceiverCallback() {
-            @Override
-            public void onImageLoaded(BitmapReference bitmap) {
-
-            }
-
-            @Override
-            public void onImageCleared() {
-
-            }
-
-            @Override
-            public void onImageError() {
-
-            }
-        });
-        transitionView.request(new RawFileTask(path));*/
     }
 
 
@@ -292,128 +265,21 @@ public class PictureActivity extends BaseActivity {
                 bitmap = ImageLoading.loadBitmapOptimized(path);
                 imageView.setImageBitmap(bitmap);
             } catch (ImageLoadException e) {
-                e.printStackTrace();
+
             }
+
             if (bitmap != null)
                 bitmap = null;
 
             attacher = new PhotoViewAttacher(imageView);
-            attacher.setOnDoubleTapListener(new GestureDetector.OnDoubleTapListener() {
-                @Override
-                public boolean onSingleTapConfirmed(MotionEvent motionEvent) {
-                    if (!uiIsHidden) {
-                        hideSystemUi();
-                    } else {
-                        showSystemUi();
-                    }
-                    return false;
-                }
-
-                @Override
-                public boolean onDoubleTap(MotionEvent motionEvent) {
-                    if (!uiIsHidden)
-                        hideSystemUi();
-                    return false;
-                }
-
-                @Override
-                public boolean onDoubleTapEvent(MotionEvent motionEvent) {
-                    return false;
+            attacher.setOnClickListener(view -> {
+                if (!uiIsHidden) {
+                    hideSystemUi();
+                } else {
+                    showSystemUi();
                 }
             });
 
-
-//            imageView = (ImageKitView) rootView.findViewById(R.id.image);
-//            imageView.setExtraReceiverCallback(new ReceiverCallback() {
-//                @Override
-//                public void onImageLoaded(BitmapReference bitmap) {
-//                    goneView(circularView);
-//                    attacher = new PhotoViewAttacher(imageView);
-//                    attacher.setOnDoubleTapListener(new DefaultOnDoubleTapListener(attacher) {
-//                        @Override
-//                        public boolean onSingleTapConfirmed(MotionEvent e) {
-//                            if (!uiIsHidden) {
-//                                hideSystemUi();
-//                            } else {
-//                                showSystemUi();
-//                            }
-//                            return super.onSingleTapConfirmed(e);
-//                        }
-//
-//                        @Override
-//                        public boolean onDoubleTap(MotionEvent e) {
-//                            if (!uiIsHidden)
-//                                hideSystemUi();
-//                            return super.onDoubleTap(e);
-//                        }
-//
-//                        @Override
-//                        public boolean onDoubleTapEvent(MotionEvent e) {
-//                            return super.onDoubleTapEvent(e);
-//                        }
-//                    });
-//                }
-//
-//                @Override
-//                public void onImageCleared() {
-//
-//                }
-//
-//                @Override
-//                public void onImageError() {
-//
-//                }
-//            });
-//            if (path == null) {
-//
-//                messenger().requestState(fileId, new FileCallback() {
-//                    @Override
-//                    public void onNotDownloaded() {
-//                        final FileReference location = new FileReference(new FileLocation(fileId, accessHash),
-//                                fileName, fileSize);
-//                        messenger().bindFile(location, true, new FileVMCallback() {
-//                            @Override
-//                            public void onNotDownloaded() {
-//                                messenger().startDownloading(location);
-//                            }
-//
-//                            @Override
-//                            public void onDownloading(float progress) {
-//                                circularView.setValue((int) progress);
-//                            }
-//
-//                            @Override
-//                            public void onDownloaded(final FileSystemReference reference) {
-//                                MVVMEngine.runOnUiThread(new Runnable() {
-//                                    @Override
-//                                    public void run() {
-//                                        path = reference.getDescriptor();
-//                                        imageView.request(new RawFileTask(path));
-//                                    }
-//                                });
-//                            }
-//                        });
-//                        circularView.setVisibility(View.VISIBLE);
-//                    }
-//
-//                    @Override
-//                    public void onDownloading(float progress) {
-//                    }
-//
-//                    @Override
-//                    public void onDownloaded(final FileSystemReference reference) {
-//                        MVVMEngine.runOnUiThread(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                path = reference.getDescriptor();
-//                                imageView.request(new RawFileTask(path));
-//                            }
-//                        });
-//                    }
-//                });
-//            } else {
-//                imageView.request(new RawFileTask(path));
-//            }
 
             ownerAvatarView = (AvatarView) rootView.findViewById(R.id.avatar);
             ownerNameView = (TextView) rootView.findViewById(R.id.name);
@@ -427,35 +293,18 @@ public class PictureActivity extends BaseActivity {
 
             ownerAvatarView.init(Screen.dp(48), 18);
             ownerAvatarView.bind(owner);
-            /*ownerAvatarView.setEmptyDrawable(AvatarDrawable.create(owner, 16, getActivity()));
-            Avatar avatar = owner.getAvatar().getValue();
-            if (avatar != null) {
-                ownerAvatarView.bindAvatar(32, avatar);
-            } else {
-                ownerAvatarView.unbind();
-            }*/
             ownerNameView.setText(owner.getName().get());
 
             backgroundView = null;
 
-            Activity activity = getActivity();
-            /*if (activity instanceof PictureActivity) {
-                backgroundView = ((PictureActivity) activity).backgroundView;
-            } else {
-                if (activity instanceof MediaActivity) {
-                    backgroundView = ((MediaActivity) activity).transitionBackgroundView;
-                }
-            }*/
+
             backgroundView = rootView.findViewById(R.id.background);
             if (backgroundView != null)
-                backgroundView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (!uiIsHidden) {
-                            hideSystemUi();
-                        } else {
-                            showSystemUi();
-                        }
+                backgroundView.setOnClickListener(v -> {
+                    if (!uiIsHidden) {
+                        hideSystemUi();
+                    } else {
+                        showSystemUi();
                     }
                 });
 
@@ -467,9 +316,6 @@ public class PictureActivity extends BaseActivity {
         @Override
         public void onDestroyView() {
             super.onDestroyView();
-//            if (attacher != null)
-//                attacher.cleanup();
-//
         }
 
         @Override
@@ -571,6 +417,7 @@ public class PictureActivity extends BaseActivity {
                         .setStartDelay(0)
                         .setDuration(300 * animationMultiplier)
                         .start();
+
                 ownerContainer.animate()
                         .setInterpolator(new MaterialInterpolator())
                         .alpha(0)
