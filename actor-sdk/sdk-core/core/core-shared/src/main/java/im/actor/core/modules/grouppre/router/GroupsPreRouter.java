@@ -84,46 +84,53 @@ public class GroupsPreRouter extends ModuleActor {
                             return null;
                         }))
 
-                .map(r -> {
-                    unfreeze();
-                    return null;
-                });
+                .map(r -> Void.INSTANCE)
+                .after((r,e)->unfreeze());
     }
 
     @Verified
     public Promise<Void> onGroupPreRemoved(final ApiGroupPre apiGroupPre,
-                                           List<Integer> removedChildren,
-                                           List<Integer> parentChildren) {
+                                           final List<Integer> removedChildren,
+                                           final List<Integer> parentChildren) {
         freeze();
-        return new Promise<Void>(resolver -> {
 
-            Integer parentId = apiGroupPre.getParentId();
+        return groupPreStates.getValueAsync(apiGroupPre.getGroupId())
+                .map(groupPreRemoved -> {
 
-            GroupPre groupRemoved = groupsPre(parentId).getValue(apiGroupPre.getGroupId());
-            groupsPre(parentId).removeItem(groupRemoved.getEngineId());
+                    if(groupPreRemoved != null && groupPreRemoved.getLoaded()){
+                        Integer parentId = groupPreRemoved.getParentId();
 
-            for (Integer orphanGroupId : removedChildren) {
-                GroupPre orphan = groupsPre(groupRemoved.getGroupId()).getValue(orphanGroupId);
-                groupsPre(parentId).addOrUpdateItem(orphan.changeParentId(parentId));
-                onParentIdChanged(orphan.getGroupId(), parentId)
-                        .then(v-> groupsPre(groupRemoved.getGroupId()).removeItem(orphanGroupId));
-            }
-            new Promise<GroupPre>(res -> {
-                if (parentId > GroupPre.DEFAULT_ID) {
-                    onHasChildrenChanged(parentId, !parentChildren.isEmpty()).then(v -> res.result(groupRemoved));
-                }else{
-                    res.result(groupRemoved);
-                }
-            }).then(removedGroup -> {
-                editGroupPre(removedGroup.getGroupId(), groupPre -> groupPre.changeIsLoaded(false)
-                        .changeParentId(GroupPre.DEFAULT_ID)
-                        .changeHasChildren(false));
-                });
-        }).map(r -> {
-            unfreeze();
-            return null;
-        });
+                        for (Integer orphanGroupId : removedChildren) {
+                            GroupPre orphan = groupsPre(groupPreRemoved.getGroupId()).getValue(orphanGroupId);
+                            if(orphan != null){
+                                groupsPre(parentId).addOrUpdateItem(orphan.changeParentId(parentId));
+                                onParentIdChanged(orphan.getGroupId(), parentId)
+                                        .then(v-> groupsPre(groupPreRemoved.getGroupId()).removeItem(orphanGroupId));
+                            }
+                        }
+
+                        if (parentId > GroupPre.DEFAULT_ID) {
+                            onHasChildrenChanged(parentId, !parentChildren.isEmpty());
+                        }
+
+                        groupPreStates.addOrUpdateItem(groupPreRemoved.changeIsLoaded(false)
+                                .changeParentId(GroupPre.DEFAULT_ID)
+                                .changeHasChildren(false));
+
+                        groupsPre(parentId).removeItem(groupPreRemoved.getGroupId());
+                        groupPreStates.removeItem(groupPreRemoved.getGroupId());
+                    }else{
+                        Integer parentId = apiGroupPre.getParentId();
+                        if (parentId > GroupPre.DEFAULT_ID) {
+                            onHasChildrenChanged(parentId, !parentChildren.isEmpty());
+                        }
+                    }
+                    return groupPreRemoved;
+                })
+                .map(res -> Void.INSTANCE)
+                .after((err,res)->unfreeze());
     }
+
 
     @Verified
     public Promise<GroupPre> onParentIdChanged(int groupId, Integer parentId) {
@@ -173,17 +180,15 @@ public class GroupsPreRouter extends ModuleActor {
        freeze();
 
        return onParentIdChanged(groupId, parentId).map(groupPre -> {
-            groupsPre(oldParentId).removeItem(groupPre.getEngineId());
+            if(groupPre != null)
+                groupsPre(oldParentId).removeItem(groupPre.getEngineId());
             return groupPre;
         }).then(groupPre -> {
             onHasChildrenChanged(parentId, true);
             if (oldParentId > GroupPre.DEFAULT_ID) {
                 onHasChildrenChanged(oldParentId, !groupsPre(oldParentId).isEmpty());
             }
-        }).map(r -> {
-            unfreeze();
-            return null;
-        });
+        }).map(r -> Void.INSTANCE).after((r,e)->unfreeze());
     }
 
     public Promise<Void> onGroupPreOrderChanged(final Integer fromGroupId, final Integer fromNewOrder,
@@ -191,10 +196,7 @@ public class GroupsPreRouter extends ModuleActor {
         freeze();
         return editGroupPre(fromGroupId, groupPre -> groupPre.changeSortOrder(fromNewOrder))
                 .map(gp -> editGroupPre(toGroupId, groupPre -> groupPre.changeSortOrder(toNewOrder)))
-                .map(r -> {
-                    unfreeze();
-                    return null;
-                });
+                .map(r -> Void.INSTANCE).after((r,e)->unfreeze());
     }
 
     private void freeze() {

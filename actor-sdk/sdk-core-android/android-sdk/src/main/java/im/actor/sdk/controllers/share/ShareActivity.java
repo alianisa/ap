@@ -38,6 +38,7 @@ public class ShareActivity extends BaseFragmentActivity {
             }
             args.putString(ShareFragment.ARG_INTENT_TYPE, getIntent().getType());
             args.putString(ShareFragment.ARG_INTENT_ACTION, getIntent().getAction());
+
             shareFragment.setArguments(args);
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.root, shareFragment)
