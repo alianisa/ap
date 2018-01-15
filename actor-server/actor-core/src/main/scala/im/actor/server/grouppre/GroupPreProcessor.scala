@@ -42,6 +42,8 @@ object GroupPreProcessor {
       300008 → classOf[GroupPreCommands.ChangeOrderAck],
       300009 → classOf[GroupPreCommands.Remove],
       300010 → classOf[GroupPreCommands.RemoveAck],
+      300013 → classOf[GroupPreCommands.ResetGroupPre],
+      300014 → classOf[GroupPreCommands.ResetGroupPreAck],
       300005 → classOf[GroupPreQueries.GetGroupsPre],
       300006 → classOf[GroupPreQueries.GetGroupsPreResponse],
       300011 → classOf[GroupPreQueries.GetGroupPre],
@@ -83,7 +85,6 @@ private[grouppre] final class GroupPreProcessor
     case ggp:GetGroupsPre => loadGroupsPre(ggp.groupFatherId)
     case ggp:GetGroupPre => loadGroupPre(ggp.groupId)
   }
-
 
   override protected def getInitialState: GroupPreState = GroupPreState.empty
 
