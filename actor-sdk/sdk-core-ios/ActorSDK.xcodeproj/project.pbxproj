@@ -1101,6 +1101,7 @@
 				066A52F91BC52FA0000E606E /* Compose */,
 				066A53021BC53171000E606E /* Contacts */,
 				066A53351BC537BF000E606E /* Conversation */,
+				F1A071E0200D21050087ADCE /* GroupPre */,
 				066A52E11BC52A16000E606E /* Group */,
 				06E7B2451C0F8D410090660C /* Location */,
 				066A53051BC5317B000E606E /* Recent */,
@@ -1794,6 +1795,13 @@
 				F076508E3899D309954904A3 /* Pods-ActorSDK.release.xcconfig */,
 			);
 			name = Pods;
+			sourceTree = "<group>";
+		};
+		F1A071E0200D21050087ADCE /* GroupPre */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = GroupPre;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

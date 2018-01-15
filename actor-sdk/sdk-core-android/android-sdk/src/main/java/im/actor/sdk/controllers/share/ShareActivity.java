@@ -41,7 +41,7 @@ public class ShareActivity extends BaseFragmentActivity {
 
             shareFragment.setArguments(args);
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.root, shareFragment)
+                    .replace(R.id.root, shareFragment)
                     .commit();
         }
     }
