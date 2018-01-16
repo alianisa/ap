@@ -62,7 +62,7 @@ public class TakePhotoActivity extends Activity {
             dialog = new AlertDialog.Builder(this)
                     .setItems(args, (dialog2, which) -> {
                         if (which == 0) {
-                            externalFile = Files.getExternalTempFile("capture", "jpg");
+                            externalFile = Files.getExternalTempFile("capture", ".jpg");
                             if (externalFile == null) {
                                 Toast.makeText(getApplicationContext(),
                                         R.string.toast_no_sdcard, Toast.LENGTH_LONG).show();

@@ -3,6 +3,8 @@ package im.actor.sdk.controllers.share;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -10,7 +12,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 
 import im.actor.core.entity.Peer;
@@ -27,6 +31,7 @@ import im.actor.sdk.controllers.placeholder.GlobalPlaceholderFragment;
 import im.actor.sdk.controllers.search.GlobalSearchDelegate;
 import im.actor.sdk.controllers.search.GlobalSearchFragment;
 import im.actor.sdk.intents.ShareAction;
+import im.actor.sdk.util.Files;
 
 import static im.actor.sdk.util.ActorSDKMessenger.messenger;
 import static im.actor.sdk.util.ActorSDKMessenger.users;
@@ -135,13 +140,22 @@ public class ShareFragment extends BaseFragment implements DialogsFragmentDelega
                         intent.putExtra(Intents.EXTRA_FORWARD_CONTENT, shareAction.getForwardTextRaw());
                     }
 
-
                     if (shareAction.getText() != null) {
                         messenger().sendMessage(peer, shareAction.getText());
                     } else if (shareAction.getUris().size() > 0) {
                         for (String sendUri : shareAction.getUris()) {
+                            Uri uri = null;
 
-                            executeSilent(messenger().sendUri(peer, Uri.parse(sendUri), ActorSDK.sharedActor().getAppName()));
+                            try {
+
+                                InputStream inputStream = getActivity().getApplicationContext().getContentResolver().openInputStream(Uri.parse(sendUri));
+                                Bitmap bm = BitmapFactory.decodeStream(inputStream);
+                                uri = Files.saveTempBitmap(getActivity(), bm);
+                            } catch (FileNotFoundException e) {
+                                Log.e(ShareFragment.class.getName(), e);
+                            }
+                            
+                            executeSilent(messenger().sendUri(peer, uri, ActorSDK.sharedActor().getAppName()));
                         }
                     } else if (shareAction.getUserId() != null) {
                         String userName = users().get(shareAction.getUserId()).getName().get();

@@ -259,36 +259,33 @@ public class ViewAvatarActivity extends BaseActivity {
             }
 
             new AlertDialog.Builder(this)
-                    .setItems(args, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface d, int which) {
-                            if (which == 0) {
-                                externalFile = Files.getExternalTempFile("capture", "jpg");
-                                if (externalFile == null) {
-                                    Toast.makeText(ViewAvatarActivity.this, R.string.toast_no_sdcard, Toast.LENGTH_LONG).show();
-                                    return;
-                                }
-                                if (ContextCompat.checkSelfPermission(ViewAvatarActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-                                    Log.d("Permissions", "camera - no permission :c");
-                                    ActivityCompat.requestPermissions(ViewAvatarActivity.this,
-                                            new String[]{Manifest.permission.CAMERA},
-                                            PERMISSIONS_REQUEST_CAMERA);
+                    .setItems(args, (d, which) -> {
+                        if (which == 0) {
+                            externalFile = Files.getExternalTempFile("capture", ".jpg");
+                            if (externalFile == null) {
+                                Toast.makeText(ViewAvatarActivity.this, R.string.toast_no_sdcard, Toast.LENGTH_LONG).show();
+                                return;
+                            }
+                            if (ContextCompat.checkSelfPermission(ViewAvatarActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                                Log.d("Permissions", "camera - no permission :c");
+                                ActivityCompat.requestPermissions(ViewAvatarActivity.this,
+                                        new String[]{Manifest.permission.CAMERA},
+                                        PERMISSIONS_REQUEST_CAMERA);
 
-                                } else {
-                                    startCamera();
+                            } else {
+                                startCamera();
+                            }
+                        } else if (which == 1) {
+                            Intent i = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                            i.setType("image/*");
+                            startActivityForResult(i, REQUEST_GALLERY);
+                        } else if (which == 2) {
+                            if (peer.getPeerType() == PeerType.PRIVATE) {
+                                if (peer.getPeerId() == myUid()) {
+                                    messenger().removeMyAvatar();
                                 }
-                            } else if (which == 1) {
-                                Intent i = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                                i.setType("image/*");
-                                startActivityForResult(i, REQUEST_GALLERY);
-                            } else if (which == 2) {
-                                if (peer.getPeerType() == PeerType.PRIVATE) {
-                                    if (peer.getPeerId() == myUid()) {
-                                        messenger().removeMyAvatar();
-                                    }
-                                } else if (peer.getPeerType() == PeerType.GROUP) {
-                                    messenger().removeGroupAvatar(peer.getPeerId());
-                                }
+                            } else if (peer.getPeerType() == PeerType.GROUP) {
+                                messenger().removeGroupAvatar(peer.getPeerId());
                             }
                         }
                     })
