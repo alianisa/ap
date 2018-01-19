@@ -39,20 +39,20 @@ open class AAConversationContentController: SLKTextViewController, ARDisplayList
     open var currentAudioFileId: jlong = 0
     open var voicesCache: Dictionary<jlong,Float> = Dictionary<jlong,Float>()
     
-    public init(peer: ACPeer) {
+    public init?(peer: ACPeer) {
         self.peer = peer
         
         super.init(collectionViewLayout: collectionViewLayout)
         
-        self.collectionView.backgroundColor = UIColor.clear
-        self.collectionView.alwaysBounceVertical = true
+        self.collectionView?.backgroundColor = UIColor.clear
+       // self.collectionView?.alwaysBounceVertical = true
   
         for layout in AABubbles.layouters {
-            self.collectionView.register(layout.cellClass(), forCellWithReuseIdentifier: layout.cellReuseId())
+            self.collectionView?.register(layout.cellClass(), forCellWithReuseIdentifier: layout.cellReuseId())
         }
     }
     
-    public required init!(coder decoder: NSCoder!) {
+    public required init!(coder decoder: NSCoder) {
         fatalError("Not implemented");
     }
     
@@ -68,7 +68,7 @@ open class AAConversationContentController: SLKTextViewController, ARDisplayList
     
     open override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+          
         isVisible = true
         
         // Hack for delaying collection view init from first animation frame
@@ -80,7 +80,7 @@ open class AAConversationContentController: SLKTextViewController, ARDisplayList
                 tryBind()
                 return
             } else {
-                self.collectionView.alpha = 0
+                self.collectionView?.alpha = 0
             }
             
             DispatchQueue.main.async(execute: {
@@ -91,14 +91,14 @@ open class AAConversationContentController: SLKTextViewController, ARDisplayList
                 
                 self.isStarted = true
                 
-                UIView.animate(withDuration: 0.6, animations: { () -> Void in self.collectionView.alpha = 1 }, completion: { (comp) -> Void in })
+                UIView.animate(withDuration: 0.6, animations: { () -> Void in self.collectionView?.alpha = 1 }, completion: { (comp) -> Void in })
                 
                 self.tryBind()
             })
         } else {
             self.isStarted = true
             
-            UIView.animate(withDuration: 0.6, animations: { () -> Void in self.collectionView.alpha = 1 }, completion: { (comp) -> Void in })
+            UIView.animate(withDuration: 0.6, animations: { () -> Void in self.collectionView?.alpha = 1 }, completion: { (comp) -> Void in })
             
             tryBind()
         }
@@ -131,7 +131,7 @@ open class AAConversationContentController: SLKTextViewController, ARDisplayList
             self.isBinded = true
             self.willUpdate()
             self.collectionViewLayout.beginUpdates(false, list: self.displayList.getProcessedList() as? AAPreprocessedList, unread: self.unreadMessageId)
-            self.collectionView.reloadData()
+            self.collectionView?.reloadData()
             self.prevCount = self.getCount()
             self.displayList.addAppleListener(self)
             self.didUpdate()
@@ -162,7 +162,7 @@ open class AAConversationContentController: SLKTextViewController, ARDisplayList
     }
     
     open func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAtIndex section: Int) -> UIEdgeInsets {
-        return UIEdgeInsetsMake(6, 0, 100, 0)
+        return UIEdgeInsets.zero
     }
     
     open func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAtIndex section: Int) -> CGFloat {
@@ -280,7 +280,7 @@ open class AAConversationContentController: SLKTextViewController, ARDisplayList
             
             isUpdating = true
             
-            self.collectionView.performBatchUpdates({ () -> Void in
+            self.collectionView?.performBatchUpdates({ () -> Void in
                 
                 // Removed rows
                 if modification.removedCount() > 0 {
@@ -289,7 +289,7 @@ open class AAConversationContentController: SLKTextViewController, ARDisplayList
                         let removedRow = Int(modification.getRemoved(jint(i)))
                         rows.append(IndexPath(row: removedRow, section: 0))
                     }
-                    self.collectionView.deleteItems(at: rows)
+                    self.collectionView?.deleteItems(at: rows)
                 }
                 
                 // Added rows
@@ -300,7 +300,7 @@ open class AAConversationContentController: SLKTextViewController, ARDisplayList
                         rows.append(IndexPath(row: insertedRow, section: 0))
                     }
                     
-                    self.collectionView.insertItems(at: rows)
+                    self.collectionView?.insertItems(at: rows)
                 }
                 
                 // Moved rows
@@ -309,7 +309,7 @@ open class AAConversationContentController: SLKTextViewController, ARDisplayList
                         let mov = modification.getMoved(jint(i))
                         let sourceRow = Int((mov?.getSourceIndex())!)
                         let destRow = Int((mov?.getDestIndex())!)
-                        self.collectionView.moveItem(at: IndexPath(row: sourceRow, section: 0), to: IndexPath(row: destRow, section: 0))
+                        self.collectionView?.moveItem(at: IndexPath(row: sourceRow, section: 0), to: IndexPath(row: destRow, section: 0))
                     }
                 }
                 
@@ -358,12 +358,12 @@ open class AAConversationContentController: SLKTextViewController, ARDisplayList
         }
         
         var forcedRows = [IndexPath]()
-        let visibleIndexes = self.collectionView.indexPathsForVisibleItems
+        let visibleIndexes = self.collectionView?.indexPathsForVisibleItems
         for ind in updated {
             let indexPath = IndexPath(row: ind, section: 0)
-            if visibleIndexes.contains(indexPath) {
-                let cell = self.collectionView.cellForItem(at: indexPath)
-                self.bindCell(self.collectionView, cellForRowAtIndexPath: indexPath, cell: cell!)
+            if (visibleIndexes?.contains(indexPath))! {
+                let cell = self.collectionView?.cellForItem(at: indexPath)
+                self.bindCell(self.collectionView!, cellForRowAtIndexPath: indexPath, cell: cell!)
             }
         }
         
@@ -374,8 +374,8 @@ open class AAConversationContentController: SLKTextViewController, ARDisplayList
         
         if (forcedRows.count > 0) {
             self.collectionViewLayout.beginUpdates(false, list: list, unread: unreadMessageId)
-            self.collectionView.performBatchUpdates({ () -> Void in
-                self.collectionView.reloadItems(at: forcedRows)
+            self.collectionView?.performBatchUpdates({ () -> Void in
+                self.collectionView?.reloadItems(at: forcedRows)
             }, completion: nil)
         }
         
@@ -391,12 +391,12 @@ open class AAConversationContentController: SLKTextViewController, ARDisplayList
     }
     
     fileprivate func messageStatesUpdated(_ start: jlong, end: jlong) {
-        let visibleIndexes = self.collectionView.indexPathsForVisibleItems
-        for ind in visibleIndexes {
+        let visibleIndexes = self.collectionView?.indexPathsForVisibleItems
+        for ind in visibleIndexes! {
             if let obj = objectAtIndex((ind as NSIndexPath).row) {
                 if obj.senderId == Actor.myUid() && obj.sortDate >= start && obj.sortDate <= end {
-                    let cell = self.collectionView.cellForItem(at: ind)
-                    self.bindCell(self.collectionView, cellForRowAtIndexPath: ind, cell: cell!)
+                    let cell = self.collectionView?.cellForItem(at: ind)
+                    self.bindCell(self.collectionView!, cellForRowAtIndexPath: ind, cell: cell!)
                 }
             }
         }
@@ -430,7 +430,7 @@ open class AAConversationContentController: SLKTextViewController, ARDisplayList
     open func didUpdate() {
         if isLoadedAfter {
             if unreadIndex != nil {
-                self.collectionView.scrollToItem(at: IndexPath(item: unreadIndex!, section: 0), at: UICollectionViewScrollPosition.bottom, animated: false)
+                self.collectionView?.scrollToItem(at: IndexPath(item: unreadIndex!, section: 0), at: UICollectionViewScrollPosition.bottom, animated: false)
                 unreadIndex = nil
             }
         }
@@ -457,7 +457,7 @@ open class AAConversationContentController: SLKTextViewController, ARDisplayList
         
         DispatchQueue.main.async(execute: { () -> Void in
 //            self.collectionView.collectionViewLayout.invalidateLayout()
-            self.collectionView.performBatchUpdates(nil, completion: nil)
+            self.collectionView?.performBatchUpdates(nil, completion: nil)
         })
     }
     

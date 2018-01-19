@@ -4,41 +4,39 @@
 
 import Foundation
 
-public enum AAContentTableStyle {
+public enum AASimpleContentTableStyle {
     case settingsPlain
     case settingsGrouped
     case plain
 }
 
-open class AAContentTableController: AAManagedTableController, AAManagedTableControllerDelegate {
+open class AASimpleContentTableController: AAManagedTableController, AAManagedTableControllerDelegate {
     
     fileprivate var isInLoad: Bool = false
-    
     open var autoSections = true
     
     // Controller constructor
     
-    public override init(style: AAContentTableStyle) {
+    public override init(style: AASimpleContentTableStyle) {
         super.init(style: style)
-        
         self.managedTableDelegate = self
-        
         self.autoSections = style != .plain
     }
-
+    
     public required init(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
     // DSL Implementation
     
-    open func section(_ closure: (_ s: AAManagedSection) -> ()) -> AAManagedSection {
+    open func section(_ closure: (_ s: AASimpleManagedSection) -> ()) -> AASimpleManagedSection {
         if !isInLoad {
             fatalError("Unable to change sections not during tableDidLoad method call")
         }
         
         let isFirst = managedTable.sections.count == 0
         let s = managedTable.addSection(true)
+        
         if autoSections {
             s.headerHeight = 15
             s.footerHeight = 15
@@ -61,7 +59,7 @@ open class AAContentTableController: AAManagedTableController, AAManagedTableCon
     }
     
     // Implement it in subclass
-
+    
     open func tableWillLoad() {
         
     }
@@ -101,3 +99,4 @@ open class AAContentTableController: AAManagedTableController, AAManagedTableCon
         tableWillLoad()
     }
 }
+

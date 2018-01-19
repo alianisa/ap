@@ -51,6 +51,44 @@ open class AAComposeController: AAContactsListContentController, AAContactsListC
                 return false
             }
         }
+        
+        
+        if(ActorSDK.sharedActor().enablePredefinedGroups){
+            section.custom { (r:AACustomRow<AAContactActionCell>) -> () in
+                
+                r.height = 56
+                
+                r.closure = { (cell) -> () in
+                    cell.bind("ic_pre_groups", actionTitle: AALocalized("GroupsPre"))
+                }
+                
+                r.selectAction = { () -> Bool in
+                    let gruposPredefinidosController = AAGrouppreListController()
+                    gruposPredefinidosController.type = "G"
+                    gruposPredefinidosController.title = AALocalized("GroupsPre")
+                    self.navigateNext(gruposPredefinidosController, removeCurrent: false)
+                    return false
+                }
+            }
+            
+            section.custom { (r:AACustomRow<AAContactActionCell>) -> () in
+                
+                r.height = 56
+                
+                r.closure = { (cell) -> () in
+                    cell.bind("ic_pre_channels", actionTitle: AALocalized("ChannelsPre"))
+                }
+                
+                r.selectAction = { () -> Bool in
+                    let gruposPredefinidosController = AAGrouppreListController()
+                    gruposPredefinidosController.type = "C"
+                    gruposPredefinidosController.title = AALocalized("ChannelsPre")
+                    self.navigateNext(gruposPredefinidosController, removeCurrent: false)
+                    return false
+                }
+            }
+        }
+        
     }
     
     open func contactDidTap(_ controller: AAContactsListContentController, contact: ACContact) -> Bool {

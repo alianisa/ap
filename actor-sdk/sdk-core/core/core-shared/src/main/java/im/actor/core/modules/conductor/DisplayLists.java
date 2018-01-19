@@ -167,15 +167,4 @@ public class DisplayLists extends AbsModule {
 
         return res;
     }
-
-    public PlatformDisplayList<GroupPre> buildGrupoPreList(Integer idGrupoPai, boolean isShared) {
-        im.actor.runtime.Runtime.checkMainThread();
-
-        PlatformDisplayList<GroupPre> res = Storage.createDisplayList(context().getGrupoPreModule().getGrupospreEngine(idGrupoPai),
-                isShared, GroupPre.ENTITY_NAME);
-
-        res.initTop();
-
-        return res;
-    }
 }

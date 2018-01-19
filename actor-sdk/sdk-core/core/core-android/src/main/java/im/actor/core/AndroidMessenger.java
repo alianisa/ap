@@ -594,13 +594,6 @@ public class AndroidMessenger extends im.actor.core.Messenger {
         return videosLists.get(peer);
     }
 
-    public BindedDisplayList<GroupPre> getGroupPreDisplayList(Integer idGrupoPai, Integer type, int groupId) {
-
-        BindedDisplayList<GroupPre> groupPreList = (BindedDisplayList<GroupPre>) modules.getDisplayListsModule().buildGrupoPreList(idGrupoPai, false);
-
-        return groupPreList;
-    }
-
     public SimpleBindedDisplayList<GroupPre> getGroupsPreSimpleDisplayList(Integer parentId,
                                                                            SimpleBindedDisplayList.Filter<GroupPre> filter){
        return new SimpleBindedDisplayList<>((ListEngineDisplayExt<GroupPre>) modules.getGrupoPreModule().getGrupospreEngine(parentId),

@@ -26,7 +26,7 @@ import im.actor.runtime.storage.ListEngineItem;
 
 public class SimpleBindedDisplayList<T extends BserObject & ListEngineItem>{
 
-    private static final String TAG = "SimpleBindedDisplayList";
+    private static final String TAG = SimpleBindedDisplayList.class.getName();
 
     private final ListEngineDisplayExt<T> listEngine;
     private final ListEngineDisplayListener<T> engineListener;
@@ -118,20 +118,6 @@ public class SimpleBindedDisplayList<T extends BserObject & ListEngineItem>{
         updateListState();
     }
 
-    public int findPositionById(long key){
-        for(int i =0; i < currentList.size(); i++){
-            T currentVal = currentList.get(i);
-            if(currentVal.getEngineId() == key){
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    public void itensMoved(int fromPosition, int toPosition){
-        Collections.swap(currentList, fromPosition, toPosition);
-    }
-
     private void updateListState(){
         Collections.sort(this.currentList, (t, t1) -> Long.valueOf(t.getEngineSort())
                 .compareTo(Long.valueOf(t1.getEngineSort())));
@@ -156,6 +142,17 @@ public class SimpleBindedDisplayList<T extends BserObject & ListEngineItem>{
         return true;
     }
 
+    @ObjectiveCName("findPositionById:")
+    public int findPositionById(long key){
+        for(int i =0; i < currentList.size(); i++){
+            T currentVal = currentList.get(i);
+            if(currentVal.getEngineId() == key){
+                return i;
+            }
+        }
+        return -1;
+    }
+
     @MainThread
     @ObjectiveCName("dispose")
     public void dispose() {
@@ -171,14 +168,17 @@ public class SimpleBindedDisplayList<T extends BserObject & ListEngineItem>{
         listEngine.subscribe(engineListener);
     }
 
+    @ObjectiveCName("size")
     public int getSize(){
         return currentList.size();
     }
 
+    @ObjectiveCName("value")
     public T getValue(int position){
         return currentList.get(position);
     }
 
+    @ObjectiveCName("state")
     public ValueModel<State> getState() {
         return state;
     }
@@ -188,10 +188,12 @@ public class SimpleBindedDisplayList<T extends BserObject & ListEngineItem>{
     }
 
     public static interface Filter<T>{
+        @ObjectiveCName("accept:")
         boolean accept(T value);
     }
 
     public static interface ListChangedListener{
+        @ObjectiveCName("onListChange:")
         void onListChange(int size);
     }
 

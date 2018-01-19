@@ -90,7 +90,7 @@ final public class ConversationViewController:
         
         // Create controller
         
-        super.init(peer: peer)
+        super.init(peer: peer)!
         
         
         //
@@ -275,7 +275,7 @@ final public class ConversationViewController:
         }
     }
     
-    required public init(coder aDecoder: NSCoder!) {
+    required public init(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
@@ -566,7 +566,7 @@ final public class ConversationViewController:
         self.textInputbar.beginTextEditing()
     }
     
-    open override func didCommitTextEditing(_ sender: Any!){
+    open override func didCommitTextEditing(_ sender: Any){
         if(self.editingId != nil){
             Actor.updateMessage(with: peer, withText: textView.text, withRid: self.editingId).failure { (e: JavaLangException!) -> () in
                 if let re:ACRpcException = (e as! ACRpcException){
@@ -729,18 +729,16 @@ final public class ConversationViewController:
     
     override open func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let res = AAAutoCompleteCell(style: UITableViewCellStyle.default, reuseIdentifier: "user_name")
-        res.bindData(filteredMembers[(indexPath as NSIndexPath).row], highlightWord: foundWord)
+        res.bindData(filteredMembers[(indexPath as NSIndexPath).row], highlightWord: foundWord!)
         return res
     }
     
     override open func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let user = filteredMembers[(indexPath as NSIndexPath).row]
-
         var postfix = " "
         if foundPrefixRange.location == 0 {
             postfix = ": "
         }
-        
         acceptAutoCompletion(with: user.mentionString + postfix, keepPrefix: !user.isNickname)
     }
     
@@ -797,6 +795,7 @@ final public class ConversationViewController:
     
     open func pickDocument() {
         let documentPicker = UIDocumentMenuViewController(documentTypes: UTTAll as [String], in: UIDocumentPickerMode.import)
+        documentPicker.popoverPresentationController?.sourceView = self.textInputbar
         documentPicker.view.backgroundColor = UIColor.clear
         documentPicker.delegate = self
         self.present(documentPicker, animated: true, completion: nil)

@@ -776,3 +776,9 @@
 
 "IsNotLastMessage" = "Its not the last message";
 
+/*
+ *
+ */
+"GroupsPre" = "Predefined groups";
+"ChannelsPre" = "Predefined channels";
+

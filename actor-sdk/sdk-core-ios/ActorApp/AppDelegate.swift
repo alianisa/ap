@@ -46,6 +46,8 @@ open class AppDelegate : ActorApplicationDelegate {
         // Enabling experimental features
         ActorSDK.sharedActor().enableExperimentalFeatures = true
         
+        ActorSDK.sharedActor().enablePredefinedGroups = true
+        
         ActorSDK.sharedActor().enableCalls = true
         
         ActorSDK.sharedActor().enableVideoCalls = true
