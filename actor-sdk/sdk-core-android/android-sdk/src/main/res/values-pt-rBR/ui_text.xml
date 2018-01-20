@@ -681,4 +681,12 @@
     <string name="channel_pre_admin_title">Canal pre-definido</string>
     <string name="select_group_parent">Selecionar Grupo Pai</string>
     <string name="select_channel_parent">Selecionar Canal Pai</string>
+
+    <string name="title_activity_photo_editor">Editar Imagem</string>
+    <string name="done">pronto</string>
+    <string name="erase">borracha</string>
+    <string name="save">salvar</string>
+    <string name="clear_all">limpar tudo</string>
+    <string name="undo">desfazer</string>
+
 </resources>

@@ -28,6 +28,7 @@ import im.actor.runtime.android.AndroidContext;
 import im.actor.sdk.ActorSDK;
 import im.actor.sdk.R;
 import im.actor.sdk.controllers.BaseFragment;
+import im.actor.sdk.controllers.conversation.attach.photoeditor.PhotoEditorActivity;
 import im.actor.sdk.controllers.pickers.file.FilePickerActivity;
 import im.actor.sdk.util.Files;
 import im.actor.sdk.util.Randoms;
@@ -45,13 +46,19 @@ public class MediaPickerFragment extends BaseFragment {
 
     private String pendingFile;
     private boolean pickCropped;
+    private boolean pickEdited;
 
     public void requestPhoto() {
-        requestPhoto(false);
+        requestPhoto(false, false);
     }
 
-    public void requestPhoto(boolean pickCropped) {
+    public void requestPhotoEdited() {
+        requestPhoto(false, true);
+    }
+
+    public void requestPhoto(boolean pickCropped, boolean pickEdited) {
         this.pickCropped = pickCropped;
+        this.pickEdited = pickEdited;
 
         //
         // Checking permissions
@@ -91,6 +98,24 @@ public class MediaPickerFragment extends BaseFragment {
 
     public void requestVideo() {
         this.pickCropped = false;
+        this.pickEdited = false;
+
+        //
+        // Checking permissions
+        //
+        Activity activity = getActivity();
+        if (activity != null) {
+            if (Build.VERSION.SDK_INT >= 23) {
+                if (ContextCompat.checkSelfPermission(activity, Manifest.permission.CAMERA)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    requestPermissions(new String[]{Manifest.permission.CAMERA},
+                            PERMISSIONS_REQUEST_CAMERA);
+                    return;
+                }
+            }
+        } else {
+            return;
+        }
 
         //
         // Generating Temporary File Name
@@ -110,16 +135,20 @@ public class MediaPickerFragment extends BaseFragment {
         intent.putExtra(MediaStore.EXTRA_OUTPUT, videoUri);
 
         Files.grantExternalPermissions(getActivity(), intent, videoUri);
-
         startActivityForResult(intent, REQUEST_VIDEO);
     }
 
     public void requestGallery() {
-        requestGallery(false);
+        requestGallery(false, false);
     }
 
-    public void requestGallery(boolean pickCropped) {
+    public void requestGalleryEdited(){
+        requestGallery(false, true);
+    }
+
+    public void requestGallery(boolean pickCropped, boolean pickEdited) {
         this.pickCropped = pickCropped;
+        this.pickEdited = pickEdited;
 
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         intent.setType("image/* video/*");
@@ -171,16 +200,22 @@ public class MediaPickerFragment extends BaseFragment {
                 if (data.getData() != null) {
                     if (pickCropped) {
                         pendingFile = generateRandomFile(".jpg");
-                        Crop.of(data.getData(), Files.getUri(getContext(), pendingFile)  /*Uri.fromFile(new File(pendingFile))*/)
+                        Crop.of(data.getData(), Files.getUri(getContext(), pendingFile))
                                 .asSquare()
                                 .start(getContext(), this);
                     } else {
-                        getCallback().onUriPicked(data.getData());
+                        if(pickEdited){
+                            pendingFile = Files.getPathFromUri(getActivity(), data.getData());
+                            Intent intent = new Intent(getActivity(), PhotoEditorActivity.class);
+                            intent.putExtra(PhotoEditorActivity.IMAGE_PATH_PARAM, pendingFile);
+                            startActivityForResult(intent, PhotoEditorActivity.REQUEST_EDIT);
+                        }else{
+                            getCallback().onUriPicked(data.getData());
+                        }
                     }
                 }
             } else if (requestCode == REQUEST_PHOTO) {
                 if (pendingFile != null) {
-
                     String sourceFileName = pendingFile;
                     Context context = getContext();
                     if (context != null) {
@@ -190,13 +225,25 @@ public class MediaPickerFragment extends BaseFragment {
 
                     if (pickCropped) {
                         pendingFile = generateRandomFile(".jpg");
-                        Crop.of(/*Uri.fromFile(new File(sourceFileName))*/ Files.getUri(getContext(), sourceFileName),
-                                /*Uri.fromFile(new File(pendingFile))*/ Files.getUri(getContext(), pendingFile))
+                        Crop.of(Files.getUri(getContext(), sourceFileName), Files.getUri(getContext(), pendingFile))
                                 .asSquare()
                                 .start(getContext(), this);
                     } else {
-                        getCallback().onPhotoPicked(sourceFileName);
+                        if(pickEdited){
+                            Intent intent = new Intent(getActivity(), PhotoEditorActivity.class);
+                            intent.putExtra(PhotoEditorActivity.IMAGE_PATH_PARAM, sourceFileName);
+                            startActivityForResult(intent, PhotoEditorActivity.REQUEST_EDIT);
+                        }else{
+                            getCallback().onPhotoPicked(sourceFileName);
+                        }
                     }
+                }
+            }else if (requestCode == PhotoEditorActivity.REQUEST_EDIT) {
+                String editedImagePath = data.getStringExtra(PhotoEditorActivity.IMAGE_RETURN_PATH);
+                if(editedImagePath != null && !editedImagePath.equals("")){
+                    getCallback().onPhotoPicked(editedImagePath);
+                }else if (pendingFile != null) {
+                    getCallback().onPhotoPicked(pendingFile);
                 }
             } else if (requestCode == Crop.REQUEST_CROP) {
                 if (pendingFile != null) {
@@ -299,7 +346,7 @@ public class MediaPickerFragment extends BaseFragment {
                                            @NonNull int[] grantResults) {
         if (requestCode == PERMISSIONS_REQUEST_CAMERA) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                requestPhoto();
+                requestPhotoEdited();
             }
         }
 

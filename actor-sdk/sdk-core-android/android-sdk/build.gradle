@@ -16,6 +16,8 @@ android {
         vectorDrawables.useSupportLibrary = true
         minSdkVersion 15
         targetSdkVersion 25
+
+        renderscriptSupportModeEnabled true
     }
 
     sourceSets {
@@ -92,6 +94,10 @@ dependencies {
 
     //Video Compressor
     implementation 'br.com.diegosilva:vclibrary:1.0.10-SNAPSHOT'
+
+    api 'com.romandanylyk:pageindicatorview:1.0.0'
+    //api(name: 'photoeditorsdk', ext: 'aar')
+    compile files('libs/photoeditorsdk.aar')
 }
 
 String ossrhUsername = ""

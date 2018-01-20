@@ -483,9 +483,9 @@ public class AttachFragment extends AbsAttachFragment implements MediaPickerCall
     protected void onItemClicked(int id) {
         MediaPickerFragment picker = (MediaPickerFragment) getChildFragmentManager().findFragmentByTag("picker");
         if (id == R.id.share_gallery) {
-            picker.requestGallery();
+            picker.requestGalleryEdited();
         } else if (id == R.id.share_camera) {
-            picker.requestPhoto();
+            picker.requestPhotoEdited();
         } else if (id == R.id.share_video) {
             picker.requestVideo();
         } else if (id == R.id.share_file) {

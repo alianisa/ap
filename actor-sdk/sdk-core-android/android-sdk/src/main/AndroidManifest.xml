@@ -342,6 +342,13 @@
             android:showOnLockScreen="true"
             android:theme="@style/CallTheme" />
 
+        <activity
+            android:name=".controllers.conversation.attach.photoeditor.PhotoEditorActivity"
+            android:configChanges="orientation|screenSize"
+            android:label="@string/title_activity_photo_editor"
+            android:theme="@style/NoBarActivityTheme"
+            android:windowSoftInputMode="stateHidden|adjustPan" />
+
         <service
             android:name="im.actor.sdk.services.KeepAliveService"
             android:enabled="true"

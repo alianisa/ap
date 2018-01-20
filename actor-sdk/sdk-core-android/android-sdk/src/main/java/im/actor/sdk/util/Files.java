@@ -2,8 +2,10 @@ package im.actor.sdk.util;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
+import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
 
 import java.io.File;
@@ -77,6 +79,21 @@ public class Files {
             return FileProvider.getUriForFile(ctx, ctx.getPackageName() + ".provider", file);
         } else {
             return Uri.fromFile(file);
+        }
+    }
+
+    public static String getPathFromUri(Context ctx, Uri uri){
+        Cursor cursor = null;
+        try {
+            String[] proj = { MediaStore.Images.Media.DATA };
+            cursor = ctx.getContentResolver().query(uri,  proj, null, null, null);
+            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            return cursor.getString(column_index);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
         }
     }
 
