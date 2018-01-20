@@ -9,7 +9,6 @@ import android.os.SystemClock;
 import android.provider.ContactsContract;
 import android.support.v4.content.ContextCompat;
 
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;

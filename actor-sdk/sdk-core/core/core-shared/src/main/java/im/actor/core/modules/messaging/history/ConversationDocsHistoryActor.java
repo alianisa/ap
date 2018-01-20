@@ -49,9 +49,9 @@ public class ConversationDocsHistoryActor extends ModuleActor {
         super(context);
         this.peer = peer;
         this.docType = docType;
-        this.KEY_LOADED_DATE = docType+"_conv_docs_" + peer + "_history_date";
-        this.KEY_LOADED = docType+"_conv_docs_" + peer + "_history_loaded";
-        this.KEY_LOADED_INIT = docType+"_conv_docs_" + peer + "_history_inited";
+        this.KEY_LOADED_DATE = docType + "_conv_docs_" + peer + "_history_date";
+        this.KEY_LOADED = docType + "_conv_docs_" + peer + "_history_loaded";
+        this.KEY_LOADED_INIT = docType + "_conv_docs_" + peer + "_history_inited";
     }
 
     @Override

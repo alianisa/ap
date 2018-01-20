@@ -236,7 +236,7 @@ public class ManagerActor extends Actor {
     private void forceNetworkCheck() {
         if (currentConnection != null) {
             currentConnection.checkConnection();
-        }else{
+        } else {
             self().send(new PerformConnectionCheck(true));
         }
     }
@@ -246,7 +246,7 @@ public class ManagerActor extends Actor {
     }
 
     private void requestCheckConnection(long wait) {
-        Log.d(TAG, "isCheckingConnections: "+isCheckingConnections);
+        Log.d(TAG, "isCheckingConnections: " + isCheckingConnections);
 
         if (!isCheckingConnections) {
             if (currentConnection == null) {
@@ -265,7 +265,7 @@ public class ManagerActor extends Actor {
     }
 
     private void checkConnection(boolean forceCheck) {
-        Log.d(TAG, "isCheckingConnections: "+isCheckingConnections);
+        Log.d(TAG, "isCheckingConnections: " + isCheckingConnections);
 
         if (isCheckingConnections && !forceCheck) {
             return;
@@ -275,7 +275,7 @@ public class ManagerActor extends Actor {
 
         if (currentConnection == null) {
             Log.d(TAG, "currentConnection is null");
-            Log.d(TAG, "Connection networkState: "+NetworkState.getDesription(networkState));
+            Log.d(TAG, "Connection networkState: " + NetworkState.getDesription(networkState));
 
             if ((networkState == NetworkState.NO_CONNECTION) && !forceCheck) {
                 Log.d(TAG, "Not trying to create connection: Not network available");
@@ -492,18 +492,22 @@ public class ManagerActor extends Actor {
 
     public static class NetworkChanged {
         private int state;
+
         public NetworkChanged(int state) {
             this.state = state;
         }
     }
 
-    public static class ForceNetworkCheck {}
+    public static class ForceNetworkCheck {
+    }
 
     public static class PerformConnectionCheck {
         boolean ignoreNetworkState = false;
-        public PerformConnectionCheck(){
+
+        public PerformConnectionCheck() {
         }
-        public PerformConnectionCheck(boolean ignoreNetworkState){
+
+        public PerformConnectionCheck(boolean ignoreNetworkState) {
             this.ignoreNetworkState = ignoreNetworkState;
         }
     }

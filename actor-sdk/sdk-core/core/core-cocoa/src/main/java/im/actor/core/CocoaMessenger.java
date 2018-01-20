@@ -138,6 +138,7 @@ public class CocoaMessenger extends Messenger {
                 public void onScrolledToEnd() {
                     modules.getMessagesModule().loadMoreVideosHistory(peer);
                 }
+
                 @Override
                 public void onItemTouched(Message item) {
 
@@ -149,10 +150,9 @@ public class CocoaMessenger extends Messenger {
     }
 
     @ObjectiveCName("getGroupsPreSimpleDisplayListWithParentId:withFilter:")
-    public SimpleBindedDisplayList<GroupPre> getGroupsPreSimpleDisplayList(Integer parentId, SimpleBindedDisplayList.Filter<GroupPre> filter){
+    public SimpleBindedDisplayList<GroupPre> getGroupsPreSimpleDisplayList(Integer parentId, SimpleBindedDisplayList.Filter<GroupPre> filter) {
         return new SimpleBindedDisplayList<>((ListEngineDisplayExt<GroupPre>) modules.getGrupoPreModule().getGrupospreEngine(parentId), filter);
     }
-
 
 
 }

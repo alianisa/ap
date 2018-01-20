@@ -14,7 +14,7 @@ import im.actor.runtime.storage.ListEngineItem;
 
 public abstract class SimpleBindedListAdapter<V extends BserObject & ListEngineItem,
         T extends RecyclerView.ViewHolder>
-        extends RecyclerView.Adapter<T>{
+        extends RecyclerView.Adapter<T> {
 
 
     private SimpleBindedDisplayList<V> displayList;
@@ -63,7 +63,7 @@ public abstract class SimpleBindedListAdapter<V extends BserObject & ListEngineI
 
     public void resume() {
         displayList.resume();
-        displayList.setListChangeListener(size->{
+        displayList.setListChangeListener(size -> {
             Runtime.postToMainThread(() -> notifyDataSetChanged());
         });
     }

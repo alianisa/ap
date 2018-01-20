@@ -481,18 +481,19 @@ public class JsFacade implements Exportable {
         return JsPromise.create(new JsPromiseExecutor() {
             @Override
             public void execute() {
-            messenger.deleteChat(peer.convert()).start(new CommandCallback<Void>() {
-                @Override
-                public void onResult(Void res) {
-                    Log.d(TAG, "deleteChat:result");
-                    resolve();
-                }
-                @Override
-                public void onError(Exception e) {
-                    Log.d(TAG, "deleteChat:error");
-                    reject(e.getMessage());
-                }
-            });
+                messenger.deleteChat(peer.convert()).start(new CommandCallback<Void>() {
+                    @Override
+                    public void onResult(Void res) {
+                        Log.d(TAG, "deleteChat:result");
+                        resolve();
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        Log.d(TAG, "deleteChat:error");
+                        reject(e.getMessage());
+                    }
+                });
             }
         });
     }
@@ -508,6 +509,7 @@ public class JsFacade implements Exportable {
                         Log.d(TAG, "clearChat:result");
                         resolve();
                     }
+
                     @Override
                     public void onError(Exception e) {
                         Log.d(TAG, "clearChat:error");
@@ -529,6 +531,7 @@ public class JsFacade implements Exportable {
                         Log.d(TAG, "archiveChat:result");
                         resolve();
                     }
+
                     @Override
                     public void onError(Exception e) {
                         Log.d(TAG, "archiveChat:error");
@@ -550,6 +553,7 @@ public class JsFacade implements Exportable {
                         Log.d(TAG, "favouriteChat:result");
                         resolve();
                     }
+
                     @Override
                     public void onError(Exception e) {
                         Log.d(TAG, "favouriteChat:error");
@@ -571,6 +575,7 @@ public class JsFacade implements Exportable {
                         Log.d(TAG, "unfavouriteChat:result");
                         resolve();
                     }
+
                     @Override
                     public void onError(Exception e) {
                         Log.d(TAG, "unfavouriteChat:error");
@@ -1652,7 +1657,7 @@ public class JsFacade implements Exportable {
 
     @UsedByApp
     public boolean isNotificationsEnabled(JsPeer peer) {
-       return messenger.isNotificationsEnabled(peer.convert());
+        return messenger.isNotificationsEnabled(peer.convert());
     }
 
     @UsedByApp

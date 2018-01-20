@@ -8,14 +8,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import im.actor.core.entity.GroupPre;
-import im.actor.runtime.android.view.BindedListAdapter;
 import im.actor.runtime.android.view.SimpleBindedListAdapter;
 import im.actor.runtime.bser.BserObject;
-import im.actor.runtime.generic.mvvm.BindedDisplayList;
-import im.actor.runtime.generic.mvvm.DisplayList;
 import im.actor.runtime.generic.mvvm.SimpleBindedDisplayList;
-import im.actor.runtime.storage.ListEngineDisplayExt;
 import im.actor.runtime.storage.ListEngineItem;
 import im.actor.sdk.R;
 import im.actor.sdk.view.adapters.HeaderViewRecyclerAdapter;
@@ -25,7 +20,7 @@ import im.actor.sdk.view.adapters.HeaderViewRecyclerAdapter;
  */
 
 public abstract class SimpleDisplayListFragment<T extends BserObject & ListEngineItem,
-        V extends RecyclerView.ViewHolder> extends BaseFragment{
+        V extends RecyclerView.ViewHolder> extends BaseFragment {
 
     private RecyclerView collection;
     private SimpleBindedDisplayList<T> displayList;
@@ -47,7 +42,8 @@ public abstract class SimpleDisplayListFragment<T extends BserObject & ListEngin
         afterAdapterCreated();
     }
 
-    protected void afterAdapterCreated(){}
+    protected void afterAdapterCreated() {
+    }
 
     public void setAnimationsEnabled(boolean isEnabled) {
         if (isEnabled) {
@@ -96,10 +92,10 @@ public abstract class SimpleDisplayListFragment<T extends BserObject & ListEngin
 
     protected abstract SimpleBindedListAdapter<T, V> onCreateAdapter(SimpleBindedDisplayList<T> displayList, Activity activity);
 
-    protected void onListStateChange(SimpleBindedDisplayList.State state){
-        if(state == SimpleBindedDisplayList.State.LOADED){
+    protected void onListStateChange(SimpleBindedDisplayList.State state) {
+        if (state == SimpleBindedDisplayList.State.LOADED) {
             getCollection().setVisibility(View.VISIBLE);
-        }else {
+        } else {
             getCollection().setVisibility(View.GONE);
         }
     }

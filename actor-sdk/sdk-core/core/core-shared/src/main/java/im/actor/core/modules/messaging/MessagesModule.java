@@ -83,7 +83,7 @@ public class MessagesModule extends AbsModule implements BusSubscriber {
     private static final Void DUMB = null;
 
     private ListEngine<Dialog> dialogs;
-    
+
     private DialogsInt dialogsInt;
     private ActorRef dialogsHistoryActor;
     private ActorRef archivedDialogsActor;
@@ -487,15 +487,15 @@ public class MessagesModule extends AbsModule implements BusSubscriber {
         im.actor.runtime.Runtime.dispatch(() -> getHistoryActor(peer).loadMore());
     }
 
-    public void loadMoreDocsHistory(final Peer peer){
+    public void loadMoreDocsHistory(final Peer peer) {
         im.actor.runtime.Runtime.dispatch(() -> getDocsHistoryActor(peer).loadMore());
     }
 
-    public void loadMorePhotosHistory(final Peer peer){
+    public void loadMorePhotosHistory(final Peer peer) {
         im.actor.runtime.Runtime.dispatch(() -> getPhotosHistoryActor(peer).loadMore());
     }
 
-    public void loadMoreVideosHistory(final Peer peer){
+    public void loadMoreVideosHistory(final Peer peer) {
         im.actor.runtime.Runtime.dispatch(() -> getVideosHistoryActor(peer).loadMore());
     }
 

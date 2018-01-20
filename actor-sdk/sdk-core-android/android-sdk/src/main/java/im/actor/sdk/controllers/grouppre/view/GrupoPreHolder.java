@@ -1,16 +1,11 @@
 package im.actor.sdk.controllers.grouppre.view;
 
 import android.graphics.Color;
-import android.support.v4.view.MotionEventCompat;
-import android.view.MotionEvent;
-import android.view.View;
 
 import im.actor.core.entity.GroupPre;
-import im.actor.runtime.Log;
 import im.actor.runtime.android.view.BindedViewHolder;
-import im.actor.sdk.ActorSDK;
-import im.actor.sdk.view.drag.ItemTouchHelperViewHolder;
 import im.actor.sdk.view.adapters.OnItemClickedListener;
+import im.actor.sdk.view.drag.ItemTouchHelperViewHolder;
 
 /**
  * Created by diego on 06/06/17.
@@ -33,7 +28,7 @@ public class GrupoPreHolder extends BindedViewHolder implements
             }
         });
 
-        this.grupoPreView.setOnLongClickListener(v->{
+        this.grupoPreView.setOnLongClickListener(v -> {
             if (bindedItem != null) {
                 return onClickListener.onLongClicked(bindedItem);
             }

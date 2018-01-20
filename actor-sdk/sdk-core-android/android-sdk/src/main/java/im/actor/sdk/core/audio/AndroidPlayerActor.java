@@ -3,13 +3,9 @@ package im.actor.sdk.core.audio;
 import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.net.Uri;
-
-import java.io.File;
 
 import im.actor.runtime.Log;
 import im.actor.runtime.actors.Actor;
-import im.actor.sdk.controllers.calls.view.AudioActorEx;
 import im.actor.sdk.util.Files;
 
 /**

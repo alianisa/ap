@@ -91,7 +91,6 @@ public class Messenger {
     protected Modules modules;
 
 
-
 //    public static BaseParser[] extraRpcParsers;
 
     /**
@@ -725,7 +724,7 @@ public class Messenger {
      */
     @NotNull
     @ObjectiveCName("getGroupPreVM")
-    public GroupPreVM getGroupPreVM(long groupId){
+    public GroupPreVM getGroupPreVM(long groupId) {
         return modules.getGrupoPreModule().getGrupoPreVM(groupId);
     }
 

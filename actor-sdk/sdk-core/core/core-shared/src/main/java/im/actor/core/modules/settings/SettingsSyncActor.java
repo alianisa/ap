@@ -57,7 +57,7 @@ public class SettingsSyncActor extends ModuleActor {
         }
     }
 
-    private void onRequestGetParameters(){
+    private void onRequestGetParameters() {
         isLoading = true;
 
         api(new RequestGetParameters()).map(response -> {
@@ -103,7 +103,7 @@ public class SettingsSyncActor extends ModuleActor {
             syncState.getPendingActions().add(action);
             saveState();
             performSync(action);
-        } else if(message instanceof OnRequestGetParameters){
+        } else if (message instanceof OnRequestGetParameters) {
             onRequestGetParameters();
         } else {
             super.onReceive(message);
@@ -128,7 +128,7 @@ public class SettingsSyncActor extends ModuleActor {
         }
     }
 
-    public static class OnRequestGetParameters{
+    public static class OnRequestGetParameters {
 
     }
 }

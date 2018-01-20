@@ -68,7 +68,6 @@ import im.actor.runtime.mvvm.MVVMCollection;
 import im.actor.runtime.promise.Promise;
 import im.actor.runtime.promise.Promises;
 import im.actor.runtime.storage.KeyValueEngine;
-import im.actor.runtime.storage.ListEngine;
 
 import static im.actor.runtime.actors.ActorSystem.system;
 

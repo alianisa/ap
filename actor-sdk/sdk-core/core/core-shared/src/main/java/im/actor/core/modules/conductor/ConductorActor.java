@@ -252,7 +252,7 @@ public class ConductorActor extends ModuleActor {
             onDialogsChanged(((DialogsChanged) message).isEmpty());
         } else if (message instanceof FinishLaunching) {
             onFinishLaunching();
-        }else if (message instanceof GruposPreLoaded) {
+        } else if (message instanceof GruposPreLoaded) {
             if (!isStarted) {
                 stash();
                 return;

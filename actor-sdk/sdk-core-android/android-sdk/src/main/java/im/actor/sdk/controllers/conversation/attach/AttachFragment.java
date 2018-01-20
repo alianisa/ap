@@ -27,7 +27,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -504,8 +503,8 @@ public class AttachFragment extends AbsAttachFragment implements MediaPickerCall
     }
 
     protected void onUrisPicked(List<Uri> uris) {
-        for (Uri s : uris) {
-            execute(messenger().sendUri(getPeer(), s, ActorSDK.sharedActor().getAppName()));
+        for (Uri uri : uris) {
+            execute(messenger().sendUri(getPeer(), uri, ActorSDK.sharedActor().getAppName()));
         }
     }
 

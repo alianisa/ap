@@ -15,8 +15,6 @@ import com.facebook.imagepipeline.common.RotationOptions;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 
-import java.io.File;
-
 import im.actor.core.entity.Avatar;
 import im.actor.core.entity.AvatarImage;
 import im.actor.core.entity.Contact;

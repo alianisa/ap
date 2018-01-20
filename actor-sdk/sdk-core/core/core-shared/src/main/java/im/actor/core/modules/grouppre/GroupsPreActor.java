@@ -72,7 +72,7 @@ public class GroupsPreActor extends ModuleActor {
                                 r2.getT1().getOrder(), r2.getT1().hasChildrem(), true)))
                         .zip())
                 .map(r -> r.map(r2 -> onGruposPreLoaded(r2)))
-                .after((r, e)->{
+                .after((r, e) -> {
                     isLoading = false;
                 });
     }
@@ -88,7 +88,7 @@ public class GroupsPreActor extends ModuleActor {
                 });
     }
 
-    private void clear(){
+    private void clear() {
         isLoaded = false;
         preferences().putBool(KEY_LOADED, isLoaded);
         preferences().putBool(KEY_LOADED_INIT, false);
@@ -98,7 +98,7 @@ public class GroupsPreActor extends ModuleActor {
     public void onReceive(Object message) {
         if (message instanceof LoadGruposPre) {
             onLoadGruposPre();
-        }else if(message instanceof Clear){
+        } else if (message instanceof Clear) {
             clear();
         }
     }
@@ -108,7 +108,7 @@ public class GroupsPreActor extends ModuleActor {
         }
     }
 
-    public static class Clear{
+    public static class Clear {
 
     }
 

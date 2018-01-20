@@ -99,7 +99,6 @@ public class GroupPreSelectParentFragment extends SimpleDisplayListFragment<Grou
         emptyGroups.setVisibility(View.GONE);
 
 
-
         return res;
     }
 
@@ -107,13 +106,13 @@ public class GroupPreSelectParentFragment extends SimpleDisplayListFragment<Grou
     protected void onListStateChange(SimpleBindedDisplayList.State state) {
         super.onListStateChange(state);
 
-        if(state == SimpleBindedDisplayList.State.LOADED){
+        if (state == SimpleBindedDisplayList.State.LOADED) {
             emptyGroups.setVisibility(View.GONE);
             loadingGroups.setVisibility(View.GONE);
-        }else if(state == SimpleBindedDisplayList.State.LOADED_EMPTY){
+        } else if (state == SimpleBindedDisplayList.State.LOADED_EMPTY) {
             emptyGroups.setVisibility(View.VISIBLE);
             loadingGroups.setVisibility(View.GONE);
-        }else if(state == SimpleBindedDisplayList.State.LOADING_EMPTY){
+        } else if (state == SimpleBindedDisplayList.State.LOADING_EMPTY) {
             emptyGroups.setVisibility(View.GONE);
             loadingGroups.setVisibility(View.VISIBLE);
         }
@@ -124,10 +123,10 @@ public class GroupPreSelectParentFragment extends SimpleDisplayListFragment<Grou
         return new GrupoPreSimpleAdapter(displayList, new OnItemClickedListener<GroupPre>() {
             @Override
             public void onClicked(GroupPre groupPre) {
-                if(groupPre.getHasChildren()){
-                    ((BaseFragmentActivity)getActivity()).showFragment(GroupPreSelectParentFragment.create(rootGroupId,
-                            groupPre.getGroupId(), groupType),true);
-                }else{
+                if (groupPre.getHasChildren()) {
+                    ((BaseFragmentActivity) getActivity()).showFragment(GroupPreSelectParentFragment.create(rootGroupId,
+                            groupPre.getGroupId(), groupType), true);
+                } else {
                     messenger().changeGroupParent(rootGroupId, groupPre.getGroupId(), rootGroupPreVM.getParentId().get());
                     finishActivity();
                 }

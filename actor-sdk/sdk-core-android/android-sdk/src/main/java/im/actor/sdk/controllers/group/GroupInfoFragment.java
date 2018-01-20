@@ -26,11 +26,9 @@ import java.util.ArrayList;
 import im.actor.core.entity.GroupMember;
 import im.actor.core.entity.GroupType;
 import im.actor.core.entity.Peer;
-import im.actor.core.viewmodel.CommandCallback;
 import im.actor.core.viewmodel.GroupPreVM;
 import im.actor.core.viewmodel.GroupVM;
 import im.actor.core.viewmodel.UserVM;
-import im.actor.runtime.actors.Actor;
 import im.actor.sdk.ActorSDK;
 import im.actor.sdk.ActorStyle;
 import im.actor.sdk.R;
@@ -159,7 +157,7 @@ public class GroupInfoFragment extends BaseFragment {
         ((TintImageView) header.findViewById(R.id.settings_about_icon))
                 .setTint(style.getSettingsIconColor());
 
-        TextView settingsGroupPreTitle =  header.findViewById(R.id.settings_group_pre_title);
+        TextView settingsGroupPreTitle = header.findViewById(R.id.settings_group_pre_title);
         settingsGroupPreTitle.setTextColor(style.getTextPrimaryColor());
         settingsGroupPreTitle.setText(groupVM.getGroupType() == GroupType.GROUP ? R.string.predefined_group : R.string.predefined_channel);
 
@@ -389,22 +387,22 @@ public class GroupInfoFragment extends BaseFragment {
         return res;
     }
 
-    private void enableHideSupportUserViews(){
+    private void enableHideSupportUserViews() {
         bind(users().get(myUid()).getPhones(), phones -> {
             boolean isSupport = false;
-            if(!phones.isEmpty()){
-                for(int i = 0; i < phones.size();i++){
+            if (!phones.isEmpty()) {
+                for (int i = 0; i < phones.size(); i++) {
                     String helpPhoneNumber = ActorSDK.sharedActor().getHelpPhone().replaceAll("[^0-9]", "");
-                    if(Long.parseLong(helpPhoneNumber) == phones.get(i).getPhone()){
+                    if (Long.parseLong(helpPhoneNumber) == phones.get(i).getPhone()) {
                         isSupport = true;
                     }
                 }
             }
-            if(isSupport){
+            if (isSupport) {
                 groupPreContainer.setVisibility(View.VISIBLE);
                 dividerGroupPre.setVisibility(View.VISIBLE);
                 bindGroupPreItens();
-            }else{
+            } else {
                 groupPreContainer.setVisibility(View.GONE);
                 dividerGroupPre.setVisibility(View.GONE);
                 unbindGroupPreItens();
@@ -412,33 +410,33 @@ public class GroupInfoFragment extends BaseFragment {
         });
     }
 
-    private void bindGroupPreItens(){
+    private void bindGroupPreItens() {
 
-        groupPreBindings = bind(groupPreVm.getIsLoaded(), groupPreVm.getParentId(), (isLoaded, vm1, parentId, vm2)->{
-            if(isLoaded){
+        groupPreBindings = bind(groupPreVm.getIsLoaded(), groupPreVm.getParentId(), (isLoaded, vm1, parentId, vm2) -> {
+            if (isLoaded) {
                 isGroupPreEnabled.setChecked(true);
                 groupPreParentAction.setVisibility(View.VISIBLE);
-            }else{
+            } else {
                 isGroupPreEnabled.setChecked(false);
                 groupPreParentAction.setVisibility(View.GONE);
             }
-            if(parentId > 0){
+            if (parentId > 0) {
                 GroupPreVM parentVm = messenger().getGroupPreVM(parentId);
                 bind(parentVm.getIsLoaded(), parentIsLoaded -> {
-                    if(parentIsLoaded) {
+                    if (parentIsLoaded) {
                         GroupVM groupParentVm = groups().get(parentId);
                         int parentGroupChannel = groupVM.getGroupType() == GroupType.GROUP ? R.string.parent_group : R.string.parent_channel;
-                        groupPreParentAction.setText(getText(parentGroupChannel)+": "+groupParentVm.getName().get());
+                        groupPreParentAction.setText(getText(parentGroupChannel) + ": " + groupParentVm.getName().get());
                     }
                 });
-            }else{
+            } else {
                 groupPreParentAction.setText(groupVM.getGroupType() == GroupType.GROUP ? R.string.parent_group : R.string.parent_channel);
             }
         });
 
-        isGroupPreEnabled.setOnCheckedChangeListener((buttonView, isChecked)->{
+        isGroupPreEnabled.setOnCheckedChangeListener((buttonView, isChecked) -> {
             messenger().changeGroupPre(groupVM.getId(), isChecked)
-                    .failure(ex ->{
+                    .failure(ex -> {
                         SnackUtils.showError(getView(), ex.getMessage(), Snackbar.LENGTH_LONG, null, null);
                     });
         });
@@ -452,7 +450,7 @@ public class GroupInfoFragment extends BaseFragment {
         });
     }
 
-    private void unbindGroupPreItens(){
+    private void unbindGroupPreItens() {
         if (groupPreBindings != null) {
             for (ActorBinder.Binding b : groupPreBindings) {
                 getBINDER().unbind(b);

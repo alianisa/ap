@@ -57,7 +57,7 @@ public class UploadFileVM extends AsyncVM {
         } else if (obj instanceof Uploading) {
             vmCallback.onUploading(((Uploading) obj).getProgress());
         } else if (obj instanceof Uploaded) {
-            vmCallback.onUploaded(((Uploaded)obj).getFileSystemReference());
+            vmCallback.onUploaded(((Uploaded) obj).getFileSystemReference());
         }
     }
 

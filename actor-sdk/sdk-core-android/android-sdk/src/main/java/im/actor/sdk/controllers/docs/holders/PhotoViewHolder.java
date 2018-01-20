@@ -23,8 +23,6 @@ import com.facebook.imagepipeline.image.ImageInfo;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 
-import java.io.File;
-
 import im.actor.core.entity.FileReference;
 import im.actor.core.entity.Message;
 import im.actor.core.entity.content.AnimationContent;

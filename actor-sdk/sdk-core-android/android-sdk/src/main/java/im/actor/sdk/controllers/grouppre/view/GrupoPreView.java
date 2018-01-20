@@ -5,7 +5,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.text.Layout;
 import android.text.TextPaint;
@@ -20,8 +19,6 @@ import com.facebook.drawee.view.DraweeHolder;
 import com.facebook.imagepipeline.common.ResizeOptions;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
-
-import java.io.File;
 
 import im.actor.core.entity.Avatar;
 import im.actor.core.entity.AvatarImage;
@@ -132,7 +129,7 @@ public class GrupoPreView extends ListItemBackgroundView<GroupPre, GrupoPreView.
             if (layout.getTitleIcon() != null) {
                 int left = Screen.dp(72) + (Screen.dp(16) - layout.getTitleIcon().getIntrinsicWidth()) / 2;
                 int bottom = layout.getTitleIconTop();
-                if(layout.hasChildren){
+                if (layout.hasChildren) {
                     bottom += Screen.dp(12);
                 }
                 layout.getTitleIcon().setBounds(left, bottom - layout.getTitleIcon().getIntrinsicHeight(),
@@ -148,15 +145,15 @@ public class GrupoPreView extends ListItemBackgroundView<GroupPre, GrupoPreView.
                 canvas.translate(Screen.dp(72 + 16 + 4), Screen.dp(14));
             }
 
-            if(layout.isHasChildren()){
+            if (layout.isHasChildren()) {
                 canvas.translate(0, Screen.dp(12));
                 layout.getTitleLayout().draw(canvas);
-            }else{
+            } else {
                 layout.getTitleLayout().draw(canvas);
             }
             canvas.restore();
 
-            if(!layout.isHasChildren()){
+            if (!layout.isHasChildren()) {
                 canvas.translate(Screen.dp(72), Screen.dp(33));
                 layout.getTextLayout().draw(canvas);
             }
@@ -248,12 +245,14 @@ public class GrupoPreView extends ListItemBackgroundView<GroupPre, GrupoPreView.
                                 messenger().unbindRawFile(image.getFileReference().getFileId(), false, this);
                             }
                         }
+
                         @Override
                         public void onDownloading(float progress) {
                             if (invalidationContext.isCancelled()) {
                                 messenger().unbindRawFile(image.getFileReference().getFileId(), false, this);
                             }
                         }
+
                         @Override
                         public void onDownloaded(FileSystemReference reference) {
                             messenger().unbindRawFile(image.getFileReference().getFileId(), false, this);
@@ -282,18 +281,18 @@ public class GrupoPreView extends ListItemBackgroundView<GroupPre, GrupoPreView.
         maxTitleWidth -= Screen.dp(16 + 4);
         res.setTitleLayout(singleLineText(groupVM.getName().get(), titlePaint, maxTitleWidth));
 
-        if(!groupPre.getHasChildren()){
+        if (!groupPre.getHasChildren()) {
             int maxWidth = width - Screen.dp(72) - Screen.dp(8);
 
             int membersCount = groupVM.getMembersCount().get();
             String membersStr = membersCount > 1 ? getContext().getString(R.string.members) : getContext().getString(R.string.member);
 
-            StringBuilder secondLineText = new StringBuilder(membersCount+" "+membersStr);
+            StringBuilder secondLineText = new StringBuilder(membersCount + " " + membersStr);
 
-            if(groupVM.isMember().get()){
-                if(membersCount > 1){
+            if (groupVM.isMember().get()) {
+                if (membersCount > 1) {
                     secondLineText.append(", " + getContext().getString(R.string.including_you));
-                }else{
+                } else {
                     secondLineText.append(", " + getContext().getString(R.string.and_its_you));
                 }
             }

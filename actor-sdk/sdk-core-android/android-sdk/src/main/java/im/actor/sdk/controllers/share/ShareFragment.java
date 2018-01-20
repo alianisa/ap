@@ -3,8 +3,6 @@ package im.actor.sdk.controllers.share;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -12,9 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 
 import im.actor.core.entity.Peer;
@@ -31,7 +27,6 @@ import im.actor.sdk.controllers.placeholder.GlobalPlaceholderFragment;
 import im.actor.sdk.controllers.search.GlobalSearchDelegate;
 import im.actor.sdk.controllers.search.GlobalSearchFragment;
 import im.actor.sdk.intents.ShareAction;
-import im.actor.sdk.util.Files;
 
 import static im.actor.sdk.util.ActorSDKMessenger.messenger;
 import static im.actor.sdk.util.ActorSDKMessenger.users;
@@ -42,6 +37,8 @@ public class ShareFragment extends BaseFragment implements DialogsFragmentDelega
     public static final String ARG_INTENT_TYPE = "intent_type";
 
     private ShareAction shareAction;
+    private String mimeType;
+
 
     public ShareFragment() {
         setRootFragment(true);
@@ -58,9 +55,9 @@ public class ShareFragment extends BaseFragment implements DialogsFragmentDelega
         String action = args.getString(ARG_INTENT_ACTION);
 
         if (action != null) {
-            String type = args.getString(ARG_INTENT_TYPE);
+            mimeType = args.getString(ARG_INTENT_TYPE);
             if (action.equals(Intent.ACTION_SEND)) {
-                if ("text/plain".equals(type)) {
+                if ("text/plain".equals(mimeType)) {
                     shareAction = new ShareAction(args.getString(Intent.EXTRA_TEXT));
                 } else if (args.getParcelable(Intent.EXTRA_STREAM) != null) {
                     ArrayList<String> s = new ArrayList<>();
@@ -144,18 +141,7 @@ public class ShareFragment extends BaseFragment implements DialogsFragmentDelega
                         messenger().sendMessage(peer, shareAction.getText());
                     } else if (shareAction.getUris().size() > 0) {
                         for (String sendUri : shareAction.getUris()) {
-                            Uri uri = null;
-
-                            try {
-
-                                InputStream inputStream = getActivity().getApplicationContext().getContentResolver().openInputStream(Uri.parse(sendUri));
-                                Bitmap bm = BitmapFactory.decodeStream(inputStream);
-                                uri = Files.saveTempBitmap(getActivity(), bm);
-                            } catch (FileNotFoundException e) {
-                                Log.e(ShareFragment.class.getName(), e);
-                            }
-                            
-                            executeSilent(messenger().sendUri(peer, uri, ActorSDK.sharedActor().getAppName()));
+                            executeSilent(messenger().sendUri(peer, Uri.parse(sendUri), ActorSDK.sharedActor().getAppName(), mimeType));
                         }
                     } else if (shareAction.getUserId() != null) {
                         String userName = users().get(shareAction.getUserId()).getName().get();

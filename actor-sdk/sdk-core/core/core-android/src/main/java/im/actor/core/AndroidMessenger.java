@@ -5,11 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.ContentObserver;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.display.DisplayManager;
-import android.media.ExifInterface;
 import android.media.MediaMetadataRetriever;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -18,13 +16,10 @@ import android.os.Build;
 import android.os.Environment;
 import android.os.PowerManager;
 import android.provider.ContactsContract;
-import android.provider.MediaStore;
-import android.provider.OpenableColumns;
 import android.view.Display;
 import android.webkit.MimeTypeMap;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -34,7 +29,6 @@ import java.util.concurrent.Executors;
 
 import im.actor.core.entity.Contact;
 import im.actor.core.entity.Dialog;
-import im.actor.core.entity.Group;
 import im.actor.core.entity.GroupPre;
 import im.actor.core.entity.Message;
 import im.actor.core.entity.Peer;
@@ -57,6 +51,7 @@ import im.actor.runtime.actors.ActorSystem;
 import im.actor.runtime.actors.Props;
 import im.actor.runtime.android.AndroidContext;
 import im.actor.runtime.eventbus.EventBus;
+import im.actor.runtime.function.Tuple2;
 import im.actor.runtime.generic.mvvm.BindedDisplayList;
 import im.actor.runtime.generic.mvvm.SimpleBindedDisplayList;
 import im.actor.runtime.storage.ListEngineDisplayExt;
@@ -337,89 +332,71 @@ public class AndroidMessenger extends im.actor.core.Messenger {
         }
     }
 
-    public Command<Boolean> sendUri(final Peer peer, final Uri uri) {
-        return sendUri(peer, uri, "actor");
+    public Command<Boolean> sendUri(final Peer peer, final Uri uri, final String appName) {
+        return sendUri(peer, uri, appName, null);
     }
 
-    public Command<Boolean> sendUri(final Peer peer, final Uri uri, String appName) {
-        return callback -> fileDownloader.execute(() -> {
+    public Command<Boolean> sendUri(final Peer peer, final Uri uri, final String appName, final String mimeTyp) {
 
-            String filePath;
-            String mimeType;
-            String fileName;
+        try {
+            final InputStream inputStream = context.getContentResolver().openInputStream(uri);
 
-            String ext = "";
+            return callback -> fileDownloader.execute(() -> {
 
-            Cursor cursor = context.getContentResolver().query(uri, null, null, null, null);
+                String mimeType = null;
 
-            if (cursor != null && cursor.moveToFirst()) {
-                filePath = uri.getPath();
-                mimeType = context.getContentResolver().getType(uri);
-                fileName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
-                cursor.close();
-            } else {
-                filePath = uri.getPath();
-                fileName = new File(uri.getPath()).getName();
-                int index = fileName.lastIndexOf(".");
-
-                if (index > 0) {
-                    ext = fileName.substring(index + 1);
-                    mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(ext);
+                if (mimeTyp != null) {
+                    mimeType = mimeTyp;
                 } else {
-                    mimeType = "?/?";
-                }
-            }
-
-            if (mimeType == null) {
-                mimeType = "?/?";
-            }
-
-            if (filePath == null || !uri.getScheme().equals("file")) {
-
-                File externalFile = Environment.getExternalStorageDirectory();
-
-                if (externalFile == null) {
-                    callback.onError(new NullPointerException());
-                    return;
-                }
-                String externalPath = externalFile.getAbsolutePath();
-
-                File dest = new File(externalPath + "/" + appName + "/" + appName + " images" + "/");
-
-                dest.mkdirs();
-
-                if (ext.isEmpty() && filePath != null) {
-                    int index = filePath.lastIndexOf(".");
-                    ext = filePath.substring(index + 1);
+                    mimeType = context.getApplicationContext().getContentResolver().getType(uri);
                 }
 
-                File outputFile = new File(dest, "upload_" + random.nextLong() + "." + ext);
-                filePath = outputFile.getAbsolutePath();
+                if (mimeType == null) {
+                    String fileName = new File(uri.getPath()).getName();
+                    int index = fileName.lastIndexOf(".");
+                    if (index > 0) {
+                        String ext = fileName.substring(index + 1);
+                        mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(ext);
+                    } else {
+                        mimeType = "?/?";
+                    }
+                }
 
+                Tuple2<String, String> tuple2 = null;
                 try {
-                    IOUtils.copy(context.getContentResolver().openInputStream(uri), new File(filePath));
-                } catch (IOException e) {
-                    Log.e(TAG, e);
+                    tuple2 = createTempUploadFile(appName, inputStream, mimeType);
+                } catch (Exception e) {
                     callback.onError(e);
-                    return;
                 }
-            }
 
-            if (fileName == null) {
-                fileName = filePath;
-            }
+                String fileName = tuple2.getT1();
+                String filePath = tuple2.getT2();
 
-            if (!ext.isEmpty() && !fileName.endsWith(ext))
-                fileName += "." + ext;
-            if (mimeType.startsWith("video/")) {
-                sendVideo(peer, filePath, fileName, false);
-            } else if (mimeType.startsWith("image/")) {
-                sendPhoto(peer, filePath, new File(fileName).getName());
-            } else {
-                sendDocument(peer, filePath, new File(fileName).getName());
-            }
-            callback.onResult(true);
-        });
+                if (mimeType.startsWith("video/")) {
+                    sendVideo(peer, filePath, fileName, false);
+                } else if (mimeType.startsWith("image/")) {
+                    sendPhoto(peer, filePath, fileName);
+                } else {
+                    sendDocument(peer, filePath, fileName);
+                }
+                callback.onResult(true);
+            });
+
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    private Tuple2<String, String> createTempUploadFile(String appName, InputStream is, String mimeType)
+            throws Exception {
+        String extension = MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType);
+        File externalFile = Environment.getExternalStorageDirectory();
+        String externalPath = externalFile.getAbsolutePath();
+        File dest = new File(externalPath + "/" + appName + "/uploads" + "/");
+        dest.mkdirs();
+        File outputFile = new File(dest, "upload_" + random.nextLong() + (extension != null ? "." + extension : ""));
+        IOUtils.copy(is, outputFile);
+        return new Tuple2<>(outputFile.getName(), outputFile.getAbsolutePath());
     }
 
     public void onActivityOpen() {
@@ -584,6 +561,7 @@ public class AndroidMessenger extends im.actor.core.Messenger {
                 public void onScrolledToEnd() {
                     modules.getMessagesModule().loadMoreVideosHistory(peer);
                 }
+
                 @Override
                 public void onItemTouched(Message item) {
 
@@ -595,9 +573,9 @@ public class AndroidMessenger extends im.actor.core.Messenger {
     }
 
     public SimpleBindedDisplayList<GroupPre> getGroupsPreSimpleDisplayList(Integer parentId,
-                                                                           SimpleBindedDisplayList.Filter<GroupPre> filter){
-       return new SimpleBindedDisplayList<>((ListEngineDisplayExt<GroupPre>) modules.getGrupoPreModule().getGrupospreEngine(parentId),
-               filter);
+                                                                           SimpleBindedDisplayList.Filter<GroupPre> filter) {
+        return new SimpleBindedDisplayList<>((ListEngineDisplayExt<GroupPre>) modules.getGrupoPreModule().getGrupospreEngine(parentId),
+                filter);
     }
 
     public GalleryVM getGalleryVM() {

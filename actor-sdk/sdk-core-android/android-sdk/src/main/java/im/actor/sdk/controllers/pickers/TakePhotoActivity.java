@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.widget.Toast;
@@ -12,8 +11,6 @@ import android.widget.Toast;
 import com.soundcloud.android.crop.Crop;
 
 import org.jetbrains.annotations.NotNull;
-
-import java.io.File;
 
 import im.actor.sdk.R;
 import im.actor.sdk.controllers.Intents;
@@ -98,7 +95,7 @@ public class TakePhotoActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_GALLERY && resultCode == Activity.RESULT_OK) {
             tempAvatarPath = Files.getInternalTempFile("avatar", "jpg");
-            Crop.of(data.getData(),Files.getUri(this, tempAvatarPath) /* Uri.fromFile(new File(tempAvatarPath))*/)
+            Crop.of(data.getData(), Files.getUri(this, tempAvatarPath) /* Uri.fromFile(new File(tempAvatarPath))*/)
                     .asSquare()
                     .start(this);
             return;

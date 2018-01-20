@@ -21,6 +21,6 @@ public class ApiParserConfig {
                 Log.e(ApiParserConfig.class.getCanonicalName(), e);
             }
         }
-        throw new IOException("Unknown package for header "+header);
+        throw new IOException("Unknown package for header " + header);
     }
 }

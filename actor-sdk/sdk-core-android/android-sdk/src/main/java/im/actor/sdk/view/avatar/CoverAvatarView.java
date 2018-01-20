@@ -2,7 +2,6 @@ package im.actor.sdk.view.avatar;
 
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
-import android.net.Uri;
 import android.util.AttributeSet;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
@@ -12,8 +11,6 @@ import com.facebook.drawee.generic.GenericDraweeHierarchy;
 import com.facebook.drawee.generic.GenericDraweeHierarchyBuilder;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.facebook.imagepipeline.request.ImageRequest;
-
-import java.io.File;
 
 import im.actor.core.entity.Avatar;
 import im.actor.core.viewmodel.FileVM;

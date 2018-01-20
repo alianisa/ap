@@ -45,7 +45,7 @@ public class JsGroup extends JavaScriptObject {
         for (GroupMember g : members) {
             JsPeerInfo peerInfo = messenger.buildPeerInfo(Peer.user(g.getUid()));
             // Log.d("JsGroup", "PeerInfo: " + peerInfo);
-            if(g.isAdministrator()){
+            if (g.isAdministrator()) {
                 adminId = peerInfo.getPeer().getPeerId();
             }
             convertedMembers.add(JsGroupMember.create(peerInfo,

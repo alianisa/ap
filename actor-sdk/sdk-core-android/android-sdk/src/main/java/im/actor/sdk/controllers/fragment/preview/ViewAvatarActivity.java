@@ -3,11 +3,9 @@ package im.actor.sdk.controllers.fragment.preview;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.PersistableBundle;
@@ -24,8 +22,6 @@ import android.widget.Toast;
 import com.github.chrisbanes.photoview.PhotoView;
 import com.soundcloud.android.crop.Crop;
 
-import java.io.File;
-
 import im.actor.core.entity.Avatar;
 import im.actor.core.entity.Peer;
 import im.actor.core.entity.PeerType;
@@ -35,8 +31,6 @@ import im.actor.core.viewmodel.FileVMCallback;
 import im.actor.runtime.Log;
 import im.actor.runtime.files.FileSystemReference;
 import im.actor.runtime.mvvm.Value;
-import im.actor.runtime.mvvm.ValueChangedListener;
-import im.actor.runtime.mvvm.ValueDoubleChangedListener;
 import im.actor.sdk.ActorSDK;
 import im.actor.sdk.R;
 import im.actor.sdk.controllers.Intents;
@@ -187,7 +181,7 @@ public class ViewAvatarActivity extends BaseActivity {
                     photoView.setZoomable(false);
                     isAppliedPreview = true;
                 } catch (ImageLoadException e) {
-                    Log.e(ViewAvatarActivity.class.getName(),e);
+                    Log.e(ViewAvatarActivity.class.getName(), e);
                 }
             }
             if (!isAppliedPreview) {

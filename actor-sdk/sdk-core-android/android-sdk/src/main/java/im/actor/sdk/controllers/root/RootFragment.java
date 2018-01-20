@@ -104,10 +104,10 @@ public class RootFragment extends BaseFragment {
         } else if (i == R.id.contacts) {
             startActivity(new Intent(getActivity(), ContactsActivity.class));
             return true;
-        }else if (i == R.id.preDefinedGroups) {
+        } else if (i == R.id.preDefinedGroups) {
             startActivity(GroupsPreActivity.createIntent(getActivity(), GroupType.GROUP));
             return true;
-        }else if (i == R.id.preDefinedChannels) {
+        } else if (i == R.id.preDefinedChannels) {
             startActivity(GroupsPreActivity.createIntent(getActivity(), GroupType.CHANNEL));
             return true;
         } else {

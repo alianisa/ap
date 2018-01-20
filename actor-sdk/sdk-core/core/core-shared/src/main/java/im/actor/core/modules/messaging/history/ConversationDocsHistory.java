@@ -12,7 +12,7 @@ import static im.actor.runtime.actors.ActorSystem.system;
 public class ConversationDocsHistory extends ActorInterface {
 
     public ConversationDocsHistory(Peer peer, ModuleContext context, ApiDocsHistoryType docType) {
-        setDest(system().actorOf("historyDocs/"+docType+"/"+ peer, () -> {
+        setDest(system().actorOf("historyDocs/" + docType + "/" + peer, () -> {
             return new ConversationDocsHistoryActor(peer, context, docType);
         }));
     }

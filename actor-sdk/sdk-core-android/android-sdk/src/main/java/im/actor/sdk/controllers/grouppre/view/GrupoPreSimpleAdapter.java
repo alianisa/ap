@@ -4,11 +4,11 @@ import android.content.Context;
 import android.view.ViewGroup;
 
 import im.actor.core.entity.GroupPre;
-import im.actor.sdk.view.drag.ItemTouchHelperAdapter;
 import im.actor.runtime.android.view.SimpleBindedListAdapter;
 import im.actor.runtime.generic.mvvm.SimpleBindedDisplayList;
 import im.actor.sdk.util.ActorSDKMessenger;
 import im.actor.sdk.view.adapters.OnItemClickedListener;
+import im.actor.sdk.view.drag.ItemTouchHelperAdapter;
 
 public class GrupoPreSimpleAdapter extends SimpleBindedListAdapter<GroupPre, GrupoPreHolder>
         implements ItemTouchHelperAdapter {
@@ -48,7 +48,7 @@ public class GrupoPreSimpleAdapter extends SimpleBindedListAdapter<GroupPre, Gru
         fromPosition--;
         toPosition--;
 
-        if(dragFrom == null){
+        if (dragFrom == null) {
             dragFrom = getItem(fromPosition);
         }
         dragTo = getItem(toPosition);
@@ -64,8 +64,8 @@ public class GrupoPreSimpleAdapter extends SimpleBindedListAdapter<GroupPre, Gru
 
     @Override
     public void onClear() {
-        if(dragFrom != null && dragTo != null && dragFrom.getEngineId() != dragTo.getEngineId()){
-           ActorSDKMessenger.messenger().changeGroupPreOrder(dragFrom, dragTo);
+        if (dragFrom != null && dragTo != null && dragFrom.getEngineId() != dragTo.getEngineId()) {
+            ActorSDKMessenger.messenger().changeGroupPreOrder(dragFrom, dragTo);
         }
         dragFrom = dragTo = null;
     }

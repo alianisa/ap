@@ -39,7 +39,7 @@ import static im.actor.sdk.util.ActorSDKMessenger.users;
  * Created by diego on 13/05/17.
  */
 
-public class GroupsPreFragment extends SimpleDisplayListFragment<GroupPre, GrupoPreHolder>{
+public class GroupsPreFragment extends SimpleDisplayListFragment<GroupPre, GrupoPreHolder> {
 
     private static final String TAG = GroupsPreFragment.class.getName();
 
@@ -108,13 +108,13 @@ public class GroupsPreFragment extends SimpleDisplayListFragment<GroupPre, Grupo
     @Override
     protected void onListStateChange(SimpleBindedDisplayList.State state) {
         super.onListStateChange(state);
-        if(state == SimpleBindedDisplayList.State.LOADED){
+        if (state == SimpleBindedDisplayList.State.LOADED) {
             emptyGroups.setVisibility(View.GONE);
             loadingGroups.setVisibility(View.GONE);
-        }else if(state == SimpleBindedDisplayList.State.LOADED_EMPTY){
+        } else if (state == SimpleBindedDisplayList.State.LOADED_EMPTY) {
             emptyGroups.setVisibility(View.VISIBLE);
             loadingGroups.setVisibility(View.GONE);
-        }else if(state == SimpleBindedDisplayList.State.LOADING_EMPTY){
+        } else if (state == SimpleBindedDisplayList.State.LOADING_EMPTY) {
             emptyGroups.setVisibility(View.GONE);
             loadingGroups.setVisibility(View.VISIBLE);
         }
@@ -125,13 +125,14 @@ public class GroupsPreFragment extends SimpleDisplayListFragment<GroupPre, Grupo
         return new GrupoPreSimpleAdapter(displayList, new OnItemClickedListener<GroupPre>() {
             @Override
             public void onClicked(GroupPre groupPre) {
-                if(groupPre.getHasChildren()){
-                    ((GroupsPreActivity)getActivity()).showFragment(GroupsPreFragment.create(
-                            groupPre.getGroupId(), groupType),true);
-                }else{
+                if (groupPre.getHasChildren()) {
+                    ((GroupsPreActivity) getActivity()).showFragment(GroupsPreFragment.create(
+                            groupPre.getGroupId(), groupType), true);
+                } else {
                     enterInGroupById(groupPre);
                 }
             }
+
             @Override
             public boolean onLongClicked(GroupPre item) {
                 return false;
@@ -146,19 +147,19 @@ public class GroupsPreFragment extends SimpleDisplayListFragment<GroupPre, Grupo
         configureDrag();
     }
 
-    private void configureDrag(){
+    private void configureDrag() {
         bind(users().get(myUid()).getPhones(), phones -> {
             boolean isSupport = false;
-            if(!phones.isEmpty()){
-                for(int i = 0; i < phones.size();i++){
+            if (!phones.isEmpty()) {
+                for (int i = 0; i < phones.size(); i++) {
                     String helpPhoneNumber = ActorSDK.sharedActor().getHelpPhone().replaceAll("[^0-9]", "");
-                    if(Long.parseLong(helpPhoneNumber) == phones.get(i).getPhone()){
+                    if (Long.parseLong(helpPhoneNumber) == phones.get(i).getPhone()) {
                         isSupport = true;
                     }
                 }
             }
-            if(isSupport){
-                SimpleItemTouchHelperCallback callback = new SimpleItemTouchHelperCallback((GrupoPreSimpleAdapter)getAdapter());
+            if (isSupport) {
+                SimpleItemTouchHelperCallback callback = new SimpleItemTouchHelperCallback((GrupoPreSimpleAdapter) getAdapter());
                 callback.setItemViewSwipeEnabled(false);
                 itemTouchHelper = new ItemTouchHelper(callback);
                 itemTouchHelper.attachToRecyclerView(getCollection());
@@ -167,7 +168,7 @@ public class GroupsPreFragment extends SimpleDisplayListFragment<GroupPre, Grupo
     }
 
 
-    private void enterInGroupById(GroupPre groupPre){
+    private void enterInGroupById(GroupPre groupPre) {
         GroupVM groupVM = groups().get(groupPre.getGroupId());
         if (groupVM.isMember().get()) {
             startActivity(Intents.openGroupDialog(groupPre.getGroupId(), true, getActivity()));
@@ -188,13 +189,13 @@ public class GroupsPreFragment extends SimpleDisplayListFragment<GroupPre, Grupo
     @Override
     public void onResume() {
         super.onResume();
-        if(parentId > GroupPre.DEFAULT_ID){
+        if (parentId > GroupPre.DEFAULT_ID) {
             parentVm = groups().get(parentId);
             bind(parentVm.getName(), val -> setTitle(val));
-        }else{
-            if(groupType == GroupType.CHANNEL){
+        } else {
+            if (groupType == GroupType.CHANNEL) {
                 setTitle(getString(im.actor.sdk.R.string.predefined_channel));
-            }else {
+            } else {
                 setTitle(getString(im.actor.sdk.R.string.predefined_group));
             }
         }

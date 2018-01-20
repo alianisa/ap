@@ -32,7 +32,6 @@ import java.util.HashMap;
 import java.util.Locale;
 
 import im.actor.runtime.Log;
-import im.actor.runtime.Runtime;
 import im.actor.runtime.android.AndroidContext;
 import im.actor.sdk.util.AndroidUtils;
 import im.actor.sdk.util.Screen;
@@ -205,7 +204,7 @@ public class Emoji {
 
     public static Drawable getEmojiBigDrawable(String code) {
         EmojiDrawable ed = getEmojiDrawable(code);
- 	    if (ed == null) {
+        if (ed == null) {
             CharSequence newCode = EmojiData.emojiAliasMap.get(code);
             if (newCode != null) {
                 ed = Emoji.getEmojiDrawable(newCode);
@@ -246,7 +245,7 @@ public class Emoji {
 
         @Override
         public void draw(Canvas canvas) {
- 	        if (emojiBmp[info.page][info.page2] == null) {
+            if (emojiBmp[info.page][info.page2] == null) {
                 if (loadingEmoji[info.page][info.page2]) {
                     return;
                 }
@@ -394,7 +393,7 @@ public class Emoji {
 
                 if (doneEmoji && i + 2 < length) {
                     char next = cs.charAt(i + 1);
-                    if (next == 0xD83C){
+                    if (next == 0xD83C) {
                         next = cs.charAt(i + 2);
                         if (next >= 0xDFFB && next <= 0xDFFF) {
                             emojiCode.append(cs.subSequence(i + 1, i + 3));

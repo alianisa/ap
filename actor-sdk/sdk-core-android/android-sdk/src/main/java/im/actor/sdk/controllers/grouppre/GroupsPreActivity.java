@@ -14,7 +14,7 @@ import im.actor.sdk.controllers.activity.BaseFragmentActivity;
 
 public class GroupsPreActivity extends BaseFragmentActivity {
 
-    public static Intent createIntent(Context ctx, int groupType){
+    public static Intent createIntent(Context ctx, int groupType) {
         Intent i = new Intent(ctx, GroupsPreActivity.class);
         i.putExtra(GroupsPreFragment.GROUP_TYPE_PARAM, groupType);
         return i;

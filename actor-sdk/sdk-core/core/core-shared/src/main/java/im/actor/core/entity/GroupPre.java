@@ -91,7 +91,7 @@ public class GroupPre extends BserObject implements ListEngineItem, KeyValueItem
         this(groupId.intValue());
     }
 
-    private GroupPre(){
+    private GroupPre() {
         super();
     }
 
@@ -121,19 +121,19 @@ public class GroupPre extends BserObject implements ListEngineItem, KeyValueItem
     }
 
 
-    public GroupPre changeHasChildren(Boolean hasChildren){
+    public GroupPre changeHasChildren(Boolean hasChildren) {
         return new GroupPre(this.groupId, this.parentId, this.sortOrder, hasChildren, this.isLoaded);
     }
 
-    public GroupPre changeIsLoaded(Boolean isLoaded){
+    public GroupPre changeIsLoaded(Boolean isLoaded) {
         return new GroupPre(this.groupId, this.parentId, this.sortOrder, this.hasChildren, isLoaded);
     }
 
-    public GroupPre changeParentId(Integer parentId){
+    public GroupPre changeParentId(Integer parentId) {
         return new GroupPre(this.groupId, parentId, this.sortOrder, this.hasChildren, this.isLoaded);
     }
 
-    public GroupPre changeSortOrder(Integer sortOrder){
+    public GroupPre changeSortOrder(Integer sortOrder) {
         return new GroupPre(this.groupId, this.parentId, sortOrder, this.hasChildren, this.isLoaded);
     }
 

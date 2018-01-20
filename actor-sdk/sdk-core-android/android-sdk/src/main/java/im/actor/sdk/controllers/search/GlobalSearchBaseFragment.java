@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.ChatLinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -138,6 +137,7 @@ public abstract class GlobalSearchBaseFragment extends BaseFragment {
                 showSearch();
                 return true;
             }
+
             @Override
             public boolean onMenuItemActionCollapse(MenuItem menuItem) {
                 hideSearch();
@@ -257,6 +257,7 @@ public abstract class GlobalSearchBaseFragment extends BaseFragment {
                 onPeerPicked(item.getPeer());
                 searchMenu.collapseActionView();
             }
+
             @Override
             public boolean onLongClicked(SearchEntity item) {
                 return false;

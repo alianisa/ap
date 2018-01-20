@@ -204,20 +204,20 @@ public class MessageRouter extends ModuleActor {
         unstashAll();
     }
 
-    private void updateDocsMessages(Peer peer, List<Message> messages){
+    private void updateDocsMessages(Peer peer, List<Message> messages) {
         List<Message> docsMessages = new ArrayList<>();
         List<Message> photoMessages = new ArrayList<>();
         List<Message> videoMessages = new ArrayList<>();
 
         for (Message m : messages) {
-            if(m.getContent() instanceof VideoContent){
+            if (m.getContent() instanceof VideoContent) {
                 videoMessages.add(m);
-            }else if(m.getContent() instanceof PhotoContent){
+            } else if (m.getContent() instanceof PhotoContent) {
                 photoMessages.add(m);
-            }else{
-                if((m.getContent() instanceof DocumentContent)
+            } else {
+                if ((m.getContent() instanceof DocumentContent)
                         && !(m.getContent() instanceof VoiceContent)
-                        && !(m.getContent() instanceof AnimationContent)){
+                        && !(m.getContent() instanceof AnimationContent)) {
                     docsMessages.add(m);
                 }
             }
@@ -229,15 +229,15 @@ public class MessageRouter extends ModuleActor {
         docs(peer).addOrUpdateItems(docsMessages);
     }
 
-    private void updateDocMessage(Peer peer, Message message){
-        if(message.getContent() instanceof VideoContent){
+    private void updateDocMessage(Peer peer, Message message) {
+        if (message.getContent() instanceof VideoContent) {
             videos(peer).addOrUpdateItem(message);
-        }else if(message.getContent() instanceof PhotoContent){
+        } else if (message.getContent() instanceof PhotoContent) {
             photos(peer).addOrUpdateItem(message);
-        }else{
-            if((message.getContent() instanceof DocumentContent)
+        } else {
+            if ((message.getContent() instanceof DocumentContent)
                     && !(message.getContent() instanceof VoiceContent)
-                    && !(message.getContent() instanceof AnimationContent)){
+                    && !(message.getContent() instanceof AnimationContent)) {
                 docs(peer).addOrUpdateItem(message);
             }
         }
@@ -526,7 +526,7 @@ public class MessageRouter extends ModuleActor {
     }
 
     private Promise<Void> onChatDocsLoaded(Peer peer, List<Message> messages, Long maxReadDate,
-                                              Long maxReceiveDate, boolean isEnded) {
+                                           Long maxReceiveDate, boolean isEnded) {
 
         Log.d(TAG, "History Docs Loaded");
         updateDocsMessages(peer, messages);
@@ -848,6 +848,7 @@ public class MessageRouter extends ModuleActor {
     private ListEngine<Message> videos(Peer peer) {
         return context().getMessagesModule().getConversationVideosEngine(peer);
     }
+
     private void notifyActiveDialogsVM() {
         int counter = 0;
         ArrayList<DialogGroup> groups = new ArrayList<>();

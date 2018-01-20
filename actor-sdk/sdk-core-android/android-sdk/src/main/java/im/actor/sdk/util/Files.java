@@ -2,7 +2,6 @@ package im.actor.sdk.util;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.support.v4.content.FileProvider;
@@ -14,31 +13,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import im.actor.runtime.Log;
 import im.actor.runtime.android.AndroidContext;
 
 public class Files {
-
-    public static Uri saveTempBitmap(Context ctx, Bitmap bmp){
-        String path = getExternalTempFile("share", ".jpg");
-        FileOutputStream out = null;
-        try {
-            out = new FileOutputStream(path);
-            bmp.compress(Bitmap.CompressFormat.PNG, 100, out);
-        } catch (Exception e) {
-            Log.e(Files.class.getName(), e);
-        } finally {
-            try {
-                if (out != null) {
-                    out.close();
-                }
-            } catch (IOException e) {
-                Log.e(Files.class.getName(), e);
-            }
-        }
-
-        return getUri(ctx, path);
-    }
 
     public static String getExternalTempFile(String prefix, String postfix) {
         File externalFile = AndroidContext.getContext().getExternalFilesDir(null);
@@ -103,7 +80,7 @@ public class Files {
         }
     }
 
-    public static void grantExternalPermissions(Context context, Intent intent, Uri uri){
+    public static void grantExternalPermissions(Context context, Intent intent, Uri uri) {
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
     }

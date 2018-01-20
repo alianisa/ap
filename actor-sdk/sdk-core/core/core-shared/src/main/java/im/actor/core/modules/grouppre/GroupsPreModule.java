@@ -11,7 +11,6 @@ import im.actor.core.api.rpc.ResponseVoid;
 import im.actor.core.api.updates.UpdateGroupPreOrderChanged;
 import im.actor.core.api.updates.UpdateGroupPreParentChanged;
 import im.actor.core.entity.GroupPre;
-import im.actor.core.events.AppVisibleChanged;
 import im.actor.core.modules.AbsModule;
 import im.actor.core.modules.ModuleContext;
 import im.actor.core.modules.grouppre.router.GroupsPreRouterInt;
@@ -59,29 +58,29 @@ public class GroupsPreModule extends AbsModule implements BusSubscriber {
     }
 
     public Promise<Void> changeGroupPre(int groupId, boolean isGroupPre) {
-       return api(new RequestChangeGroupPre(groupId, isGroupPre))
-               .flatMap(r -> updates().waitForUpdate(r.getSeq()));
+        return api(new RequestChangeGroupPre(groupId, isGroupPre))
+                .flatMap(r -> updates().waitForUpdate(r.getSeq()));
     }
 
     public Promise<Void> changeParent(int groupId, int parentId, int oldParentId) {
         return api(new RequestChangeGroupParent(groupId, parentId))
-                .map(r ->{
+                .map(r -> {
                     updates().applyUpdate(r.getSeq(), r.getState(), new UpdateGroupPreParentChanged(groupId, parentId, oldParentId));
                     return null;
                 });
     }
 
-    public Promise<Void> changeOrder(GroupPre fromGroup, GroupPre toGroup){
+    public Promise<Void> changeOrder(GroupPre fromGroup, GroupPre toGroup) {
         return api(new RequestChangeOrder(fromGroup.getGroupId(), toGroup.getGroupId()))
                 .map(r -> {
                     updates().applyUpdate(r.getSeq(), r.getState(),
                             new UpdateGroupPreOrderChanged(fromGroup.getGroupId(), toGroup.getSortOrder(),
-                            toGroup.getGroupId(), fromGroup.getSortOrder()));
+                                    toGroup.getGroupId(), fromGroup.getSortOrder()));
                     return null;
                 });
     }
 
-    public Promise<GroupPre> loadGroupPre(int groupPreId){
+    public Promise<GroupPre> loadGroupPre(int groupPreId) {
         return api(new RequestLoadGroupPre(groupPreId))
                 .flatMap(r -> {
                     final GroupPre grupoPre = new GroupPre(r.getGroupPre().getGroupId(),
@@ -120,16 +119,16 @@ public class GroupsPreModule extends AbsModule implements BusSubscriber {
         }
     }
 
-    public void reset(){
+    public void reset() {
         this.groupsPreStates.getEngine().clear();
 
-        for(Map.Entry<Integer, ListEngine<GroupPre>> entry: gruposPreEngine.entrySet()){
+        for (Map.Entry<Integer, ListEngine<GroupPre>> entry : gruposPreEngine.entrySet()) {
             entry.getValue().clear();
         }
 
         this.gruposPreEngine = new HashMap<>();
 
-        for(Map.Entry<Integer, GrupoPreActorInt> entry: gruposPreLoadActor.entrySet()){
+        for (Map.Entry<Integer, GrupoPreActorInt> entry : gruposPreLoadActor.entrySet()) {
             entry.getValue().clear();
         }
         this.gruposPreLoadActor = new HashMap<>();
