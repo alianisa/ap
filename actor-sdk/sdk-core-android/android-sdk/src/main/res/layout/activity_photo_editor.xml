@@ -66,7 +66,8 @@
                 android:textColor="#FFFFFF"
                 android:textSize="20sp"
                 android:visibility="gone"
-                android:layout_alignParentRight="true" />
+                android:layout_alignParentRight="true"
+                android:clickable="true"/>
 
             <TextView
                 android:id="@+id/erase_drawing_tv"
@@ -85,7 +86,8 @@
                 android:textColor="#FFFFFF"
                 android:textSize="20sp"
                 android:visibility="gone"
-                android:layout_toLeftOf="@+id/done_drawing_tv" />
+                android:layout_toLeftOf="@+id/done_drawing_tv"
+                android:clickable="true"/>
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/drawing_view_color_picker_recycler_view"
@@ -116,7 +118,8 @@
                     android:padding="15dp"
                     android:text="@string/ic_close"
                     android:textColor="#FFFFFF"
-                    android:textSize="20sp" />
+                    android:textSize="20sp"
+                    android:clickable="true"/>
 
                 <TextView
                     android:id="@+id/add_text_tv"
@@ -128,7 +131,8 @@
                     android:text="@string/ic_text"
                     android:textColor="#FFFFFF"
                     android:textSize="20sp"
-                    android:layout_alignParentRight="true" />
+                    android:layout_alignParentRight="true"
+                    android:clickable="true"/>
 
                 <TextView
                     android:id="@+id/add_pencil_tv"
@@ -139,7 +143,8 @@
                     android:text="@string/ic_draw"
                     android:textColor="#FFFFFF"
                     android:textSize="20sp"
-                    android:layout_toLeftOf="@+id/add_text_tv" />
+                    android:layout_toLeftOf="@+id/add_text_tv"
+                    android:clickable="true"/>
 
                 <TextView
                     android:id="@+id/add_image_emoji_tv"
@@ -150,7 +155,8 @@
                     android:text="@string/ic_images"
                     android:textColor="#FFFFFF"
                     android:textSize="20sp"
-                    android:layout_toLeftOf="@+id/add_pencil_tv" />
+                    android:layout_toLeftOf="@+id/add_pencil_tv"
+                    android:clickable="true"/>
 
             </RelativeLayout>
 
@@ -171,63 +177,33 @@
                 android:paddingRight="26dp">
 
                 <TextView
-                    android:id="@+id/save_tv"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignEnd="@+id/save_text_tv"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true"
-                    android:gravity="center"
-                    android:text="@string/ic_save"
-                    android:textColor="#FFFFFF"
-                    android:textSize="25sp"
-                    android:layout_alignRight="@+id/save_text_tv"
-                    android:layout_alignParentLeft="true" />
-
-                <TextView
-                    android:id="@+id/save_text_tv"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
-                    android:layout_below="@+id/save_tv"
-                    android:layout_centerVertical="true"
-                    android:layout_marginTop="4dp"
-                    android:text="@string/save"
-                    android:textColor="#FFFFFF"
-                    android:textSize="15sp"
-                    android:layout_alignParentLeft="true" />
-
-                <TextView
                     android:id="@+id/clear_all_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignEnd="@+id/clear_all_text_tv"
+                    android:layout_alignRight="@+id/clear_all_text_tv"
+                    android:layout_alignParentStart="true"
                     android:layout_centerVertical="true"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="4dp"
-                    android:layout_toEndOf="@+id/save_tv"
+                    android:layout_alignParentLeft="true"
                     android:gravity="center"
                     android:text="@string/ic_clear_all"
                     android:textColor="#FFFFFF"
                     android:textSize="25sp"
-                    android:layout_alignRight="@+id/clear_all_text_tv"
-                    android:layout_marginLeft="20dp"
-                    android:layout_toRightOf="@+id/save_tv" />
+                    android:clickable="true" />
 
                 <TextView
                     android:id="@+id/clear_all_text_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentLeft="true"
                     android:layout_below="@+id/clear_all_tv"
                     android:layout_centerVertical="true"
-                    android:layout_marginStart="20dp"
                     android:layout_marginTop="4dp"
-                    android:layout_toEndOf="@+id/save_tv"
                     android:text="@string/clear_all"
                     android:textColor="#FFFFFF"
                     android:textSize="15sp"
-                    android:layout_marginLeft="20dp"
-                    android:layout_toRightOf="@+id/save_tv" />
+                    android:clickable="true"/>
 
                 <TextView
                     android:id="@+id/undo_tv"
@@ -261,7 +237,8 @@
                     android:textSize="15sp"
                     android:visibility="gone"
                     android:layout_marginLeft="20dp"
-                    android:layout_toRightOf="@+id/clear_all_tv" />
+                    android:layout_toRightOf="@+id/clear_all_tv"
+                    android:clickable="true"/>
 
                 <TextView
                     android:id="@+id/go_to_next_screen_tv"
@@ -272,7 +249,8 @@
                     android:text="@string/ic_continue"
                     android:textColor="#FFFFFF"
                     android:textSize="40sp"
-                    android:layout_alignParentRight="true" />
+                    android:layout_alignParentRight="true"
+                    android:clickable="true"/>
 
             </RelativeLayout>
 
@@ -281,8 +259,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
-                android:padding="20dp"
-                android:visibility="gone">
+                android:padding="40dp"
+                android:visibility="gone"
+                android:layout_marginBottom="20dp">
 
                 <TextView
                     android:id="@+id/delete_tv"

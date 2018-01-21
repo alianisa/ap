@@ -90,8 +90,7 @@ public class PhotoEditorActivity extends AppCompatActivity implements View.OnCli
         RelativeLayout deleteRelativeLayout = (RelativeLayout) findViewById(R.id.delete_rl);
         TextView deleteTextView = (TextView) findViewById(R.id.delete_tv);
         TextView addImageEmojiTextView = (TextView) findViewById(R.id.add_image_emoji_tv);
-        TextView saveTextView = (TextView) findViewById(R.id.save_tv);
-        TextView saveTextTextView = (TextView) findViewById(R.id.save_text_tv);
+
         undoTextView = (TextView) findViewById(R.id.undo_tv);
         undoTextTextView = (TextView) findViewById(R.id.undo_text_tv);
         doneDrawingTextView = (TextView) findViewById(R.id.done_drawing_tv);
@@ -115,7 +114,6 @@ public class PhotoEditorActivity extends AppCompatActivity implements View.OnCli
         addTextView.setTypeface(newFont);
         addPencil.setTypeface(newFont);
         addImageEmojiTextView.setTypeface(newFont);
-        saveTextView.setTypeface(newFont);
         undoTextView.setTypeface(newFont);
         clearAllTextView.setTypeface(newFont);
         goToNextTextView.setTypeface(newFont);
@@ -163,8 +161,7 @@ public class PhotoEditorActivity extends AppCompatActivity implements View.OnCli
         addImageEmojiTextView.setOnClickListener(this);
         addTextView.setOnClickListener(this);
         addPencil.setOnClickListener(this);
-        saveTextView.setOnClickListener(this);
-        saveTextTextView.setOnClickListener(this);
+
         undoTextView.setOnClickListener(this);
         undoTextTextView.setOnClickListener(this);
         doneDrawingTextView.setOnClickListener(this);
@@ -345,8 +342,6 @@ public class PhotoEditorActivity extends AppCompatActivity implements View.OnCli
             updateBrushDrawingView(true);
         } else if (v.getId() == R.id.done_drawing_tv) {
             updateBrushDrawingView(false);
-        } else if (v.getId() == R.id.save_tv || v.getId() == R.id.save_text_tv) {
-            returnBackWithSavedImage();
         } else if (v.getId() == R.id.clear_all_tv || v.getId() == R.id.clear_all_text_tv) {
             clearAllViews();
         } else if (v.getId() == R.id.undo_text_tv || v.getId() == R.id.undo_tv) {
