@@ -16,7 +16,6 @@ android {
         vectorDrawables.useSupportLibrary = true
         minSdkVersion 15
         targetSdkVersion 25
-
         renderscriptSupportModeEnabled true
     }
 
@@ -93,8 +92,8 @@ dependencies {
     api 'com.android.support.constraint:constraint-layout:1.0.2'
 
     //Video Compressor
-    implementation 'br.com.diegosilva:vclibrary:1.0.10-SNAPSHOT'
-    implementation 'com.ahmedadeltito:photoeditorsdk:0.1.01-SNAPSHOT'
+    api 'br.com.diegosilva:vclibrary:1.0.10-SNAPSHOT'
+    api 'com.ahmedadeltito:photoeditorsdk:0.1.01-SNAPSHOT'
 
     api 'com.romandanylyk:pageindicatorview:1.0.0'
     //api(name: 'photoeditorsdk', ext: 'aar')

@@ -1,83 +1,96 @@
 //
-//  AAGrouppreListController.swift
-//  ActorSDK
-//
-//  Created by Diego Ferreira da Silva on 16/01/2018.
-//  Copyright © 2018 Steve Kite. All rights reserved.
+//  Copyright (c) 2014-2016 Actor LLC. <https://actor.im>
 //
 
 import Foundation
+import ActorSDK
 
-open class AAGrouppreListController: AASimpleContentTableController{
+open class AAGrouppreListController: UITableViewController {
     
+    var tipo:String!
+    var parentId:jlong!
     
-   
-    
-    open var enableDeletion: Bool = true
-    
-    var type:String!
-    var parentId:JavaLangInteger!
-    
-    public init() {
-        super.init(style: .plain)
-        unbindOnDissapear = true
+    open override func viewDidLoad() {
+        super.viewDidLoad()
+        tableView.register(GrupoCell.self, forCellReuseIdentifier: "cellid")
+        
+        tableView.tableFooterView = UIView(frame: CGRect.zero)
+        tableView.tableFooterView?.hideView()
+        
+        let userId = ActorSDK.sharedActor().messenger.myUid()
+        
+        let listParams:JavaUtilListProtocol = JavaUtilArrayList()
+        listParams.add(withId: ARApiMapValueItem(nsString: "id", with: ARApiInt64Value(long: jlong(userId))))
+        listParams.add(withId: ARApiMapValueItem(nsString: "tipo", with: ARApiStringValue(nsString: self.tipo)))
+        
+        if let idPai = idGrupoPai{
+            listParams.add(withId: ARApiMapValueItem(nsString: "idPai", with: ARApiInt64Value(long: idPai)))
+        }
+
     }
     
-    public required init(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+    open override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return grupos.count
     }
     
-    open override func tableDidLoad() {
+    let imageCache:NSCache<NSString,NSData> = NSCache<NSString,NSData>()
+    
+    open override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell:GrupoCell = tableView.dequeueReusableCell(withIdentifier: "cellid", for: indexPath) as! GrupoCell
         
-        managedTable.canEditAll = true
-        managedTable.canDeleteAll = true
-        managedTable.fixedHeight = 76
-        tableView.estimatedRowHeight = 76
-        tableView.rowHeight = 76
+        let grupo = grupos[indexPath.row]
+        cell.setGrupo(grupo)
+        cell.setTipo(tipo)
         
-        section { (s) -> () in
-            
-            s.autoSeparatorsInset = 75
-            
-            s.binded { (r:AASimpleBindedRows<AAGroupreCell>) -> () in
-                
-                r.differental = true
-                
-                r.animated = true
-                
-                r.displayList = Actor.getGroupsPreSimpleDisplayList(withParentId: parentId!, with: )
-                
-                r.selectAction = { (dialog: ACGroupPre) -> Bool in
-
-                    return true
-                }
-                
-                r.editAction = { (dialog: ACGroupPre) -> () in
-                    
+        if let avatarUrl = grupo.avatarUrl{
+            if let data = imageCache.object(forKey: avatarUrl as NSString){
+                cell.setImageData(data)
+            }else{
+                XLCocoaHttpRuntime.getMethod(avatarUrl).then { (resp:ARHTTPResponse!) in
+                    if(resp.code == 200){
+                        let data = NSData(data: resp.content.toNSData())
+                        self.imageCache.setObject(data, forKey: avatarUrl as NSString)
+                        cell.setImageData(data)
+                    }
                 }
             }
         }
-        
-        placeholder.setImage(
-            UIImage.bundled("chat_list_placeholder"),
-            title: AALocalized("Placeholder_Dialogs_Title"),
-            subtitle: AALocalized("Placeholder_Dialogs_Message"))
-        
+        return cell
     }
     
-    open override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-        binder.bind(Actor.getAppState().isDialogsEmpty, closure: { (value: Any?) -> () in
-            if let empty = value as? JavaLangBoolean {
-                if Bool(empty.booleanValue()) == true {
-                    self.navigationItem.leftBarButtonItem = nil
-                    self.showPlaceholder()
-                } else {
-                    self.hidePlaceholder()
-                    self.navigationItem.leftBarButtonItem = self.editButtonItem
-                }
-            }
-        })
+    open override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 76.0
     }
+    
+    open override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let grupo = grupos[indexPath.row]
+        
+        if(grupo.possuiFilhos)!{
+            let gruposPredefinidosController = XLGruposPreDefinidosController()
+            gruposPredefinidosController.tipo =  self.tipo
+            gruposPredefinidosController.title = grupo.title
+            gruposPredefinidosController.idGrupoPai = grupo.id
+            self.navigateNext(gruposPredefinidosController, removeCurrent: false)
+        }else{
+            if(grupo.isMember)!{
+                let controller = ConversationViewController(peer: ACPeer.group(with: jint(grupo.id!)))
+                controller.removeExcedentControllers = false
+                //self.navigateNext(controller, removeCurrent: false)
+                self.navigateDetail(controller)
+            }else{
+                self.executePromise(Actor.joinGroup(byGid: jint(grupo.id!))).then({ (void:Any!) in
+                    let controller = ConversationViewController(peer: ACPeer.group(with: jint(grupo.id!)))
+                    controller.removeExcedentControllers = false
+                    //self.navigateNext(controller, removeCurrent: false)
+                    
+                    self.navigateDetail(controller)
+                }).failure(withClosure: { (erro:JavaLangException!) in
+                    self.alertUser(erro.getMessage())
+                })
+            }
+        }
+    }
+    
 }
+
+

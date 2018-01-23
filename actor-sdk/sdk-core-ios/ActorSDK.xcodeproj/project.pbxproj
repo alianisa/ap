@@ -382,9 +382,6 @@
 		F1A0728B200EA3250087ADCE /* SLKInputAccessoryView.h in Headers */ = {isa = PBXBuildFile; fileRef = F1A07275200EA3230087ADCE /* SLKInputAccessoryView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F1A0728C200EA3250087ADCE /* SLKTextInput+Implementation.m in Sources */ = {isa = PBXBuildFile; fileRef = F1A07276200EA3240087ADCE /* SLKTextInput+Implementation.m */; };
 		F1A072902010B5AA0087ADCE /* AAGrouppreCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1A0728F2010B5AA0087ADCE /* AAGrouppreCell.swift */; };
-		F1A072922010FE080087ADCE /* AASimpleContentTableController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1A072912010FE080087ADCE /* AASimpleContentTableController.swift */; };
-		F1A072942010FEFC0087ADCE /* AASimpleManagedSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1A072932010FEFC0087ADCE /* AASimpleManagedSection.swift */; };
-		F1A0729620120D2B0087ADCE /* AASimpleManagedBindedCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1A0729520120D2B0087ADCE /* AASimpleManagedBindedCells.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -781,9 +778,6 @@
 		F1A07275200EA3230087ADCE /* SLKInputAccessoryView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SLKInputAccessoryView.h; sourceTree = "<group>"; };
 		F1A07276200EA3240087ADCE /* SLKTextInput+Implementation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "SLKTextInput+Implementation.m"; sourceTree = "<group>"; };
 		F1A0728F2010B5AA0087ADCE /* AAGrouppreCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AAGrouppreCell.swift; sourceTree = "<group>"; };
-		F1A072912010FE080087ADCE /* AASimpleContentTableController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AASimpleContentTableController.swift; sourceTree = "<group>"; };
-		F1A072932010FEFC0087ADCE /* AASimpleManagedSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AASimpleManagedSection.swift; sourceTree = "<group>"; };
-		F1A0729520120D2B0087ADCE /* AASimpleManagedBindedCells.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AASimpleManagedBindedCells.swift; sourceTree = "<group>"; };
 		FCB25A92F679E862F539373D /* Pods_ActorSDK.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ActorSDK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -1073,7 +1067,6 @@
 		066A52181BC4EE9A000E606E /* Managed Runtime */ = {
 			isa = PBXGroup;
 			children = (
-				F1A07297201225CC0087ADCE /* Simple Runtime */,
 				066A52501BC4EF61000E606E /* AACollectionViewController.swift */,
 				066A521E1BC4EEAC000E606E /* AAContentTableController.swift */,
 				066A524D1BC4EF61000E606E /* AAImagePickerController.swift */,
@@ -1833,16 +1826,6 @@
 			path = Cells;
 			sourceTree = "<group>";
 		};
-		F1A07297201225CC0087ADCE /* Simple Runtime */ = {
-			isa = PBXGroup;
-			children = (
-				F1A072912010FE080087ADCE /* AASimpleContentTableController.swift */,
-				F1A072932010FEFC0087ADCE /* AASimpleManagedSection.swift */,
-				F1A0729520120D2B0087ADCE /* AASimpleManagedBindedCells.swift */,
-			);
-			path = "Simple Runtime";
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -2136,7 +2119,6 @@
 				F1A0727D200EA3250087ADCE /* UIView+SLKAdditions.m in Sources */,
 				15D35F601C20187E00E3717A /* AAOpusAudioPlayerAU.mm in Sources */,
 				061850EB1C95CBF000C522D5 /* YYTextSelectionView.m in Sources */,
-				F1A072922010FE080087ADCE /* AASimpleContentTableController.swift in Sources */,
 				15D35F1C1C20185500E3717A /* picture.c in Sources */,
 				066A532B1BC53406000E606E /* AABubbleCell.swift in Sources */,
 				061850E91C95CBF000C522D5 /* YYTextMagnifier.m in Sources */,
@@ -2240,7 +2222,6 @@
 				066A52F31BC52B02000E606E /* AASettingsWallpapper.swift in Sources */,
 				066A53041BC53177000E606E /* AAContactsViewController.swift in Sources */,
 				F1A07289200EA3250087ADCE /* SLKTextViewController.m in Sources */,
-				F1A0729620120D2B0087ADCE /* AASimpleManagedBindedCells.swift in Sources */,
 				066A51801BC4C373000E606E /* FMDatabasePool.m in Sources */,
 				061850F51C95CBF000C522D5 /* YYTextRunDelegate.m in Sources */,
 				06129AA91C8394700099286B /* AAAudioManager.swift in Sources */,
@@ -2256,7 +2237,6 @@
 				066A531A1BC533E7000E606E /* AAAutoCompleteCell.swift in Sources */,
 				065975051BC757A300B8C7DF /* ActorRuntime.swift in Sources */,
 				066A517B1BC4C373000E606E /* FMDatabase.m in Sources */,
-				F1A072942010FEFC0087ADCE /* AASimpleManagedSection.swift in Sources */,
 				06C1D07E1C8D0DEA00B73632 /* Telephony.swift in Sources */,
 				BE2621591C4656EE00A817AB /* AAThumbnailView.swift in Sources */,
 				F1A072902010B5AA0087ADCE /* AAGrouppreCell.swift in Sources */,
