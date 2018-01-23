@@ -198,19 +198,21 @@ public class MediaPickerFragment extends BaseFragment {
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == REQUEST_GALLERY) {
                 if (data.getData() != null) {
+                    Uri returnedUri = data.getData();
                     if (pickCropped) {
                         pendingFile = generateRandomFile(".jpg");
                         Crop.of(data.getData(), Files.getUri(getContext(), pendingFile))
                                 .asSquare()
                                 .start(getContext(), this);
                     } else {
-                        if(pickEdited){
-                            pendingFile = Files.getPathFromUri(getActivity(), data.getData());
+                        String mimeType = getContext().getApplicationContext().getContentResolver().getType(returnedUri);
+                        if(pickEdited && mimeType.startsWith("image")){
+                            pendingFile = Files.getPathFromUri(getActivity(), returnedUri);
                             Intent intent = new Intent(getActivity(), PhotoEditorActivity.class);
                             intent.putExtra(PhotoEditorActivity.IMAGE_PATH_PARAM, pendingFile);
                             startActivityForResult(intent, PhotoEditorActivity.REQUEST_EDIT);
                         }else{
-                            getCallback().onUriPicked(data.getData());
+                            getCallback().onUriPicked(returnedUri);
                         }
                     }
                 }
@@ -282,9 +284,7 @@ public class MediaPickerFragment extends BaseFragment {
                 Cursor c = activity.managedQuery(contactData, null, null, null, null);
                 if (c.moveToFirst()) {
 
-
                     String id = c.getString(c.getColumnIndexOrThrow(ContactsContract.Contacts._ID));
-
                     String hasPhone = c.getString(c.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER));
 
                     if (hasPhone.equalsIgnoreCase("1")) {
@@ -312,6 +312,7 @@ public class MediaPickerFragment extends BaseFragment {
                             ContactsContract.CommonDataKinds.Email.CONTENT_URI, null,
                             ContactsContract.CommonDataKinds.Email.CONTACT_ID + " = " + id,
                             null, null);
+
                     if (emailCursor != null && emailCursor.moveToFirst()) {
                         int emailColumnIndex = emailCursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA);
                         do {
