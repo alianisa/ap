@@ -149,10 +149,10 @@ public class CocoaMessenger extends Messenger {
         return videosLists.get(peer);
     }
 
-    @ObjectiveCName("getGroupsPreSimpleDisplayListWithParentId:withFilter:")
-    public SimpleBindedDisplayList<GroupPre> getGroupsPreSimpleDisplayList(Integer parentId, SimpleBindedDisplayList.Filter<GroupPre> filter) {
-        return new SimpleBindedDisplayList<>((ListEngineDisplayExt<GroupPre>) modules.getGrupoPreModule().getGrupospreEngine(parentId), filter);
-    }
+//    @ObjectiveCName("getGroupsPreSimpleDisplayListWithParentId:withFilter:")
+//    public SimpleBindedDisplayList<GroupPre> getGroupsPreSimpleDisplayList(Integer parentId, SimpleBindedDisplayList.Filter<GroupPre> filter) {
+//        return new SimpleBindedDisplayList<>((ListEngineDisplayExt<GroupPre>) modules.getGrupoPreModule().getGrupospreEngine(parentId), filter);
+//    }
 
 
 }

@@ -64,7 +64,7 @@ open class AAComposeController: AAContactsListContentController, AAContactsListC
                 
                 r.selectAction = { () -> Bool in
                     let gruposPredefinidosController = AAGrouppreListController()
-                    gruposPredefinidosController.type = "G"
+                    gruposPredefinidosController.groupType = JavaLangInteger.valueOf(with: ACGroupType.group())
                     gruposPredefinidosController.title = AALocalized("GroupsPre")
                     self.navigateNext(gruposPredefinidosController, removeCurrent: false)
                     return false
@@ -81,7 +81,7 @@ open class AAComposeController: AAContactsListContentController, AAContactsListC
                 
                 r.selectAction = { () -> Bool in
                     let gruposPredefinidosController = AAGrouppreListController()
-                    gruposPredefinidosController.type = "C"
+                    gruposPredefinidosController.groupType = JavaLangInteger.valueOf(with:ACGroupType.channel())
                     gruposPredefinidosController.title = AALocalized("ChannelsPre")
                     self.navigateNext(gruposPredefinidosController, removeCurrent: false)
                     return false

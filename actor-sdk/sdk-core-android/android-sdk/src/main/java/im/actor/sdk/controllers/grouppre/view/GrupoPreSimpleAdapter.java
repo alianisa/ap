@@ -51,6 +51,7 @@ public class GrupoPreSimpleAdapter extends SimpleBindedListAdapter<GroupPre, Gru
         if (dragFrom == null) {
             dragFrom = getItem(fromPosition);
         }
+
         dragTo = getItem(toPosition);
 
         getDisplayList().itensMoved(fromPosition, toPosition);

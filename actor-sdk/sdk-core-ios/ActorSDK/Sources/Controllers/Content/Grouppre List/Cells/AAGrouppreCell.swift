@@ -1,12 +1,15 @@
 
 class AAGrouppreCell: AATableViewCell {
     
-    fileprivate var grupo: GrupoDomain!
-    fileprivate var tipoGrupo: String!
+    fileprivate let binder = AABinder()
+    
+    fileprivate var groupVm: ACGroupVM!
+    fileprivate var groupPreVm: ACGroupPreVM!
+    fileprivate var groupPre: ACGroupPre!
+    
     fileprivate var title: YYLabel!
     fileprivate var titleMemberQuantity: YYLabel!
-    fileprivate var avatarView: UIImageView!
-    fileprivate var avatarImageData:NSData!
+    fileprivate var avatarView = AAAvatarView()
     fileprivate var chevronView: UIImageView!
     fileprivate var checkView: UIImageView!
     fileprivate var groupTypeView: UIImageView!
@@ -27,25 +30,21 @@ class AAGrouppreCell: AATableViewCell {
         titleMemberQuantity.font = UIFont.systemFont(ofSize: 13.0)
         titleMemberQuantity.textColor = UIColor.black
         titleMemberQuantity.backgroundColor = UIColor.white
-        
-        avatarView = UIImageView()
-        
+    
         contentView.addSubview(avatarView)
         contentView.addSubview(title)
-        
     }
     
     required init(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func setGrupo(_ grupo:GrupoDomain){
-        self.grupo = grupo
+    func setGroupPre(groupPre:ACGroupPre){
+        self.groupPre = groupPre;
+        self.groupPreVm = Actor.getGroupPreVM(withLong: jlong(truncating: groupPre.groupId))
+        self.groupVm = Actor.getGroupWithGid(jint(truncating: groupPre.groupId))
     }
     
-    func setTipo(_ tipo:String){
-        self.tipoGrupo = tipo
-    }
     
     func exibirChevron(){
         let width = self.contentView.frame.width
@@ -74,72 +73,78 @@ class AAGrouppreCell: AATableViewCell {
         }
     }
     
+    open override func prepareForReuse() {
+        super.prepareForReuse()
+        binder.unbindAll()
+    }
+    
+    func bindLayout(){
+     
+        binder.bind(groupVm.getMembersCountModel(), closure: { (qtdMembersCount:JavaLangInteger!) -> () in
+            self.titleMemberQuantity.text = "\(jint(truncating: qtdMembersCount)) membros"
+        })
+        
+    }
+    
     open override func layoutSubviews() {
         super.layoutSubviews()
         
-        
         if(!self.viewInitialized){
+            
             let width = self.contentView.frame.width
             let leftPadding = CGFloat(76)
             let padding = CGFloat(14)
             
             let titleFrame = CGRect(x: leftPadding+22, y: 16, width: width - leftPadding - (padding + 50), height: 21)
-            
+
             UIView.performWithoutAnimation {
                 self.title.frame = titleFrame
-                if(grupo.possuiFilhos != nil && grupo.possuiFilhos!){
+                if(groupPre != nil && groupPre.hasChildren.booleanValue()){
                     self.title.center.y = contentView.center.y
                 }
             }
             
-            if !(grupo.possuiFilhos!){
+            if (groupPre.hasChildren.booleanValue()){
                 let titleQuantityMembersFrame = CGRect(x: leftPadding, y: 16+21, width: width - leftPadding - (padding + 50), height: 21)
                 UIView.performWithoutAnimation {
                     self.titleMemberQuantity.frame = titleQuantityMembersFrame
-                    self.titleMemberQuantity.text = "\(jint(grupo.qtdMembros!)) membros"
                     contentView.addSubview(self.titleMemberQuantity)
                 }
             }
             
-            if(tipoGrupo == "C"){
+            if(groupVm.groupType == ACGroupType.channel()){
                 let tipoGrupoFrame = CGRect(x: leftPadding, y: 16, width: 21, height: 21)
-                self.groupTypeView = UIImageView(image: #imageLiteral(resourceName: "ic_megaphone"))
+                self.groupTypeView = UIImageView(image: #imageLiteral(resourceName: "ic_create_channel"))
                 self.groupTypeView.frame = tipoGrupoFrame
                 
-                if(grupo.possuiFilhos)!{
+                if(groupPre.hasChildren.booleanValue()){
                     self.groupTypeView.center.y = contentView.center.y
                 }
                 contentView.addSubview(self.groupTypeView)
-            }else if (tipoGrupo == "G"){
+            }else if(groupVm.groupType == ACGroupType.group()){
                 let tipoGrupoFrame = CGRect(x: leftPadding, y: 16, width: 21, height: 21)
                 self.groupTypeView = UIImageView(image: #imageLiteral(resourceName: "ic_group"))
                 self.groupTypeView.frame = tipoGrupoFrame
                 
-                if(grupo.possuiFilhos)!{
+                if(groupPre.hasChildren.booleanValue()){
                     self.groupTypeView.center.y = contentView.center.y
                 }
                 contentView.addSubview(self.groupTypeView)
             }
-            
-            
+           
             let dialogAvatarSize = CGFloat(50)
             let avatarPadding = padding + (50 - dialogAvatarSize) / 2
             self.avatarView.frame = CGRect(x: avatarPadding, y: avatarPadding, width: dialogAvatarSize, height: dialogAvatarSize)
             
-            setTitle(grupo.title!)
+            self.avatarView.bind(groupVm.name.get(), id: Int(truncating: groupPre.groupId), avatar: groupVm.avatar.get());
             
+            self.title.text = groupVm.description
             
-            if let imageData = self.avatarImageData{
-                setImageData(imageData)
-            }else{
-                setImageTitle(grupo.title!)
-            }
-            
-            if(grupo.possuiFilhos)!{
+            if(groupPre.hasChildren.booleanValue()){
                 exibirChevron()
             }else{
                 removerChevron()
-                if(grupo.isMember)!{
+                if(groupVm.isMember.get().booleanValue()){
                     exibirCheck()
                 }else{
                     removerChevron()
@@ -147,20 +152,5 @@ class AAGrouppreCell: AATableViewCell {
             }
         }
         self.viewInitialized = true
-    }
-    
-    open func setTitle(_ title: String) {
-        self.title.text = title
-    }
-    
-    open func setImageTitle(_ title: String) {
-        self.avatarView.setImageWith(title, color: nil, circular: true)
-    }
-    
-    open func setImageData(_ data: NSData) {
-        self.avatarImageData = data
-        self.avatarView.image = UIImage(data: data as Data)
-        self.avatarView.layer.cornerRadius = self.avatarView.frame.size.width / 2
-        self.avatarView.clipsToBounds = true
     }
 }
