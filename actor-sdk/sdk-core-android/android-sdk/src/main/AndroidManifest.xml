@@ -344,7 +344,7 @@
 
         <activity
             android:name=".controllers.conversation.attach.photoeditor.PhotoEditorActivity"
-            android:configChanges="orientation|screenSize"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_photo_editor"
             android:theme="@style/NoBarActivityTheme"
             android:windowSoftInputMode="stateHidden|adjustPan" />
