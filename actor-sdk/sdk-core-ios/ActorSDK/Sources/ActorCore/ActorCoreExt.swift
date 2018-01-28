@@ -117,7 +117,6 @@ public extension ACCocoaMessenger {
     
     public func getGroupsPreSimpleDisplayList(_ parentId: JavaLangInteger, filter: @escaping (_ value: Any?)->jboolean) -> ARSimpleBindedDisplayList {
         return ARSimpleBindedDisplayList(arListEngineDisplayExt: getModulesContext().getGrupoPreModule().getGrupospreEngine(with: parentId) as! ARListEngineDisplayExt!, with: SimpleBindedDisplayListFilter(closure: filter))
-        //return Actor.getGroupsPreSimpleDisplayList(withParentId: parentId, with: filter)
     }
 }
 
@@ -537,6 +536,19 @@ open class SimpleBindedDisplayListFilter: NSObject, ARSimpleBindedDisplayList_Fi
     
     public func accept(_ val: Any!) -> jboolean {
         return closure!(val)
+    }
+}
+
+open class SimpleListChangeListener: NSObject, ARSimpleBindedDisplayList_ListChangedListener{
+    
+    public func onListChange(_ size: jint) {
+        closure!(size)
+    }
+    
+    var closure: ((_ value: jint?)->())?
+    
+    init(closure: @escaping (_ value: jint?)->()) {
+        self.closure = closure
     }
 }
 

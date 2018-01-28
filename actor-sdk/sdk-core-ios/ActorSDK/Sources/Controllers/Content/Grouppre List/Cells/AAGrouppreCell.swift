@@ -7,12 +7,11 @@ class AAGrouppreCell: AATableViewCell {
     fileprivate var groupPreVm: ACGroupPreVM!
     fileprivate var groupPre: ACGroupPre!
     
-    fileprivate var title: YYLabel!
-    fileprivate var titleMemberQuantity: YYLabel!
+    fileprivate var title = YYLabel()
+    fileprivate var titleMemberQuantity = YYLabel()
     fileprivate var avatarView = AAAvatarView()
-    fileprivate var chevronView: UIImageView!
-    fileprivate var checkView: UIImageView!
-    fileprivate var groupTypeView: UIImageView!
+    fileprivate var chevronView = UIImageView()
+    fileprivate var groupTypeView = UIImageView()
     
     fileprivate var viewInitialized: Bool = false
     
@@ -31,8 +30,8 @@ class AAGrouppreCell: AATableViewCell {
         titleMemberQuantity.textColor = UIColor.black
         titleMemberQuantity.backgroundColor = UIColor.white
     
-        contentView.addSubview(avatarView)
-        contentView.addSubview(title)
+        self.contentView.addSubview(avatarView)
+        self.contentView.addSubview(title)
     }
     
     required init(coder aDecoder: NSCoder) {
@@ -45,45 +44,54 @@ class AAGrouppreCell: AATableViewCell {
         self.groupVm = Actor.getGroupWithGid(jint(truncating: groupPre.groupId))
     }
     
-    
     func exibirChevron(){
         let width = self.contentView.frame.width
-        self.chevronView = UIImageView(image: #imageLiteral(resourceName: "ic_chevron_right"))
+        self.chevronView.image = UIImage.bundled("ic_chevron_right")
         self.chevronView.frame = CGRect(x: width - 40, y: (76/2)-(30/2), width: 30, height: 30)
-        contentView.addSubview(self.chevronView)
+        self.contentView.addSubview(self.chevronView)
     }
     
     func removerChevron(){
-        if let v = self.chevronView{
-            v.removeFromSuperview()
-        }
-    }
-    
-    func exibirCheck(){
-        let width = self.contentView.frame.width
-        self.checkView = UIImageView(image: #imageLiteral(resourceName: "ic_check_outline"))
-        self.checkView.frame = CGRect(x: width - 40, y: (76/2)-(21/2), width: 21, height: 21)
-        
-        contentView.addSubview(self.checkView)
-    }
-    
-    func removerCheck(){
-        if let v = self.checkView {
-            v.removeFromSuperview()
-        }
+        self.chevronView.image = UIImage()
+        self.chevronView.removeFromSuperview()
     }
     
     open override func prepareForReuse() {
         super.prepareForReuse()
-        binder.unbindAll()
+        self.binder.unbindAll()
+        self.avatarView.unbind()
     }
     
     func bindLayout(){
-     
-        binder.bind(groupVm.getMembersCountModel(), closure: { (qtdMembersCount:JavaLangInteger!) -> () in
-            self.titleMemberQuantity.text = "\(jint(truncating: qtdMembersCount)) membros"
+        binder.bind(groupVm.membersCount, valueModel2: groupVm.isMember, valueModel3: groupVm.name,
+                    closure: { (membersCount:JavaLangInteger!, isMember:JavaLangBoolean?, groupName:String?)  -> () in
+            
+            self.title.text = groupName
+                        
+            var membersText = "\(jint(truncating: membersCount)) members"
+            if let isM = isMember{
+                if(isM.booleanValue()){
+                    membersText += ", including you"
+                }
+            }
+            self.titleMemberQuantity.text = membersText
         })
         
+        binder.bind(groupPreVm.getHasChildren(), closure: {(hasChildren: JavaLangBoolean!) -> () in
+            if let hc = hasChildren {
+                if(hc.booleanValue()){
+                    self.title.center.y = self.contentView.center.y
+                    self.titleMemberQuantity.removeFromSuperview()
+                    self.groupTypeView.center.y = self.contentView.center.y
+                    self.exibirChevron()
+                }else{
+                    self.contentView.addSubview(self.titleMemberQuantity)
+                    self.removerChevron()
+                }
+            }
+        })
+        
+        self.avatarView.bind(groupVm.name.get(), id: Int(truncating: groupPre.groupId), avatar: groupVm.avatar.get());
     }
     
     open override func layoutSubviews() {
@@ -95,62 +103,29 @@ class AAGrouppreCell: AATableViewCell {
             let leftPadding = CGFloat(76)
             let padding = CGFloat(14)
             
-            let titleFrame = CGRect(x: leftPadding+22, y: 16, width: width - leftPadding - (padding + 50), height: 21)
+            let avatarSize = CGFloat(50)
+            let avatarPadding = padding + (50 - avatarSize) / 2
+            self.avatarView.frame = CGRect(x: avatarPadding, y: avatarPadding, width: avatarSize, height: avatarSize)
+            
+            let titleFrame = CGRect(x: leftPadding, y: 16, width: width - leftPadding - (padding + 50), height: 21)
+            self.title.frame = titleFrame
 
-            UIView.performWithoutAnimation {
-                self.title.frame = titleFrame
-                if(groupPre != nil && groupPre.hasChildren.booleanValue()){
-                    self.title.center.y = contentView.center.y
-                }
-            }
-            
-            if (groupPre.hasChildren.booleanValue()){
-                let titleQuantityMembersFrame = CGRect(x: leftPadding, y: 16+21, width: width - leftPadding - (padding + 50), height: 21)
-                UIView.performWithoutAnimation {
-                    self.titleMemberQuantity.frame = titleQuantityMembersFrame
-                    contentView.addSubview(self.titleMemberQuantity)
-                }
-            }
-            
+            let titleQuantityMembersFrame = CGRect(x: leftPadding, y: 16+21, width: width - leftPadding - (padding + 50), height: 21)
+            self.titleMemberQuantity.frame = titleQuantityMembersFrame
+
             if(groupVm.groupType == ACGroupType.channel()){
-                let tipoGrupoFrame = CGRect(x: leftPadding, y: 16, width: 21, height: 21)
-                self.groupTypeView = UIImageView(image: #imageLiteral(resourceName: "ic_create_channel"))
-                self.groupTypeView.frame = tipoGrupoFrame
-                
-                if(groupPre.hasChildren.booleanValue()){
-                    self.groupTypeView.center.y = contentView.center.y
-                }
-                contentView.addSubview(self.groupTypeView)
+                self.groupTypeView.image = UIImage.bundled("ic_channel")
             }else if(groupVm.groupType == ACGroupType.group()){
-                let tipoGrupoFrame = CGRect(x: leftPadding, y: 16, width: 21, height: 21)
-                self.groupTypeView = UIImageView(image: #imageLiteral(resourceName: "ic_group"))
-                self.groupTypeView.frame = tipoGrupoFrame
-                
-                if(groupPre.hasChildren.booleanValue()){
-                    self.groupTypeView.center.y = contentView.center.y
-                }
-                contentView.addSubview(self.groupTypeView)
+                self.groupTypeView.image = UIImage.bundled("ic_group")
             }
-           
-            let dialogAvatarSize = CGFloat(50)
-            let avatarPadding = padding + (50 - dialogAvatarSize) / 2
-            self.avatarView.frame = CGRect(x: avatarPadding, y: avatarPadding, width: dialogAvatarSize, height: dialogAvatarSize)
+            self.groupTypeView.frame = CGRect(x: leftPadding, y: 16, width: 21, height: 21)
+            self.contentView.addSubview(self.groupTypeView)
             
-            self.avatarView.bind(groupVm.name.get(), id: Int(truncating: groupPre.groupId), avatar: groupVm.avatar.get());
+            self.title.left = self.title.left+20
             
-            self.title.text = groupVm.description
-            
-            if(groupPre.hasChildren.booleanValue()){
-                exibirChevron()
-            }else{
-                removerChevron()
-                if(groupVm.isMember.get().booleanValue()){
-                    exibirCheck()
-                }else{
-                    removerChevron()
-                }
-            }
+            self.bindLayout()
         }
+        
         self.viewInitialized = true
     }
 }
