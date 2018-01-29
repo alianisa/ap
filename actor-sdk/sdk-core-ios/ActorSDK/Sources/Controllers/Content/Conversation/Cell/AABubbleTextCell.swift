@@ -35,7 +35,7 @@ open class AABubbleTextCell : AABubbleCell {
     
     fileprivate var cellLayout: TextCellLayout!
     
-    public init(frame: CGRect) {
+    @objc public init(frame: CGRect) {
         super.init(frame: frame, isFullSize: false)
         
         messageText.displaysAsynchronously = true

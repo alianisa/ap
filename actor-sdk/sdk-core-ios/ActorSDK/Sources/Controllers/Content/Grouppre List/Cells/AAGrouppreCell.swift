@@ -123,9 +123,10 @@ class AAGrouppreCell: AATableViewCell {
             
             self.title.left = self.title.left+20
             
-            self.bindLayout()
+            
         }
         
+        self.bindLayout()
         self.viewInitialized = true
     }
 }

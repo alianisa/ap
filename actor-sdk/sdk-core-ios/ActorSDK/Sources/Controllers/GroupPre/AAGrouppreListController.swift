@@ -7,14 +7,15 @@ import Foundation
 open class AAGrouppreListController: UITableViewController {
     
     var groupType:JavaLangInteger!
-    var parentId:JavaLangInteger = ACGroupPre.default_ID()
+    var parentId:JavaLangInteger!
     var groupsList:ARSimpleBindedDisplayList!
     
-    public init(groupType:JavaLangInteger) {
+    public init(groupType:JavaLangInteger,_ parentId:JavaLangInteger = ACGroupPre.default_ID()) {
         super.init(style: UITableViewStyle.plain)
         self.groupType = groupType
+        self.parentId = parentId
         
-        self.groupsList = Actor.getGroupsPreSimpleDisplayList(parentId, filter: {value in
+        self.groupsList = Actor.getGroupsPreSimpleDisplayList(self.parentId, filter: {value in
             let groupPre = value as! ACGroupPre
             let groupVm = Actor.getGroupWithGid(groupPre.groupId.intValue())
             return jboolean(groupVm.groupType == self.groupType.intValue())
@@ -28,7 +29,6 @@ open class AAGrouppreListController: UITableViewController {
     open override func viewDidLoad() {
         super.viewDidLoad()
         tableView.register(AAGrouppreCell.self, forCellReuseIdentifier: "cellid")
-        
         tableView.tableFooterView = UIView(frame: CGRect.zero)
         tableView.tableFooterView?.hideView()
     }
@@ -36,8 +36,6 @@ open class AAGrouppreListController: UITableViewController {
     open override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return Int(groupsList.size())
     }
-    
-    let imageCache:NSCache<NSString,NSData> = NSCache<NSString,NSData>()
     
     open override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell:AAGrouppreCell = tableView.dequeueReusableCell(withIdentifier: "cellid", for: indexPath) as! AAGrouppreCell
@@ -57,21 +55,18 @@ open class AAGrouppreListController: UITableViewController {
         let groupVm = Actor.getGroupWithGid(groupPre.groupId.intValue())
         
         if(groupPre.hasChildren.booleanValue()){
-            let gruposPredefinidosController = AAGrouppreListController(groupType:self.groupType)
+            let gruposPredefinidosController = AAGrouppreListController(groupType:self.groupType, groupPre.groupId)
             gruposPredefinidosController.title = groupVm.name.get()
-            gruposPredefinidosController.parentId = groupPre.parentId
             self.navigateNext(gruposPredefinidosController, removeCurrent: false)
         }else{
             if(groupVm.isMember.get().booleanValue()){
                 let controller = ConversationViewController(peer: ACPeer.group(with: groupPre.groupId.intValue()))
                 controller.removeExcedentControllers = false
-                //self.navigateNext(controller, removeCurrent: false)
                 self.navigateDetail(controller)
             }else{
                 self.executePromise(Actor.joinGroup(byGid: groupPre.groupId.intValue())).then({ (void:Any!) in
                     let controller = ConversationViewController(peer: ACPeer.group(with: groupPre.groupId.intValue()))
                     controller.removeExcedentControllers = false
-                    //self.navigateNext(controller, removeCurrent: false)
                     self.navigateDetail(controller)
                 }).failure(withClosure: { (erro:JavaLangException!) in
                     self.alertUser(erro.getMessage())
@@ -84,7 +79,9 @@ open class AAGrouppreListController: UITableViewController {
     open override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.groupsList.setListChangeListenerWith(SimpleListChangeListener(closure: {value in
-            self.tableView.reloadData()
+            DispatchQueue.main.async {
+                self.tableView.reloadData()
+            }
         }))
     }
     
