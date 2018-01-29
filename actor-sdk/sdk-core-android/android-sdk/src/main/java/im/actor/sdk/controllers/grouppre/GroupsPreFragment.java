@@ -123,6 +123,7 @@ public class GroupsPreFragment extends SimpleDisplayListFragment<GroupPre, Grupo
     @Override
     protected SimpleBindedListAdapter onCreateAdapter(SimpleBindedDisplayList displayList, Activity activity) {
         return new GrupoPreSimpleAdapter(displayList, new OnItemClickedListener<GroupPre>() {
+
             @Override
             public void onClicked(GroupPre groupPre) {
                 if (groupPre.getHasChildren()) {

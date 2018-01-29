@@ -3,12 +3,15 @@
 //
 
 import Foundation
+import MBProgressHUD
 
 open class AAGrouppreListController: UITableViewController {
     
     var groupType:JavaLangInteger!
     var parentId:JavaLangInteger!
     var groupsList:ARSimpleBindedDisplayList!
+    var hud: MBProgressHUD?
+    fileprivate let binder = AABinder()
     
     public init(groupType:JavaLangInteger,_ parentId:JavaLangInteger = ACGroupPre.default_ID()) {
         super.init(style: UITableViewStyle.plain)
@@ -75,7 +78,6 @@ open class AAGrouppreListController: UITableViewController {
         }
     }
     
-    
     open override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.groupsList.setListChangeListenerWith(SimpleListChangeListener(closure: {value in
@@ -83,11 +85,35 @@ open class AAGrouppreListController: UITableViewController {
                 self.tableView.reloadData()
             }
         }))
+        
+        binder.bind(self.groupsList.state()) { (state: ARSimpleBindedDisplayList_State!) in
+            if(state == ARSimpleBindedDisplayList_State.loaded()){
+                self.hideProgress()
+            }else if(state == ARSimpleBindedDisplayList_State.loaded_EMPTY()){
+                self.showProgress()
+            }else if(state == ARSimpleBindedDisplayList_State.loading_EMPTY()){
+                self.showProgress()
+            }
+        }
+    }
+    
+    func showProgress(){
+        if(self.hud == nil){
+            self.hud = AAExecutions.showProgress()
+        }
+    }
+    
+    func hideProgress(){
+        if let hd = self.hud{
+            hd.hide(animated: true)
+            self.hud = nil
+        }
     }
     
     open override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         self.groupsList.setListChangeListenerWith(nil)
+        binder.unbindAll()
     }
     
 }
