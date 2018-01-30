@@ -96,7 +96,6 @@ final public class ConversationViewController:
         //
         // Background
         //
-        
         backgroundView.clipsToBounds = true
         backgroundView.contentMode = .scaleAspectFill
         backgroundView.backgroundColor = appStyle.chatBgColor
@@ -253,6 +252,7 @@ final public class ConversationViewController:
         } else {
             isBot = false
         }
+        
         if (ActorSDK.sharedActor().enableCalls && !isBot && peer.isPrivate) {
             if ActorSDK.sharedActor().enableVideoCalls {
                 let callButtonView = AACallButton(image: UIImage.bundled("ic_call_outline_22")?.tintImage(ActorSDK.sharedActor().style.navigationTintColor))
@@ -366,9 +366,11 @@ final public class ConversationViewController:
                 self.titleView.text = String(value!);
                 self.navigationView.sizeToFit();
             })
+            
             binder.bind(group.getAvatarModel(), closure: { (value: ACAvatar?) -> () in
                 self.avatarView.bind(group.getNameModel().get(), id: Int(group.getId()), avatar: value)
             })
+            
             binder.bind(Actor.getGroupTyping(withGid: group.getId()), valueModel2: group.membersCount, valueModel3: group.getPresenceModel(), closure: { (typingValue:IOSIntArray?, membersCount: JavaLangInteger?, onlineCount:JavaLangInteger?) -> () in
                 if (!group.isMemberModel().get().booleanValue()) {
                     self.subtitleView.text = AALocalized("ChatNoGroupAccess")

@@ -148,7 +148,6 @@ open class AAConversationContentController: SLKTextViewController, ARDisplayList
     }
     
     open func bindCell(_ collectionView: UICollectionView, cellForRowAtIndexPath indexPath: IndexPath, cell: UICollectionViewCell) {
-        NSLog("UPDATE_MSG bindCeelll")
         
         let list = getProcessedList()
         let message = list!.items[(indexPath as NSIndexPath).row]
@@ -219,18 +218,15 @@ open class AAConversationContentController: SLKTextViewController, ARDisplayList
     
     open override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        
         isVisible = false
-        
         if isBinded {
             isBinded = false
-            
             // Remove listener on exit
             self.displayList.removeAppleListener(self)
-            
             // Unbinding read/receive states
             self.binder.unbindAll()
         }
+        self.stopVoicePlayer()
     }
     
     // Model updates
@@ -465,57 +461,47 @@ open class AAConversationContentController: SLKTextViewController, ARDisplayList
     // MARK: - audio play
     ///////////////////////
     
+    func stopVoicePlayer(){
+        if let vp = self.voicePlayer {
+            vp.stop()
+            vp.audioPlayerStopAndFinish()
+            self.voicesCache[self.currentAudioFileId] = 0.0
+        }
+    }
+    
     
     func playVoiceFromPath(_ path:String,fileId:jlong,position:Float) {
         
         if (self.currentAudioFileId != fileId) {
-            
-            self.voicePlayer?.stop()
-            self.voicePlayer?.audioPlayerStopAndFinish()
-            
-            self.voicesCache[self.currentAudioFileId] = 0.0
-            
+            self.stopVoicePlayer()
             self.voicePlayer = AAModernConversationAudioPlayer(filePath:path)
             self.voiceContext = self.voicePlayer.inlineMediaContext()
-            
             self.voicePlayer?.play()
-            
             self.currentAudioFileId = fileId
-            
         } else {
-            
             if (position == 0.0  || position == 0) {
-                
                 self.voicePlayer = AAModernConversationAudioPlayer(filePath:path)
                 self.voiceContext = self.voicePlayer.inlineMediaContext()
-                
                 self.voicePlayer?.play()
-                
             } else {
-                
                 if self.voicePlayer?.isPaused() == false {
                     self.voicePlayer?.pause()
                 } else {
                     self.voicePlayer?.play()
                 }
-                
             }
-            
         }
         
     }
     
     func playVideoFromPath(_ path:String) {
-        
         let player = AVPlayer(url: URL(fileURLWithPath: path))
         let playerController = AVPlayerViewController()
         playerController.player = player
         self.present(playerController, animated: true) {
             player.play()
         }
-        
     }
-    
     
     open func onEditMessageTap(rid:Int64, msg:String){}
     

@@ -382,6 +382,7 @@
 		F1A0728B200EA3250087ADCE /* SLKInputAccessoryView.h in Headers */ = {isa = PBXBuildFile; fileRef = F1A07275200EA3230087ADCE /* SLKInputAccessoryView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F1A0728C200EA3250087ADCE /* SLKTextInput+Implementation.m in Sources */ = {isa = PBXBuildFile; fileRef = F1A07276200EA3240087ADCE /* SLKTextInput+Implementation.m */; };
 		F1A072902010B5AA0087ADCE /* AAGrouppreCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1A0728F2010B5AA0087ADCE /* AAGrouppreCell.swift */; };
+		F1EF1D4F201F455C0059BAB1 /* CocoaVideoCompressorRuntime.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1EF1D4E201F455C0059BAB1 /* CocoaVideoCompressorRuntime.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -778,6 +779,7 @@
 		F1A07275200EA3230087ADCE /* SLKInputAccessoryView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SLKInputAccessoryView.h; sourceTree = "<group>"; };
 		F1A07276200EA3240087ADCE /* SLKTextInput+Implementation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "SLKTextInput+Implementation.m"; sourceTree = "<group>"; };
 		F1A0728F2010B5AA0087ADCE /* AAGrouppreCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AAGrouppreCell.swift; sourceTree = "<group>"; };
+		F1EF1D4E201F455C0059BAB1 /* CocoaVideoCompressorRuntime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CocoaVideoCompressorRuntime.swift; sourceTree = "<group>"; };
 		FCB25A92F679E862F539373D /* Pods_ActorSDK.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ActorSDK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -1028,6 +1030,7 @@
 				066A51871BC4C383000E606E /* iOSNotificationProvider.swift */,
 				066A51881BC4C383000E606E /* iOSPhoneBookProvider.swift */,
 				06E322C81C69344A00D66F53 /* iOSCallsProvider.swift */,
+				F1EF1D4E201F455C0059BAB1 /* CocoaVideoCompressorRuntime.swift */,
 			);
 			path = Providers;
 			sourceTree = "<group>";
@@ -2336,6 +2339,7 @@
 				066A52661BC50E7B000E606E /* AACountryViewController.swift in Sources */,
 				0601BBB21CA4C7DE00AEFA81 /* ElegantPresentations.swift in Sources */,
 				066A53391BC5456B000E606E /* ActorStyle.swift in Sources */,
+				F1EF1D4F201F455C0059BAB1 /* CocoaVideoCompressorRuntime.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

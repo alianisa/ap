@@ -68,10 +68,10 @@ class AAGrouppreCell: AATableViewCell {
             
             self.title.text = groupName
                         
-            var membersText = "\(jint(truncating: membersCount)) members"
+            var membersText = "\(jint(truncating: membersCount)) "+AALocalized("MEMBERS")
             if let isM = isMember{
                 if(isM.booleanValue()){
-                    membersText += ", including you"
+                    membersText += ", "+AALocalized("INCLUDING_YOU")
                 }
             }
             self.titleMemberQuantity.text = membersText

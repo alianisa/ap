@@ -7,7 +7,6 @@ import java.util.HashMap;
 import im.actor.core.modules.ModuleActor;
 import im.actor.core.modules.ModuleContext;
 import im.actor.core.viewmodel.CompressVideoCallback;
-import im.actor.runtime.CompressorProgressListener;
 import im.actor.runtime.Storage;
 import im.actor.runtime.actors.ActorRef;
 
@@ -38,15 +37,11 @@ public class CompressVideoManager extends ModuleActor {
         ci.isStarted = true;
         queue.add(ci);
 
-
-        Storage.getVideoCompressorRuntime().compressVideo(ci.getRid(), ci.getOriginalFilePath(), ci.getSender(), new CompressorProgressListener() {
-            @Override
-            public void onProgress(long rid, float v) {
-                ArrayList<CompressVideoCallback> clist = callbacks.get(rid);
-                if (clist != null) {
-                    for (final CompressVideoCallback callback : clist) {
-                        im.actor.runtime.Runtime.dispatch(() -> callback.onCompressing(v));
-                    }
+        Storage.getVideoCompressorRuntime().compressVideo(ci.getRid(), ci.getOriginalFilePath(), ci.getSender(), (rid1, v) -> {
+            ArrayList<CompressVideoCallback> clist = callbacks.get(rid1);
+            if (clist != null) {
+                for (final CompressVideoCallback callback : clist) {
+                    im.actor.runtime.Runtime.dispatch(() -> callback.onCompressing(v));
                 }
             }
         }).then((cv) -> {

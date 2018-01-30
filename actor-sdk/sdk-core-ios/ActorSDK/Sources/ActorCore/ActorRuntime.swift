@@ -22,6 +22,7 @@ class AAActorRuntime {
         ARCocoaWebRTCProxyProvider.setWebRTCRuntime(CocoaWebRTCRuntime())
         ARCocoaLifecycleProxyProvider.setLifecycleRuntime(CocoaLifecycleRuntime())
         ARCocoaDispatcher.setDispatcherProxy(CocoaDispatcher())
+        ARCocoaVideoCompressorProxyProvider.setVideoCompressorRuntime(CocoaVideoCompressorRuntime())
         // ARRuntimeEnvironment.setIsProductionWithBoolean(true)
         ARCocoaCryptoProvider.setProxyProviderWithARCocoaCryptoProxy(CocoaCrypto())
     }
