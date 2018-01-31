@@ -8,14 +8,9 @@ import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,17 +26,12 @@ import com.ahmedadeltito.photoeditorsdk.BrushDrawingView;
 import com.ahmedadeltito.photoeditorsdk.OnPhotoEditorSDKListener;
 import com.ahmedadeltito.photoeditorsdk.PhotoEditorSDK;
 import com.ahmedadeltito.photoeditorsdk.ViewType;
-import com.rd.PageIndicatorView;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-
-import im.actor.sdk.ActorSDK;
 import im.actor.sdk.R;
 import im.actor.sdk.util.ExifUtil;
-import im.actor.sdk.view.widget.SlidingUpPanelLayout;
 
 public class PhotoEditorActivity extends AppCompatActivity implements View.OnClickListener, OnPhotoEditorSDKListener {
 
@@ -53,8 +43,7 @@ public class PhotoEditorActivity extends AppCompatActivity implements View.OnCli
     private RelativeLayout parentImageRelativeLayout;
     private RecyclerView drawingViewColorPickerRecyclerView;
     private TextView undoTextView, undoTextTextView, doneDrawingTextView, eraseDrawingTextView;
-    private SlidingUpPanelLayout mLayout;
-    private Typeface emojiFont;
+
     private View topShadow;
     private RelativeLayout topShadowRelativeLayout;
     private View bottomShadow;
@@ -79,7 +68,6 @@ public class PhotoEditorActivity extends AppCompatActivity implements View.OnCli
 
 
         Typeface newFont = Typeface.createFromAsset(getAssets(), "Eventtus-Icons.ttf");
-        emojiFont = Typeface.createFromAsset(getAssets(), "emojione-android.ttf");
 
         BrushDrawingView brushDrawingView = (BrushDrawingView) findViewById(R.id.drawing_view);
         drawingViewColorPickerRecyclerView = (RecyclerView) findViewById(R.id.drawing_view_color_picker_recycler_view);
@@ -89,7 +77,6 @@ public class PhotoEditorActivity extends AppCompatActivity implements View.OnCli
         TextView addPencil = (TextView) findViewById(R.id.add_pencil_tv);
         RelativeLayout deleteRelativeLayout = (RelativeLayout) findViewById(R.id.delete_rl);
         TextView deleteTextView = (TextView) findViewById(R.id.delete_tv);
-        TextView addImageEmojiTextView = (TextView) findViewById(R.id.add_image_emoji_tv);
 
         undoTextView = (TextView) findViewById(R.id.undo_tv);
         undoTextTextView = (TextView) findViewById(R.id.undo_text_tv);
@@ -99,34 +86,21 @@ public class PhotoEditorActivity extends AppCompatActivity implements View.OnCli
         TextView clearAllTextTextView = (TextView) findViewById(R.id.clear_all_text_tv);
         TextView goToNextTextView = (TextView) findViewById(R.id.go_to_next_screen_tv);
         ImageView photoEditImageView = (ImageView) findViewById(R.id.photo_edit_iv);
-        mLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
+
         topShadow = findViewById(R.id.top_shadow);
         topShadowRelativeLayout = (RelativeLayout) findViewById(R.id.top_parent_rl);
         bottomShadow = findViewById(R.id.bottom_shadow);
         bottomShadowRelativeLayout = (RelativeLayout) findViewById(R.id.bottom_parent_rl);
-
-        ViewPager pager = (ViewPager) findViewById(R.id.image_emoji_view_pager);
-        PageIndicatorView indicator = (PageIndicatorView) findViewById(R.id.image_emoji_indicator);
 
         photoEditImageView.setImageBitmap(orientedBitmap);
 
         closeTextView.setTypeface(newFont);
         addTextView.setTypeface(newFont);
         addPencil.setTypeface(newFont);
-        addImageEmojiTextView.setTypeface(newFont);
         undoTextView.setTypeface(newFont);
         clearAllTextView.setTypeface(newFont);
         goToNextTextView.setTypeface(newFont);
         deleteTextView.setTypeface(newFont);
-
-        final List<Fragment> fragmentsList = new ArrayList<>();
-        fragmentsList.add(new ImageFragment());
-        fragmentsList.add(new EmojiFragment());
-
-        PreviewSlidePagerAdapter adapter = new PreviewSlidePagerAdapter(getSupportFragmentManager(), fragmentsList);
-        pager.setAdapter(adapter);
-        pager.setOffscreenPageLimit(5);
-        indicator.setViewPager(pager);
 
         photoEditorSDK = new PhotoEditorSDK.PhotoEditorSDKBuilder(PhotoEditorActivity.this)
                 .parentView(parentImageRelativeLayout) // add parent image view
@@ -136,29 +110,7 @@ public class PhotoEditorActivity extends AppCompatActivity implements View.OnCli
                 .buildPhotoEditorSDK(); // build photo editor sdk
         photoEditorSDK.setOnPhotoEditorSDKListener(this);
 
-        pager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                if (position == 0)
-                    mLayout.setScrollableView(((ImageFragment) fragmentsList.get(position)).imageRecyclerView);
-                else if (position == 1)
-                    mLayout.setScrollableView(((EmojiFragment) fragmentsList.get(position)).emojiRecyclerView);
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
-        });
-
         closeTextView.setOnClickListener(this);
-        addImageEmojiTextView.setOnClickListener(this);
         addTextView.setOnClickListener(this);
         addPencil.setOnClickListener(this);
 
@@ -171,6 +123,7 @@ public class PhotoEditorActivity extends AppCompatActivity implements View.OnCli
         goToNextTextView.setOnClickListener(this);
 
         colorPickerColors = new ArrayList<>();
+
         colorPickerColors.add(getResources().getColor(R.color.black));
         colorPickerColors.add(getResources().getColor(R.color.blue_color_picker));
         colorPickerColors.add(getResources().getColor(R.color.brown_color_picker));
@@ -184,16 +137,9 @@ public class PhotoEditorActivity extends AppCompatActivity implements View.OnCli
         colorPickerColors.add(getResources().getColor(R.color.yellow_color_picker));
         colorPickerColors.add(getResources().getColor(R.color.yellow_green_color_picker));
 
-        new CountDownTimer(500, 100) {
+        photoEditorSDK.setBrushColor(colorPickerColors.get(5));
+        colorCodeTextView = colorPickerColors.get(5);
 
-            public void onTick(long millisUntilFinished) {
-            }
-
-            public void onFinish() {
-                mLayout.setScrollableView(((ImageFragment) fragmentsList.get(0)).imageRecyclerView);
-            }
-
-        }.start();
     }
 
     private boolean stringIsNotEmpty(String string) {
@@ -203,18 +149,6 @@ public class PhotoEditorActivity extends AppCompatActivity implements View.OnCli
             }
         }
         return false;
-    }
-
-    public void addEmoji(String emojiName) {
-        photoEditorSDK.addEmoji(emojiName, emojiFont);
-        if (mLayout != null)
-            mLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
-    }
-
-    public void addImage(Bitmap image) {
-        photoEditorSDK.addImage(image);
-        if (mLayout != null)
-            mLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
     }
 
     private void addText(String text, int colorCodeTextView) {
@@ -238,18 +172,16 @@ public class PhotoEditorActivity extends AppCompatActivity implements View.OnCli
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View addTextPopupWindowRootView = inflater.inflate(R.layout.add_text_popup_window, null);
         final EditText addTextEditText = (EditText) addTextPopupWindowRootView.findViewById(R.id.add_text_edit_text);
+        addTextEditText.setTextColor(colorCodeTextView);
         TextView addTextDoneTextView = (TextView) addTextPopupWindowRootView.findViewById(R.id.add_text_done_tv);
         RecyclerView addTextColorPickerRecyclerView = (RecyclerView) addTextPopupWindowRootView.findViewById(R.id.add_text_color_picker_recycler_view);
         LinearLayoutManager layoutManager = new LinearLayoutManager(PhotoEditorActivity.this, LinearLayoutManager.HORIZONTAL, false);
         addTextColorPickerRecyclerView.setLayoutManager(layoutManager);
         addTextColorPickerRecyclerView.setHasFixedSize(true);
         ColorPickerAdapter colorPickerAdapter = new ColorPickerAdapter(PhotoEditorActivity.this, colorPickerColors);
-        colorPickerAdapter.setOnColorPickerClickListener(new ColorPickerAdapter.OnColorPickerClickListener() {
-            @Override
-            public void onColorPickerClickListener(int colorCode) {
-                addTextEditText.setTextColor(colorCode);
-                colorCodeTextView = colorCode;
-            }
+        colorPickerAdapter.setOnColorPickerClickListener(colorCode1 -> {
+            addTextEditText.setTextColor(colorCode1);
+            colorCodeTextView = colorCode1;
         });
         addTextColorPickerRecyclerView.setAdapter(colorPickerAdapter);
         if (stringIsNotEmpty(text)) {
@@ -265,14 +197,11 @@ public class PhotoEditorActivity extends AppCompatActivity implements View.OnCli
         pop.showAtLocation(addTextPopupWindowRootView, Gravity.TOP, 0, 0);
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
-        addTextDoneTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                addText(addTextEditText.getText().toString(), colorCodeTextView);
-                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                pop.dismiss();
-            }
+        addTextDoneTextView.setOnClickListener(view -> {
+            addText(addTextEditText.getText().toString(), colorCodeTextView);
+            InputMethodManager imm1 = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm1.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            pop.dismiss();
         });
     }
 
@@ -294,12 +223,7 @@ public class PhotoEditorActivity extends AppCompatActivity implements View.OnCli
             drawingViewColorPickerRecyclerView.setLayoutManager(layoutManager);
             drawingViewColorPickerRecyclerView.setHasFixedSize(true);
             ColorPickerAdapter colorPickerAdapter = new ColorPickerAdapter(PhotoEditorActivity.this, colorPickerColors);
-            colorPickerAdapter.setOnColorPickerClickListener(new ColorPickerAdapter.OnColorPickerClickListener() {
-                @Override
-                public void onColorPickerClickListener(int colorCode) {
-                    photoEditorSDK.setBrushColor(colorCode);
-                }
-            });
+            colorPickerAdapter.setOnColorPickerClickListener(colorCode -> photoEditorSDK.setBrushColor(colorCode));
             drawingViewColorPickerRecyclerView.setAdapter(colorPickerAdapter);
         } else {
             updateView(View.VISIBLE);
@@ -334,10 +258,8 @@ public class PhotoEditorActivity extends AppCompatActivity implements View.OnCli
     public void onClick(View v) {
         if (v.getId() == R.id.close_tv) {
             onBackPressed();
-        } else if (v.getId() == R.id.add_image_emoji_tv) {
-            mLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
         } else if (v.getId() == R.id.add_text_tv) {
-            openAddTextPopupWindow("", -1);
+            openAddTextPopupWindow("", colorCodeTextView);
         } else if (v.getId() == R.id.add_pencil_tv) {
             updateBrushDrawingView(true);
         } else if (v.getId() == R.id.done_drawing_tv) {
@@ -364,25 +286,10 @@ public class PhotoEditorActivity extends AppCompatActivity implements View.OnCli
             undoTextView.setVisibility(View.VISIBLE);
             undoTextTextView.setVisibility(View.VISIBLE);
         }
-        switch (viewType) {
-            case BRUSH_DRAWING:
-                Log.i("BRUSH_DRAWING", "onAddViewListener");
-                break;
-            case EMOJI:
-                Log.i("EMOJI", "onAddViewListener");
-                break;
-            case IMAGE:
-                Log.i("IMAGE", "onAddViewListener");
-                break;
-            case TEXT:
-                Log.i("TEXT", "onAddViewListener");
-                break;
-        }
     }
 
     @Override
     public void onRemoveViewListener(int numberOfAddedViews) {
-        Log.i(TAG, "onRemoveViewListener");
         if (numberOfAddedViews == 0) {
             undoTextView.setVisibility(View.GONE);
             undoTextTextView.setVisibility(View.GONE);
@@ -391,59 +298,11 @@ public class PhotoEditorActivity extends AppCompatActivity implements View.OnCli
 
     @Override
     public void onStartViewChangeListener(ViewType viewType) {
-        switch (viewType) {
-            case BRUSH_DRAWING:
-                Log.i("BRUSH_DRAWING", "onStartViewChangeListener");
-                break;
-            case EMOJI:
-                Log.i("EMOJI", "onStartViewChangeListener");
-                break;
-            case IMAGE:
-                Log.i("IMAGE", "onStartViewChangeListener");
-                break;
-            case TEXT:
-                Log.i("TEXT", "onStartViewChangeListener");
-                break;
-        }
+
     }
 
     @Override
     public void onStopViewChangeListener(ViewType viewType) {
-        switch (viewType) {
-            case BRUSH_DRAWING:
-                Log.i("BRUSH_DRAWING", "onStopViewChangeListener");
-                break;
-            case EMOJI:
-                Log.i("EMOJI", "onStopViewChangeListener");
-                break;
-            case IMAGE:
-                Log.i("IMAGE", "onStopViewChangeListener");
-                break;
-            case TEXT:
-                Log.i("TEXT", "onStopViewChangeListener");
-                break;
-        }
-    }
 
-    private class PreviewSlidePagerAdapter extends FragmentStatePagerAdapter {
-        private List<Fragment> mFragments;
-
-        PreviewSlidePagerAdapter(FragmentManager fm, List<Fragment> fragments) {
-            super(fm);
-            mFragments = fragments;
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            if (mFragments == null) {
-                return (null);
-            }
-            return mFragments.get(position);
-        }
-
-        @Override
-        public int getCount() {
-            return 2;
-        }
     }
 }

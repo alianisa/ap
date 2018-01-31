@@ -93,11 +93,7 @@ dependencies {
 
     //Video Compressor
     api 'br.com.diegosilva:vclibrary:1.0.10-SNAPSHOT'
-    api 'com.ahmedadeltito:photoeditorsdk:0.1.01-SNAPSHOT'
 
-    api 'com.romandanylyk:pageindicatorview:1.0.0'
-    //api(name: 'photoeditorsdk', ext: 'aar')
-    //api files('libs/photoeditorsdk.aar')
 }
 
 String ossrhUsername = ""
