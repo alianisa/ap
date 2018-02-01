@@ -22,7 +22,7 @@ public class AndroidVideoCompressorRuntimeProvider implements VideoCompressorRun
 
     @Override
     public Promise<CompressedVideo> compressVideo(long rid, String originalPath, ActorRef sender, CompressorProgressListener progressCallback) {
-        return new Promise<>(resolver -> Runtime.dispatch(() -> {
+        return new Promise<>(resolver -> new Thread(() -> {
             try {
                 FileSystemReference fr = Storage.createTempFile();
                 String destPath = fr.getDescriptor();
@@ -50,6 +50,6 @@ public class AndroidVideoCompressorRuntimeProvider implements VideoCompressorRun
             } catch (Exception e) {
                 resolver.error(e);
             }
-        }));
+        }).start());
     }
 }
