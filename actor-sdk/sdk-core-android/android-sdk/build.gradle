@@ -17,6 +17,13 @@ android {
         minSdkVersion 15
         targetSdkVersion 25
         renderscriptSupportModeEnabled true
+
+        externalNativeBuild {
+            ndkBuild {
+                arguments "NDK_APPLICATION_MK:=jni/Application.mk", "APP_PLATFORM:=android-14"
+                abiFilters "armeabi-v7a", "x86", "armeabi"
+            }
+        }
     }
 
     sourceSets {
@@ -44,6 +51,14 @@ android {
                            '../../sdk-core/runtime/runtime-generic/src/main/java',
                            '../../sdk-core/runtime/runtime-android/src/main/java']
             }
+        }
+    }
+
+    sourceSets.main.jniLibs.srcDirs = ['./jni/']
+
+    externalNativeBuild {
+        ndkBuild {
+            path "jni/Android.mk"
         }
     }
 
@@ -91,9 +106,7 @@ dependencies {
     api 'com.android.support:customtabs:27.0.2'
     api 'com.android.support.constraint:constraint-layout:1.0.2'
 
-    //Video Compressor
-    api 'br.com.diegosilva:vclibrary:1.0.10-SNAPSHOT'
-
+    api 'com.googlecode.mp4parser:isoparser:1.0.6'
 }
 
 String ossrhUsername = ""

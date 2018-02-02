@@ -5,13 +5,11 @@ import java.io.File;
 import br.com.diegosilva.vo.vclibrary.video.ConversionListener;
 import br.com.diegosilva.vo.vclibrary.video.MediaController;
 import im.actor.runtime.CompressorProgressListener;
-import im.actor.runtime.Runtime;
 import im.actor.runtime.Storage;
 import im.actor.runtime.VideoCompressorRuntime;
 import im.actor.runtime.actors.ActorRef;
 import im.actor.runtime.files.FileSystemReference;
 import im.actor.runtime.promise.Promise;
-import im.actor.runtime.promise.PromiseFunc;
 import im.actor.runtime.video.CompressedVideo;
 
 /**
