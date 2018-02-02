@@ -48,6 +48,8 @@ public class MediaPickerFragment extends BaseFragment {
     private boolean pickCropped;
     private boolean pickEdited;
 
+    private int cameraAction = 0;
+
     public void requestPhoto() {
         requestPhoto(false, false);
     }
@@ -59,6 +61,7 @@ public class MediaPickerFragment extends BaseFragment {
     public void requestPhoto(boolean pickCropped, boolean pickEdited) {
         this.pickCropped = pickCropped;
         this.pickEdited = pickEdited;
+        this.cameraAction = 1;
 
         //
         // Checking permissions
@@ -99,6 +102,7 @@ public class MediaPickerFragment extends BaseFragment {
     public void requestVideo() {
         this.pickCropped = false;
         this.pickEdited = false;
+        this.cameraAction = 2;
 
         //
         // Checking permissions
@@ -125,7 +129,6 @@ public class MediaPickerFragment extends BaseFragment {
         if (pendingFile == null) {
             return;
         }
-
 
         //
         // Requesting Video
@@ -347,7 +350,10 @@ public class MediaPickerFragment extends BaseFragment {
                                            @NonNull int[] grantResults) {
         if (requestCode == PERMISSIONS_REQUEST_CAMERA) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                requestPhotoEdited();
+                if(cameraAction == 1)
+                    requestPhotoEdited();
+                else if(cameraAction == 2)
+                    requestVideo();
             }
         }
 

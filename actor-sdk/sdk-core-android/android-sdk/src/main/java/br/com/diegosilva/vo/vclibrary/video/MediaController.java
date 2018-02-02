@@ -14,6 +14,7 @@ import android.util.Log;
 import java.io.File;
 import java.nio.ByteBuffer;
 
+
 @SuppressLint("NewApi")
 public class MediaController {
     private static final String TAG = MediaController.class.getName();
@@ -178,11 +179,10 @@ public class MediaController {
     }
 
     @TargetApi(16)
-    public void convertVideo(final String path, final String outPath, ConversionListener listener) {
+    public void convertVideo(final String sourcePath, String outPath, ConversionListener listener) {
 
         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-        retriever.setDataSource(path);
-
+        retriever.setDataSource(sourcePath);
         String width = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT);
         String height = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH);
         String rotation = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
@@ -191,37 +191,47 @@ public class MediaController {
         long startTime = -1;
         long endTime = -1;
 
+        int resultWidth = 720;
+        int resultHeight = 480;
+
         int rotationValue = Integer.valueOf(rotation);
         int originalWidth = Integer.valueOf(width);
         int originalHeight = Integer.valueOf(height);
-
-        int resultWidth  = originalWidth / 2;
-        int resultHeight = originalHeight / 2;
 
         int bitrate = Integer.valueOf(bitrates) / 8;
         int rotateRender = 0;
 
         File cacheFile = new File(outPath);
 
-        if (rotationValue == 90) {
-            rotationValue = 0;
-            rotateRender = 270;
-        } else if (rotationValue == 180 || rotationValue == 0) {
+        if (Build.VERSION.SDK_INT < 18 && resultHeight > resultWidth && resultWidth != originalWidth && resultHeight != originalHeight) {
             int temp = resultHeight;
             resultHeight = resultWidth;
             resultWidth = temp;
-            rotateRender = 180;
-            rotationValue = 0;
-        } else if (rotationValue == 270) {
-            rotationValue = 0;
-            rotateRender = 90;
+            rotationValue = 90;
+            rotateRender = 270;
+        } else if (Build.VERSION.SDK_INT > 20) {
+            if (rotationValue == 90) {
+                int temp = resultHeight;
+                resultHeight = resultWidth;
+                resultWidth = temp;
+                rotationValue = 0;
+                rotateRender = 270;
+            } else if (rotationValue == 180) {
+                rotateRender = 180;
+                rotationValue = 0;
+            } else if (rotationValue == 270) {
+                int temp = resultHeight;
+                resultHeight = resultWidth;
+                resultWidth = temp;
+                rotationValue = 0;
+                rotateRender = 90;
+            }
         }
 
-        File inputFile = new File(path);
+        File inputFile = new File(sourcePath);
         if (!inputFile.canRead()) {
             didWriteData(true, true);
-            listener.onError(new RuntimeException("Canot read the input"));
-            return;
+            listener.onError(new RuntimeException(("Canot read the input")));
         }
 
         videoConvertFirstWrite = true;
@@ -608,8 +618,8 @@ public class MediaController {
             listener.onError(new RuntimeException("Invalid sizes"));
             return;
         }
-        didWriteData(true, error);
 
+        didWriteData(true, error);
         listener.onSuccess(cacheFile);
     }
 }
