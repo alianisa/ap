@@ -224,7 +224,7 @@
     <!-- Contacts -->
     <string name="contacts_title">Contatos</string>
     <string name="contacts_empty_short">Não há contatos</string>
-    <string name="contacts_share">Avise um amigo sobre o {appName}</string>
+    <string name="contacts_share">Convidar seus amigos?</string>
     <string name="contacts_add">Adicionar amigo...</string>
 
     <string name="contacts_empty_title">Convide seus amigos</string>
@@ -238,11 +238,11 @@
 
     <string name="contacts_invite_via_link">Convidar via link</string>
 
-    <string name="invites_select_all">Select all</string>
-    <string name="invites_select_none">Select none</string>
+    <string name="invites_select_all">Selecionar todos</string>
+    <string name="invites_select_none">Desmarcar todos</string>
 
-    <string name="invites_share_link_one">Share link</string>
-    <string name="invites_share_link_multiple">Send link via sms/email to multiple contacts</string>
+    <string name="invites_share_link_one">Convidar utilizando um aplicativo?</string>
+    <string name="invites_share_link_multiple">Convidar utilizando SMS/Email?</string>
 
     <!-- Chat -->
     <string name="chat_menu_group_info">Informações do Grupo</string>
