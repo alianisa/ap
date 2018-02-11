@@ -175,16 +175,15 @@ public class DialogView extends ListItemBackgroundView<Dialog, DialogView.Dialog
             // Content
             //
             if (isTyping) {
-                canvas.drawText(typingText, Screen.dp(72), Screen.dp(54), textActivePaint);
+                if(typingText != null && textActivePaint != null)
+                    canvas.drawText(typingText, Screen.dp(72), Screen.dp(54), textActivePaint);
             } else {
-
                 if (layout.getTextLayout() != null) {
                     canvas.save();
                     canvas.translate(Screen.dp(72), Screen.dp(40));
                     layout.getTextLayout().draw(canvas);
                     canvas.restore();
                 }
-
                 if (layout.getCounter() != null) {
                     int left = getWidth() - Screen.sp(12) - layout.getCounterWidth();
                     int top = Screen.dp(37);
@@ -299,10 +298,8 @@ public class DialogView extends ListItemBackgroundView<Dialog, DialogView.Dialog
                 String desc = messenger().findDownloadedDescriptor(image.getFileReference().getFileId());
                 if (desc != null) {
                     ImageRequest request = ImageRequestBuilder.newBuilderWithSource(
-//                            Uri.fromFile(new File(desc)))
                             Files.getUri(getContext(), desc))
                             .setResizeOptions(new ResizeOptions(Screen.dp(52), Screen.dp(52)))
-                            //.setImageType(ImageRequest.ImageType.SMALL)
                             .build();
                     res.setImageRequest(request);
                 } else {
