@@ -42,6 +42,7 @@ final class SmtpEmailSender(config: EmailConfig)(implicit ec: ExecutionContext) 
     email.setSmtpPort(config.smtp.port)
     email.setAuthenticator(new DefaultAuthenticator(config.smtp.username, config.smtp.password))
     email.setStartTLSEnabled(config.smtp.tls)
+    email.setSSLOnConnect(config.smtp.ssl)
     email.setFrom(config.sender.address, config.sender.name)
     email.setSubject(message.subject)
     message.content.html foreach { email.setHtmlMsg }
