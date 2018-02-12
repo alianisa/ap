@@ -70,16 +70,16 @@ public class Application extends ActorSDKApplication {
         ActorSDK.sharedActor().setOnClientPrivacyEnabled(true);
         ActorStyle style = ActorSDK.sharedActor().style;
 
-        style.setDialogsActiveTextColor(0xff5882ac);
-        style.setShowAvatarPrivateInTitle(false);
-        style.setDialogsActiveTextColor(0xff5882ac);
-        style.setMainColor(Color.parseColor("#A43436"));
-        style.setAccentColor(Color.parseColor("#1F3255"));
-        style.setStatusBarColor(Color.parseColor("#A43436"));
-        style.setAccentPressedColor(Color.parseColor("#1F3255"));
-        style.setPrimaryAltColor(Color.parseColor("#A43436"));
-        style.setToolBarColor(Color.parseColor("#A43436"));
-        style.setFabColor(Color.parseColor("#A43436"));
+//        style.setDialogsActiveTextColor(0xff5882ac);
+//        style.setShowAvatarPrivateInTitle(false);
+//        style.setDialogsActiveTextColor(0xff5882ac);
+//        style.setMainColor(Color.parseColor("#A43436"));
+//        style.setAccentColor(Color.parseColor("#1F3255"));
+//        style.setStatusBarColor(Color.parseColor("#A43436"));
+//        style.setAccentPressedColor(Color.parseColor("#1F3255"));
+//        style.setPrimaryAltColor(Color.parseColor("#A43436"));
+//        style.setToolBarColor(Color.parseColor("#A43436"));
+//        style.setFabColor(Color.parseColor("#A43436"));
 
         ActorSDK.sharedActor().setFastShareEnabled(true);
 
