@@ -177,8 +177,7 @@ public class SignPhoneFragment extends BaseAuthFragment {
 
         phoneNumberEditText = (BackspaceKeyEditText) v.findViewById(R.id.tv_phone_number);
         phoneNumberEditText.setTextColor(ActorSDK.sharedActor().style.getTextPrimaryColor());
-
-        phoneNumberEditText.addTextChangedListener(Mask.telephoneMask(phoneNumberEditText));
+        phoneNumberEditText.setKeyListener(Mask.keylistenerNumber);
 
         phoneNumberEditText.setBackspaceListener(() -> {
             if (phoneNumberEditText.getText().length() == 0) {
