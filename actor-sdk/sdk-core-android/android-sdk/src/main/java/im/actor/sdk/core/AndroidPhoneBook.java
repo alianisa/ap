@@ -77,7 +77,6 @@ public class AndroidPhoneBook implements PhoneBookProvider {
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_CONTACTS) != PackageManager.PERMISSION_GRANTED &&
                 ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
             Log.d("Permissions", "contacts - no permission :c");
-            Toast.makeText(context, "No permission to read the contacts, returning empty list", Toast.LENGTH_LONG).show();
             return new ArrayList<>();
         }
 
