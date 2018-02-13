@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.os.SystemClock;
 import android.provider.ContactsContract;
 import android.support.v4.content.ContextCompat;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -73,14 +74,13 @@ public class AndroidPhoneBook implements PhoneBookProvider {
             return new ArrayList<>();
         }
 
-        // Loading records
-        // TODO: Better logic for duplicate phones
-        //Check have permission for this
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_CONTACTS) != PackageManager.PERMISSION_GRANTED &&
                 ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
             Log.d("Permissions", "contacts - no permission :c");
+            Toast.makeText(context, "No permission to read the contacts, returning empty list", Toast.LENGTH_LONG).show();
             return new ArrayList<>();
         }
+
         Cursor cur = cr.query(ContactsContract.Contacts.CONTENT_URI,
                 new String[]
                         {
@@ -101,7 +101,7 @@ public class AndroidPhoneBook implements PhoneBookProvider {
                     try {
                         Thread.sleep(READ_ITEM_DELAY);
                     } catch (InterruptedException e) {
-                        e.printStackTrace();
+                        Log.e(TAG, e);
                     }
                 }
             }
