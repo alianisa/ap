@@ -367,10 +367,12 @@ public class AttachFragment extends AbsAttachFragment implements MediaPickerCall
                 if (activity == null) {
                     return;
                 }
-                if (ContextCompat.checkSelfPermission(activity,
-                        Manifest.permission.READ_EXTERNAL_STORAGE)
-                        != PackageManager.PERMISSION_GRANTED) {
-                    requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_REQ_MEDIA);
+                if (ContextCompat.checkSelfPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE)
+                        != PackageManager.PERMISSION_GRANTED ||
+                        ContextCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                                != PackageManager.PERMISSION_GRANTED) {
+                    requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQ_MEDIA);
                     return;
                 }
             }
@@ -384,19 +386,16 @@ public class AttachFragment extends AbsAttachFragment implements MediaPickerCall
 //            fastShare.startAnimation(animation);
 //            bottomBackground.startAnimation(animation);
 
-            shareButtons.post(new Runnable() {
-                @Override
-                public void run() {
-                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                        View internal = fastShare;
-                        int cx = internal.getWidth() - Screen.dp(56 + 56);
-                        int cy = internal.getHeight() - Screen.dp(56 / 2);
-                        float finalRadius = (float) Math.hypot(cx, cy);
-                        Animator anim = ViewAnimationUtils.createCircularReveal(internal, cx, cy, 0, finalRadius);
-                        anim.setDuration(200);
-                        anim.start();
-                        internal.setAlpha(1);
-                    }
+            shareButtons.post(() -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    View internal = fastShare;
+                    int cx = internal.getWidth() - Screen.dp(56 + 56);
+                    int cy = internal.getHeight() - Screen.dp(56 / 2);
+                    float finalRadius = (float) Math.hypot(cx, cy);
+                    Animator anim = ViewAnimationUtils.createCircularReveal(internal, cx, cy, 0, finalRadius);
+                    anim.setDuration(200);
+                    anim.start();
+                    internal.setAlpha(1);
                 }
             });
 

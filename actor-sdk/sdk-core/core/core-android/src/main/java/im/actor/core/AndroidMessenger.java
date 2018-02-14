@@ -372,6 +372,7 @@ public class AndroidMessenger extends im.actor.core.Messenger {
                 try {
                     tuple2 = createTempUploadFile(appName, inputStream, mimeType);
                 } catch (Exception e) {
+                    Log.e(TAG, e);
                     callback.onError(e);
                 }
 
@@ -397,6 +398,7 @@ public class AndroidMessenger extends im.actor.core.Messenger {
             throws Exception {
         String extension = MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType);
         File externalFile = Environment.getExternalStorageDirectory();
+        //File externalFile = ContextCompat.getExternalFilesDirs();
         String externalPath = externalFile.getAbsolutePath();
         File dest = new File(externalPath + "/" + appName + "/uploads" + "/");
         dest.mkdirs();

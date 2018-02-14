@@ -67,6 +67,7 @@ public class Application extends ActorSDKApplication {
     public void onConfigureActorSDK() {
         ActorSDK.sharedActor().setDelegate(new ActorSDKDelegate());
         //ActorSDK.sharedActor().setPushId(43880936595L);
+        ActorSDK.sharedActor().setPushId(43880936595L);
         ActorSDK.sharedActor().setOnClientPrivacyEnabled(true);
         ActorStyle style = ActorSDK.sharedActor().style;
 
