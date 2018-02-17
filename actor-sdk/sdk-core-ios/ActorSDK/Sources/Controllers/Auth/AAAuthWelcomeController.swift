@@ -102,12 +102,15 @@ open class AAWelcomeController: AAViewController {
     @objc open func signInAction() {
         // TODO: Remove BG after auth?
         UIApplication.shared.keyWindow?.backgroundColor = ActorSDK.sharedActor().style.welcomeBgColor
-        self.presentElegantViewController(AAAuthNavigationController(rootViewController: AAAuthLogInViewController()))
+        if ActorSDK.sharedActor().authStrategy == .phoneOnly || ActorSDK.sharedActor().authStrategy == .phoneEmail {
+            self.presentElegantViewController(AAAuthNavigationController(rootViewController: AAAuthPhoneViewController()))
+        } else {
+            self.presentElegantViewController(AAAuthNavigationController(rootViewController: AAAuthEmailViewController()))
+        }
     }
     
     open override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-     
         // TODO: Fix after cancel?
         UIApplication.shared.setStatusBarStyle(.lightContent, animated: true)
     }

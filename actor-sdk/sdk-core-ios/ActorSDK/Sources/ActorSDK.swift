@@ -75,7 +75,7 @@ import UserNotifications
     open var apiPushId: Int? = nil
     
     /// Strategy about authentication
-    open var authStrategy = AAAuthStrategy.phoneOnly
+    open var authStrategy = AAAuthStrategy.phoneEmail
     
     /// Enable phone book import
     open var enablePhoneBookImport = true

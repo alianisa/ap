@@ -5,7 +5,7 @@ import java.util.concurrent.TimeUnit
 import akka.actor.{ ActorLogging, ActorRef, Cancellable, Props }
 import akka.stream.actor._
 import com.typesafe.config.Config
-import im.actor.api.rpc.{ RpcOk, UpdateBox, RpcResult ⇒ ApiRpcResult }
+import im.actor.api.rpc.{UpdateBox, RpcResult ⇒ ApiRpcResult }
 import im.actor.api.rpc.codecs.UpdateBoxCodec
 import im.actor.api.rpc.sequence._
 import im.actor.server.api.rpc.RpcResultCodec
@@ -15,7 +15,6 @@ import scodec.bits.BitVector
 import scala.annotation.tailrec
 import scala.collection.{ immutable, mutable }
 import scala.concurrent.duration._
-import scala.util.control.NoStackTrace
 
 private[session] sealed trait ReSenderMessage
 
@@ -121,7 +120,6 @@ private[session] class ReSender(authId: Long, sessionId: Long, firstMessageId: L
   import ReSenderMessage._
   import context.dispatcher
 
-  // TODO: configurable
   private val AckTimeout = config.ackTimeout
   private val MaxBufferSize = config.maxBufferSize
   private val MaxResendSize = config.maxResendSize
@@ -195,9 +193,7 @@ private[session] class ReSender(authId: Long, sessionId: Long, firstMessageId: L
         getResendableItem(messageId) foreach {
           case (item, scheduledResend) ⇒
             decreaseBufferSize(item)
-
             scheduledResend.cancel()
-
             item match {
               case PushItem(_, reduceKeyOpt, _) ⇒
                 reduceKeyOpt foreach { reduceKey ⇒
@@ -219,7 +215,6 @@ private[session] class ReSender(authId: Long, sessionId: Long, firstMessageId: L
       getResendableItem(messageId) foreach {
         case (item, scheduled) ⇒
           scheduled.cancel()
-
           item match {
             case pi: PushItem ⇒
               enqueuePush(pi, nextMessageId())
@@ -375,7 +370,7 @@ private[session] class ReSender(authId: Long, sessionId: Long, firstMessageId: L
   }
 
   private def scheduleResend(item: ResendableItem, messageId: Long) = {
-    log.debug("Scheduling resend of messageId: {}, timeout: {}", messageId, AckTimeout)
+    log.debug("Scheduling resend of messageId: {}, priority: {}, message timeout: {}", messageId, item.priority, AckTimeout)
 
     // FIXME: increase resendBufferSize by real Unsent
 
@@ -414,6 +409,7 @@ private[session] class ReSender(authId: Long, sessionId: Long, firstMessageId: L
 
   private def enqueueNewSession(item: NewSessionItem): Unit = {
     val messageId = nextMessageId()
+    log.debug("enqueueNewSession {}", messageId)
     scheduleResend(item, messageId)
     enqueue(MessageBox(messageId, item.newSession), Priority.NewSession)
   }
@@ -422,24 +418,28 @@ private[session] class ReSender(authId: Long, sessionId: Long, firstMessageId: L
     enqueue(MessageBox(nextMessageId(), ProtoPush(UpdateBoxCodec.encode(SeqUpdateTooLong).require)), Priority.SeqPush)
 
   private def enqueueRpc(item: RpcItem, messageId: Long): Unit = {
+    log.debug("enqueueRpc {}", messageId)
     scheduleResend(item, messageId)
     val mb = MessageBox(messageId, ProtoRpcResponse(item.requestMessageId, item.body))
     enqueue(mb, Priority.RPC)
   }
 
   private def enqueueUnsentRpc(item: RpcItem, unsentMessageId: Long): Unit = {
+    log.debug("enqueueUnsentRpc {}", unsentMessageId)
     scheduleResend(item, unsentMessageId)
     val mb = MessageBox(nextMessageId(), UnsentResponse(unsentMessageId, item.requestMessageId, item.size.toInt))
     enqueue(mb, Priority.RPC)
   }
 
   private def enqueuePush(item: PushItem, messageId: Long): Unit = {
+    log.debug("enqueuePush {}", messageId)
     scheduleResend(item, messageId)
     val mb = MessageBox(messageId, ProtoPush(item.body))
     enqueue(mb, item.priority)
   }
 
   private def enqueueUnsentPush(item: PushItem, unsentMessageId: Long): Unit = {
+    log.debug("enqueuePush {}", unsentMessageId)
     scheduleResend(item, unsentMessageId)
     val mb = MessageBox(nextMessageId(), UnsentMessage(unsentMessageId, item.size.toInt))
     enqueue(mb, item.priority)
@@ -462,11 +462,15 @@ private[session] class ReSender(authId: Long, sessionId: Long, firstMessageId: L
 
   private def pushBufferSize = responseBuffer.size + pushBuffer.size + newSessionBuffer.map(_ ⇒ 1).getOrElse(0)
 
-  override def postStop(): Unit = {
-    super.postStop()
-    log.debug("Clearing resend buffers ({} items)", pushBufferSize)
+  private def cleanupAllResends() = {
     responseBuffer.values foreach (_._2.cancel())
     pushBuffer.values foreach (_._2.cancel())
     newSessionBuffer foreach (_._3.cancel())
+  }
+
+  override def postStop(): Unit = {
+    super.postStop()
+    log.debug("Clearing resend buffers ({} items)", pushBufferSize)
+    cleanupAllResends()
   }
 }

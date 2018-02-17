@@ -20,25 +20,25 @@ open class AppDelegate : ActorApplicationDelegate {
         style.vcStatusBarStyle = .lightContent
         
         // Navigation colors
-        style.navigationBgColor = UIColor(rgb: 0xA43436)
-        style.dialogStatusActive = UIColor(rgb: 0xff5882)
-        style.welcomeBgColor = UIColor(rgb: 0xA43436)
+//        style.navigationBgColor = UIColor(rgb: 0xA43436)
+//        style.dialogStatusActive = UIColor(rgb: 0xff5882)
+//        style.welcomeBgColor = UIColor(rgb: 0xA43436)
         
-        ActorSDK.sharedActor().style.welcomeSignupTextColor = UIColor(rgb: 0xA43436)
-        ActorSDK.sharedActor().style.nextBarColor = UIColor(rgb: 0xA43436)
+//        ActorSDK.sharedActor().style.welcomeSignupTextColor = UIColor(rgb: 0xA43436)
+//        ActorSDK.sharedActor().style.nextBarColor = UIColor(rgb: 0xA43436)
         
-        style.navigationTintColor = UIColor.white
-        style.navigationTitleColor = UIColor.white
-        style.navigationSubtitleColor = UIColor.white.alpha(0.64)
-        style.navigationSubtitleActiveColor = UIColor.white
+//        style.navigationTintColor = UIColor.white
+//        style.navigationTitleColor = UIColor.white
+//        style.navigationSubtitleColor = UIColor.white.alpha(0.64)
+//        style.navigationSubtitleActiveColor = UIColor.white
         // style.navigationHairlineHidden = true
         
         // Full screen placeholder. Set here value that matches UINavigationBar color
-        style.placeholderBgColor = UIColor(rgb: 0x528dbe)
+//        style.placeholderBgColor = UIColor(rgb: 0x528dbe)
         
         // Override User's online/offline statuses in navigation color
-        style.userOfflineNavigationColor = UIColor.white.alpha(0.64)
-        style.userOnlineNavigationColor = UIColor.white
+//        style.userOfflineNavigationColor = UIColor.white.alpha(0.64)
+//        style.userOnlineNavigationColor = UIColor.white
         
         // Override search status bar style
         style.searchStatusBarStyle = .default
@@ -55,7 +55,7 @@ open class AppDelegate : ActorApplicationDelegate {
         // Setting Development Push Id
         ActorSDK.sharedActor().apiPushId = 868547
         ActorSDK.sharedActor().autoPushMode = .afterLogin
-        ActorSDK.sharedActor().authStrategy = .phoneOnly
+        ActorSDK.sharedActor().authStrategy = .phoneEmail
         
         ActorSDK.sharedActor().style.dialogAvatarSize = 58
         

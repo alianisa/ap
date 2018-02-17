@@ -2,11 +2,11 @@ package im.actor.server.push.apple
 
 import akka.actor.ActorSystem
 import akka.event.Logging
-import com.google.protobuf.wrappers.{ Int32Value, StringValue }
-import com.relayrides.pushy.apns.PushNotificationResponse
-import com.relayrides.pushy.apns.util.{ SimpleApnsPushNotification, TokenUtil }
+import com.google.protobuf.wrappers.{Int32Value, StringValue}
+import com.relayrides.pushy.apns.{DeliveryPriority, PushNotificationResponse}
+import com.relayrides.pushy.apns.util.{SimpleApnsPushNotification, TokenUtil}
 import im.actor.server.model.push.ApplePushCredentials
-import io.netty.util.concurrent.{ Future ⇒ NFuture }
+import io.netty.util.concurrent.{Future => NFuture}
 import scodec.bits.BitVector
 
 import scala.collection.concurrent.TrieMap
