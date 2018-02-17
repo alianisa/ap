@@ -59,6 +59,7 @@ import im.actor.runtime.generic.mvvm.BindedDisplayList;
 import im.actor.runtime.generic.mvvm.SimpleBindedDisplayList;
 import im.actor.runtime.storage.ListEngineDisplayExt;
 import me.leolin.shortcutbadger.ShortcutBadger;
+import me.leolin.shortcutbadger.impl.XiaomiHomeBadger;
 
 import static im.actor.runtime.actors.ActorSystem.system;
 

@@ -10,12 +10,13 @@ def baseVersion = "3.0"
 android {
 
     compileSdkVersion 27
-    buildToolsVersion '27.0.2'
+    buildToolsVersion '27.0.3'
 
     defaultConfig {
         vectorDrawables.useSupportLibrary = true
         minSdkVersion 15
         targetSdkVersion 25
+        multiDexEnabled true
         renderscriptSupportModeEnabled true
 
         externalNativeBuild {
