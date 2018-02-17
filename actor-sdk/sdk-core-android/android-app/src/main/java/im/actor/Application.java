@@ -14,6 +14,8 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.Toast;
 
+import com.google.firebase.FirebaseApp;
+
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -65,8 +67,8 @@ public class Application extends ActorSDKApplication {
 
     @Override
     public void onConfigureActorSDK() {
+        FirebaseApp.initializeApp(this);
         ActorSDK.sharedActor().setDelegate(new ActorSDKDelegate());
-        //ActorSDK.sharedActor().setPushId(43880936595L);
         ActorSDK.sharedActor().setPushId(43880936595L);
         ActorSDK.sharedActor().setOnClientPrivacyEnabled(true);
         ActorStyle style = ActorSDK.sharedActor().style;

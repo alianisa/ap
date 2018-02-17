@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 27
-    buildToolsVersion '27.0.2'
+    buildToolsVersion '27.0.3'
 
     defaultConfig {
         applicationId "im.actor.develop"
@@ -35,15 +35,15 @@ android {
         }
         avell {
             dimension "padrao"
-            applicationIdSuffix ".avell"
+            //applicationIdSuffix ".avell"
         }
         mac {
             dimension "padrao"
-            applicationIdSuffix ".mac"
+            //applicationIdSuffix ".mac"
         }
         desenv {
             dimension "padrao"
-            applicationIdSuffix ".desenv"
+            //applicationIdSuffix ".desenv"
         }
     }
 
@@ -52,6 +52,7 @@ android {
     }
 
     dexOptions {
+//        jumboMode true
         javaMaxHeapSize "4g"
     }
 
@@ -70,3 +71,5 @@ dependencies {
 
     api 'com.roughike:bottom-bar:1.3.9'
 }
+
+apply plugin: 'com.google.gms.google-services'

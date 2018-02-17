@@ -25,7 +25,6 @@ import im.actor.core.ConfigurationBuilder;
 import im.actor.core.DeviceCategory;
 import im.actor.core.PlatformType;
 import im.actor.core.entity.Peer;
-import im.actor.core.network.parser.BaseParser;
 import im.actor.runtime.Log;
 import im.actor.runtime.Runtime;
 import im.actor.runtime.actors.ActorSystem;
