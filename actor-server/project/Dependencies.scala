@@ -116,7 +116,7 @@ object Dependencies {
     val alpn                    = "org.eclipse.jetty.alpn"        % "alpn-api"                       % "1.1.3.v20160715" % "runtime"
     //val tcnative                = "io.netty"                      % "netty-tcnative"                 % "1.1.33.Fork25" classifier "linux-x86_64"
 
-    val tcnative                = "io.netty"                      % "netty-tcnative-boringssl-static"  % "1.1.33.Fork25"
+    val tcnative                = "io.netty"                      % "netty-tcnative-boringssl-static"  % "2.0.0.Final"
     val silencer                = "com.github.ghik"               % "silencer-lib"                   % "0.4"
 
 
