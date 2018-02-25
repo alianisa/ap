@@ -95,20 +95,14 @@
             android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
-
                 <category android:name="android.intent.category.BROWSABLE" />
                 <category android:name="android.intent.category.DEFAULT" />
-
-                <data
-                    android:host="quit.email"
-                    android:pathPrefix="/join/"
-                    android:scheme="https" />
-                <data
-                    android:host="actor.im"
-                    android:pathPrefix="/join/"
-                    android:scheme="https" />
                 <data
                     android:host="im.xloto.com.br"
+                    android:pathPrefix="/join/"
+                    android:scheme="https" />
+                <data
+                    android:host="conecta.im"
                     android:pathPrefix="/join/"
                     android:scheme="https" />
             </intent-filter>
@@ -120,6 +114,8 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data android:scheme="actor" />
+                <data android:scheme="xloto" />
+                <data android:scheme="conecta" />
             </intent-filter>
 
         </activity>
