@@ -72,6 +72,8 @@ private [grouppre] trait GroupPreCommandHandlers {
 
       activeUsersIds <- db.run(UserRepo.activeUsersIds)
       seqState <- seqUpdExt.broadcastClientUpdate(cmd.userId, cmd.authId, activeUsersIds.toSet, update)
+
+      //weakExt.
       
     }yield(CreateAck(Some(seqState)))
 

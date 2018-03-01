@@ -11,7 +11,7 @@ import im.actor.server.cqrs.{Processor, TaggedEvent}
 import im.actor.server.db.DbExtension
 import im.actor.server.dialog.DialogExtension
 import im.actor.server.group.GroupExtension
-import im.actor.server.sequence.SeqUpdatesExtension
+import im.actor.server.sequence.{SeqUpdatesExtension, WeakUpdatesExtension}
 import slick.driver.PostgresDriver.api._
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -72,6 +72,7 @@ private[grouppre] final class GroupPreProcessor
   protected val seqUpdExt = SeqUpdatesExtension(system)
   protected val groupExt = GroupExtension(system)
   protected val dialogExt = DialogExtension(system)
+  protected val weakExt = WeakUpdatesExtension(system)
 
   override protected def handleCommand: Receive = {
     case c: Create => create(c)

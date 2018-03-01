@@ -43,8 +43,8 @@ private[activation] final class SMTPProvider(system: ActorSystem) extends Activa
     sendAction = (code: EmailCode) ⇒ emailSender.send(
     Message(
       to = code.email,
-      subject = s"Actor activation code: ${code.code}",
-      content = Content(Some(emailTemplate.replace("$$CODE$$", code.code)), Some(s"Your actor activation code: ${code.code}"))
+      subject = s"Your activation code: ${code.code}",
+      content = Content(Some(emailTemplate.replace("$$CODE$$", code.code)), Some(s"Your activation code: ${code.code}"))
     )
   ),
     id = (code: EmailCode) ⇒ code.email
