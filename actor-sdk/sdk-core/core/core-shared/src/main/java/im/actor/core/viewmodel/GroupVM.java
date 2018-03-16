@@ -132,6 +132,9 @@ public class GroupVM extends BaseValueModel<Group> {
     @NotNull
     @Property("nonatomic, readonly")
     private ValueModel<ApiMapValue> ext;
+    @NotNull
+    @Property("nonatomic, readonly")
+    private StringValueModel restrictedDomains;
 
     @NotNull
     private ArrayList<ModelChangedListener<GroupVM>> listeners = new ArrayList<>();
@@ -179,6 +182,7 @@ public class GroupVM extends BaseValueModel<Group> {
         this.about = new StringValueModel("group." + groupId + ".about", rawObj.getAbout());
         this.shortName = new StringValueModel("group." + groupId + ".shortname", rawObj.getShortName());
         this.ext = new ValueModel<>("group." + groupId + ".ext", rawObj.getExt());
+        this.restrictedDomains = new StringValueModel("group." + groupId + ".restricteddomains", rawObj.getRestrictedDomains());
     }
 
     /**
@@ -529,6 +533,12 @@ public class GroupVM extends BaseValueModel<Group> {
         return presence;
     }
 
+    @NotNull
+    @ObjectiveCName("getRestrictedDomains")
+    public StringValueModel getRestrictedDomains() {
+        return restrictedDomains;
+    }
+
     /**
      * Get ext Value Model
      *
@@ -621,6 +631,7 @@ public class GroupVM extends BaseValueModel<Group> {
         isChanged |= isCanJoin.change(rawObj.isCanJoin());
         isChanged |= isCanCall.change(rawObj.isCanCall());
         isChanged |= ext.change(rawObj.getExt());
+        isChanged |= restrictedDomains.change(rawObj.getRestrictedDomains());
 
         if (isChanged) {
             notifyIfNeeded();

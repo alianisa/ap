@@ -88,6 +88,7 @@ private[group] object GroupState {
       isHidden = false,
       isHistoryShared = false,
       isAsyncMembers = false,
+      restrictedDomains = None,
       members = Map.empty,
       invitedUserIds = Set.empty,
       accessHash = 0L,
@@ -119,6 +120,7 @@ private[group] final case class GroupState(
   isHidden:        Boolean,
   isHistoryShared: Boolean,
   isAsyncMembers:  Boolean,
+  restrictedDomains: Option[String],
 
   // members info
   members:        Map[Int, Member],
@@ -185,6 +187,7 @@ private[group] final case class GroupState(
         isHidden = evt.isHidden getOrElse false,
         isHistoryShared = evt.isHistoryShared getOrElse false,
         isAsyncMembers = isMemberAsync,
+        restrictedDomains = restrictedDomains,
         members = (
           evt.userIds map { userId ⇒
             userId →
@@ -269,6 +272,8 @@ private[group] final case class GroupState(
       this.copy(shortName = newShortName)
     case AdminSettingsUpdated(_, bitMask) ⇒
       this.copy(adminSettings = AdminSettings.fromBitMask(bitMask))
+    case RestrictedDomainsUpdated(_,newDomains) =>
+      this.copy(restrictedDomains = Some(newDomains))
     case HistoryBecameShared(_, _) ⇒
       this.copy(isHistoryShared = true)
     case MembersBecameAsync(_) ⇒
@@ -450,6 +455,9 @@ private[group] final case class GroupState(
 
     // only owner can change admin settings
     def canEditAdminSettings(clientUserId: Int): Boolean = isOwner(clientUserId)
+
+    // only owner can change admin settings
+    def canEditDomainRestriction(clientUserId: Int): Boolean = isOwner(clientUserId) || isAdmin(clientUserId)
 
     /**
      * admins list is always visible to owner and admins

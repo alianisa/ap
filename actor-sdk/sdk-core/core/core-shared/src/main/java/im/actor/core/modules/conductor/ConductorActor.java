@@ -7,6 +7,7 @@ import im.actor.core.api.rpc.RequestNotifyAboutDeviceInfo;
 import im.actor.core.api.rpc.ResponseVoid;
 import im.actor.core.modules.ModuleActor;
 import im.actor.core.modules.ModuleContext;
+import im.actor.core.network.RpcException;
 import im.actor.core.util.JavaUtil;
 import im.actor.core.viewmodel.AppStateVM;
 import im.actor.runtime.Log;
@@ -157,6 +158,12 @@ public class ConductorActor extends ModuleActor {
             if (!context().getSettingsModule().getBooleanValue("auto_join." + s, false)) {
                 context().getGroupsModule().joinGroupByToken(s).then(r -> {
                     context().getSettingsModule().setBooleanValue("auto_join." + s, true);
+                }).after((v,e)->{
+                    if(e instanceof RpcException){
+                        if("USER_ALREADY_JOINED".equals(((RpcException) e).getTag())){
+                            context().getSettingsModule().setBooleanValue("auto_join." + s, true);
+                        }
+                    }
                 });
             }
         }

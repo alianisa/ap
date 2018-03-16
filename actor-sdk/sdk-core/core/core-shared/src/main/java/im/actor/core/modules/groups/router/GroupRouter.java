@@ -30,6 +30,7 @@ import im.actor.core.api.updates.UpdateGroupPermissionsChanged;
 import im.actor.core.api.updates.UpdateGroupShortNameChanged;
 import im.actor.core.api.updates.UpdateGroupTitleChanged;
 import im.actor.core.api.updates.UpdateGroupTopicChanged;
+import im.actor.core.api.updates.UpdateRestrictedDomainsChanged;
 import im.actor.core.entity.Group;
 import im.actor.core.modules.ModuleActor;
 import im.actor.core.modules.ModuleContext;
@@ -80,6 +81,11 @@ public class GroupRouter extends ModuleActor {
     @Verified
     public Promise<Void> onPermissionsChanged(int groupId, long permissions) {
         return editGroup(groupId, group -> group.editPermissions(permissions));
+    }
+
+    @Verified
+    public Promise<Void> onRestrictedDomainsChanged(int groupId, String domains) {
+        return editGroup(groupId, group -> group.editRestrictedDomains(domains));
     }
 
     @Verified
@@ -306,6 +312,9 @@ public class GroupRouter extends ModuleActor {
         } else if (update instanceof UpdateGroupExtChanged) {
             UpdateGroupExtChanged extChanged = (UpdateGroupExtChanged) update;
             return onExtChanged(extChanged.getGroupId(), extChanged.getExt());
+        } else if(update instanceof UpdateRestrictedDomainsChanged){
+            UpdateRestrictedDomainsChanged domainsChanged = (UpdateRestrictedDomainsChanged) update;
+            return onRestrictedDomainsChanged(domainsChanged.getGroupId(), domainsChanged.getDomains());
         }
 
         //

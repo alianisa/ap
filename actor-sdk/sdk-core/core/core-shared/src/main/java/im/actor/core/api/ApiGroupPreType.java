@@ -22,13 +22,10 @@ public enum ApiGroupPreType {
     }
 
     public static ApiGroupPreType parse(int value) throws IOException {
-        switch (value) {
-            case 1:
-                return ApiGroupPreType.GROUP;
-            case 2:
-                return ApiGroupPreType.CHANNEL;
-            default:
-                return ApiGroupPreType.UNSUPPORTED_VALUE;
+        switch(value) {
+            case 1: return ApiGroupPreType.GROUP;
+            case 2: return ApiGroupPreType.CHANNEL;
+            default: return ApiGroupPreType.UNSUPPORTED_VALUE;
         }
     }
 }

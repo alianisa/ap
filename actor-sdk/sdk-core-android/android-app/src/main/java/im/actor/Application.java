@@ -27,12 +27,14 @@ import im.actor.core.entity.content.PhotoContent;
 import im.actor.develop.R;
 import im.actor.fragments.AttachFragmentEx;
 import im.actor.fragments.RootFragmentEx;
+import im.actor.runtime.android.AndroidLogProvider;
 import im.actor.runtime.json.JSONException;
 import im.actor.runtime.json.JSONObject;
 import im.actor.sdk.ActorSDK;
 import im.actor.sdk.ActorSDKApplication;
 import im.actor.sdk.ActorStyle;
 import im.actor.sdk.BaseActorSDKDelegate;
+import im.actor.sdk.controllers.auth.AuthActivity;
 import im.actor.sdk.controllers.conversation.attach.AbsAttachFragment;
 import im.actor.sdk.controllers.conversation.messages.BubbleLayouter;
 import im.actor.sdk.controllers.conversation.messages.DefaultLayouter;
@@ -69,7 +71,7 @@ public class Application extends ActorSDKApplication {
     public void onConfigureActorSDK() {
         FirebaseApp.initializeApp(this);
         ActorSDK.sharedActor().setDelegate(new ActorSDKDelegate());
-        ActorSDK.sharedActor().setPushId(43880936595L);
+        ActorSDK.sharedActor().setPushId(157558192914L);
         ActorSDK.sharedActor().setOnClientPrivacyEnabled(true);
         ActorStyle style = ActorSDK.sharedActor().style;
 
@@ -85,34 +87,28 @@ public class Application extends ActorSDKApplication {
 //        style.setFabColor(Color.parseColor("#A43436"));
 
         ActorSDK.sharedActor().setFastShareEnabled(true);
-
         ActorSDK.sharedActor().setCallsEnabled(true);
-
         ActorSDK.sharedActor().setAppName(getApplicationContext().getString(R.string.app_name));
 
-        ActorSDK.sharedActor().setTosUrl("http://actor.im");
-        ActorSDK.sharedActor().setPrivacyText("bla bla bla");
+        ActorSDK.sharedActor().setTosUrl("https://conecta.im/politica.html");
+        ActorSDK.sharedActor().setTosText("Conecta IM, all rights reserved");
+        ActorSDK.sharedActor().setPrivacyText("Conecta IM, all rights reserved");
+        ActorSDK.sharedActor().setCustomApplicationName("Conecta");
+        ActorSDK.sharedActor().setHelpPhone("+55 (55) 55555-5555");
+        ActorSDK.sharedActor().setHomePage("https://conecta.im");
+        ActorSDK.sharedActor().setTwitter("conecta_im");
 
         ActorSDK.sharedActor().setVideoCallsEnabled(true);
 
         ActorSDK.sharedActor().setHelpPhone("+55 (55) 55555-5555");
-        ActorSDK.sharedActor().setAutoJoinGroups(new String[]{
-                "canalxloto"
-        });
-
+        ActorSDK.sharedActor().setAutoJoinGroups(new String[]{"ConectaGlobal"});
         ActorSDK.sharedActor().setEndpoints(new String[]{getApplicationContext().getString(R.string.app_endpoint)});
-//        ActorSDK.sharedActor().setEndpoints(new String[]{"tcp://api-mtproto.im.xloto.com.br:9070"});
-//        ActorSDK.sharedActor().setEndpoints(new String[]{"tcp://api-mtproto.actor.diegosilva.com.br:9070"});
-        // ActorSDK.sharedActor().setAuthType(AuthActivity.AUTH_TYPE_PHONE);
 
         ActorSDK.sharedActor().setStickersEnabled(true);
 
-//        ActorSDK.sharedActor().setTwitter("");
-//        ActorSDK.sharedActor().setHomePage("http://www.foo.com");
-//        ActorSDK.sharedActor().setInviteUrl("http://www.foo.com");
-//        ActorSDK.sharedActor().setCallsEnabled(true);
-
-//        ActorSDK.sharedActor().setEndpoints(new String[]{"tcp://192.168.1.184:9070"});
+        ActorSDK.sharedActor().setInviteUrl("https://play.google.com/store/apps/details?id=br.com.diegosilva.conecta");
+        ActorSDK.sharedActor().setGroupInvitePrefix("https://j.conecta.im/#/join/");
+        ActorSDK.sharedActor().setInviteDataUrl("https://api.conecta.im/v1/groups/invites/");
 
 //        ActorStyle style = ActorSDK.sharedActor().style;
 //        style.setMainColor(Color.parseColor("#529a88"));
@@ -128,6 +124,9 @@ public class Application extends ActorSDKApplication {
 //                return content instanceof TCBotMesaage;
 //            }
 //        });
+
+        AndroidLogProvider.setWriteLogs(true);
+
     }
 
     private class ActorSDKDelegate extends BaseActorSDKDelegate {

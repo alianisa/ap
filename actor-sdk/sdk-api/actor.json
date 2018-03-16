@@ -1691,6 +1691,14 @@
 ]}},     {
        "type":"struct",
        "content": {
+         "name":"Location",
+"doc":[
+"Location Representation"],"attributes":[
+{"type":"double","id":1,"name":"ltd"}
+,{"type":"double","id":2,"name":"lng"}
+]}},     {
+       "type":"struct",
+       "content": {
          "name":"GroupFull",
 "doc":[
 "Goup Full information","Permissions.","Idea of Group Full mermissions is about Group Info pages. This permissions","are usefull only when trying to view and update group settings and not related","to chat messages itself.","Default value is ZERO, Opposide iz ONE. If Default is FALSE then ONE == TRUE.","If default is TRUE then ONE == FALSE.","Bits:","0 - canEditInfo. Default is FALSE.","1 - canViewMembers. Default is FALSE.","2 - canInviteMembers. Default is FALSE.","3 - canInviteViaLink. Default is FALSE.","4 - canCall. Default is FALSE.","5 - canEditAdminSettings. Default is FALSE.","6 - canViewAdmins. Default is FALSE.","7 - canEditAdmins. Default is FALSE.","8 - canKickInvited. Default is FALSE.","9 - canKickAnyone. Default is FALSE.","10 - canEditForeign. Default is FALSE.","11 - canDeleteForeign. Default is FALSE.","",{"type":"reference","argument":"id","category":"full","description":"  Group Id"},{"type":"reference","argument":"createDate","category":"full","description":"  Date created"},{"type":"reference","argument":"ownerUid","category":"full","description":"  Optional group owner"},{"type":"reference","argument":"members","category":"full","description":"  Group members. Can be empty when isAsyncMembers enabled."},{"type":"reference","argument":"theme","category":"full","description":"  Group Theme"},{"type":"reference","argument":"about","category":"full","description":"  Group about"},{"type":"reference","argument":"isAsyncMembers","category":"full","description":"  Is Members need to be loaded asynchronous. Default is false."},{"type":"reference","argument":"isSharedHistory","category":"full","description":"  Is history shared among all users. Default is false."},{"type":"reference","argument":"shortName","category":"full","description":"  Group's short name"},{"type":"reference","argument":"permissions","category":"full","description":"  Group Permissions"}],"expandable":"true","attributes":[
@@ -1705,6 +1713,8 @@
 ,{"type":{"type":"opt","childType":"bool"},"id":10,"name":"isSharedHistory"}
 ,{"type":{"type":"opt","childType":"string"},"id":14,"name":"shortName"}
 ,{"type":{"type":"opt","childType":"int64"},"id":27,"name":"permissions"}
+,{"type":{"type":"opt","childType":"string"},"id":28,"name":"restrictedDomains"}
+,{"type":{"type":"opt","childType":{"type":"struct","childType":"Location"}},"id":29,"name":"location"}
 ]}},{"type":"rpc","content":{
 "name":"LoadFullGroups",
 "header":2782,
@@ -1853,6 +1863,13 @@
 {"type":{"type":"alias","childType":"groupId"},"id":1,"name":"groupId"}
 ,{"type":{"type":"alias","childType":"userId"},"id":2,"name":"userId"}
 ,{"type":"bool","id":3,"name":"isAdmin"}
+]}},{"type":"update","content":{
+"name":"RestrictedDomainsChanged",
+"header":2164,
+"doc":[
+"Update about restricted ddomaains","param groupId groupId","param domains domains"],"attributes":[
+{"type":{"type":"alias","childType":"groupId"},"id":1,"name":"groupId"}
+,{"type":"string","id":2,"name":"domains"}
 ]}},{"type":"comment","content":"Actions"},{"type":"rpc","content":{
 "name":"CreateGroup",
 "header":230,
@@ -2085,6 +2102,14 @@
 "Join group method",{"type":"reference","argument":"token","category":"full","description":"Url or Token for joining to group"},{"type":"reference","argument":"optimizations","category":"hidden","description":"Enabled Optimizations"}],"attributes":[
 {"type":"string","id":1,"name":"token"}
 ,{"type":{"type":"list","childType":{"type":"enum","childType":"UpdateOptimization"}},"id":2,"name":"optimizations"}
+]}},{"type":"rpc","content":{
+"name":"UpdateRestrictedDomains",
+"header":1333,
+"response":{"type":"reference","name":"Void"},
+"doc":[
+"Update restricted domains"],"attributes":[
+{"type":{"type":"struct","childType":"GroupOutPeer"},"id":1,"name":"groupPeer"}
+,{"type":"string","id":2,"name":"domains"}
 ]}},{"type":"comment","content":"Obsolete Actions"},{"type":"rpc","content":{
 "name":"CreateGroupObsolete",
 "header":65,
@@ -4383,7 +4408,7 @@
 "name":"GroupPreOrderChanged",
 "header":89,
 "doc":[
-"GroupPre order changed"],"attributes":[
+"GroupPre Order Changed"],"attributes":[
 {"type":"int32","id":1,"name":"fromGroupId"}
 ,{"type":"int32","id":2,"name":"fromOrder"}
 ,{"type":"int32","id":3,"name":"toGroupId"}
@@ -4392,8 +4417,8 @@
 "name":"ResetGroupPre",
 "header":96,
 "doc":[
-"Reset module groupPre"],"attributes":[
-{"type":{"type":"alias","childType":"date"},"id":1,"name":"resetDate"}
+"ResetGroupPre"],"attributes":[
+{"type":"int64","id":1,"name":"resetDate"}
 ]}},{"type":"rpc","content":{
 "name":"LoadGroupsPre",
 "header":23,
@@ -4405,9 +4430,9 @@
 {"type":{"type":"opt","childType":"int32"},"id":1,"name":"idParent"}
 ]}},{"type":"rpc","content":{
 "name":"LoadGroupPre",
-"header":36,
-"response":{"type":"anonymous","header":21, "doc":[
-"GroupPre returned"] ,"attributes":[{"type":{"type":"struct","childType":"GroupPre"},"id":1,"name":"groupPre"}
+"header":337,
+"response":{"type":"anonymous","header":2177, "doc":[
+"return"] ,"attributes":[{"type":{"type":"struct","childType":"GroupPre"},"id":1,"name":"groupPre"}
 ]},
 "doc":[
 "LoadGroupPre"],"attributes":[
@@ -4430,7 +4455,7 @@
 ,{"type":"int32","id":2,"name":"parentId"}
 ]}},{"type":"rpc","content":{
 "name":"ChangeOrder",
-"header":35,
+"header":36,
 "response":{"type":"reference","name":"Seq"},
 "doc":[
 "Change group order"],"attributes":[

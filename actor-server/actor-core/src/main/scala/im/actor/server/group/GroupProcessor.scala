@@ -58,6 +58,8 @@ object GroupProcessor {
       20026 → classOf[GroupCommands.DeleteGroup],
       20027 → classOf[GroupCommands.AddExt],
       20028 → classOf[GroupCommands.RemoveExt],
+      20029 → classOf[GroupCommands.UpdateRestrictedDomains],
+      20030 → classOf[GroupCommands.UpdateRestrictedAck],
 
       21001 → classOf[GroupQueries.GetIntegrationToken],
       21002 → classOf[GroupQueries.GetIntegrationTokenResponse],
@@ -169,6 +171,7 @@ private[group] final class GroupProcessor
     case s: UpdateAdminSettings                ⇒ updateAdminSettings(s)
     case m: MakeHistoryShared                  ⇒ makeHistoryShared(m)
     case d: DeleteGroup                        ⇒ deleteGroup(d)
+    case r: UpdateRestrictedDomains            ⇒ updateRestrictedDomains(r)
 
     // dialogs envelopes coming through group.
     case de: DialogEnvelope ⇒

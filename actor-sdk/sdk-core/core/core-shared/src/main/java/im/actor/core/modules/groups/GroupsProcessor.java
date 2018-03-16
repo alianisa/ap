@@ -22,6 +22,7 @@ import im.actor.core.api.updates.UpdateGroupPermissionsChanged;
 import im.actor.core.api.updates.UpdateGroupShortNameChanged;
 import im.actor.core.api.updates.UpdateGroupTitleChanged;
 import im.actor.core.api.updates.UpdateGroupTopicChanged;
+import im.actor.core.api.updates.UpdateRestrictedDomainsChanged;
 import im.actor.core.modules.AbsModule;
 import im.actor.core.modules.ModuleContext;
 import im.actor.core.modules.sequence.processor.SequenceProcessor;
@@ -56,7 +57,8 @@ public class GroupsProcessor extends AbsModule implements SequenceProcessor {
                 update instanceof UpdateGroupOwnerChanged ||
                 update instanceof UpdateGroupHistoryShared ||
                 update instanceof UpdateGroupFullPermissionsChanged ||
-                update instanceof UpdateGroupFullExtChanged) {
+                update instanceof UpdateGroupFullExtChanged ||
+                update instanceof UpdateRestrictedDomainsChanged) {
             return context().getGroupsModule().getRouter().onUpdate(update);
         }
         return null;

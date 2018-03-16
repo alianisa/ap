@@ -1,35 +1,27 @@
 {
   "project_info": {
-    "project_number": "43880936595",
-    "firebase_url": "https://xlotomessenger.firebaseio.com",
-    "project_id": "xlotomessenger",
-    "storage_bucket": "xlotomessenger.appspot.com"
+    "project_number": "157558192914",
+    "firebase_url": "https://conecta-br.firebaseio.com",
+    "project_id": "conecta-br",
+    "storage_bucket": "conecta-br.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:43880936595:android:3dec825a9a2cc71d",
+        "mobilesdk_app_id": "1:157558192914:android:18f4d0af6683b456",
         "android_client_info": {
-          "package_name": "br.com.diegosilva.actorlotericas"
+          "package_name": "br.com.diegosilva.conecta"
         }
       },
       "oauth_client": [
         {
-          "client_id": "43880936595-ud8v7r1342u884d9jl28kh2cutubrgfs.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "br.com.diegosilva.actorlotericas",
-            "certificate_hash": "d5ae77ebc318307bc86c7f5d96a25932db082293"
-          }
-        },
-        {
-          "client_id": "43880936595-d44inbjl6ge7kels0v4pf28q6gmcm1ft.apps.googleusercontent.com",
+          "client_id": "157558192914-fq0n7hgujkqsaehpjjmfdq680ijo0sue.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAx2OMx5j84OC5FhWbClonxPNhIZyk15VU"
+          "current_key": "AIzaSyD64faGfeaOyZd6tRpqFFXxkxHXhKSI2is"
         }
       ],
       "services": {
@@ -47,20 +39,51 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:43880936595:android:3eb7732ffebedcea",
+        "mobilesdk_app_id": "1:157558192914:android:a05e8eb1da617325",
+        "android_client_info": {
+          "package_name": "br.com.diegosilva.conecta.beta"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "157558192914-fq0n7hgujkqsaehpjjmfdq680ijo0sue.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD64faGfeaOyZd6tRpqFFXxkxHXhKSI2is"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:157558192914:android:3eb7732ffebedcea",
         "android_client_info": {
           "package_name": "im.actor.develop"
         }
       },
       "oauth_client": [
         {
-          "client_id": "43880936595-d44inbjl6ge7kels0v4pf28q6gmcm1ft.apps.googleusercontent.com",
+          "client_id": "157558192914-fq0n7hgujkqsaehpjjmfdq680ijo0sue.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAx2OMx5j84OC5FhWbClonxPNhIZyk15VU"
+          "current_key": "AIzaSyD64faGfeaOyZd6tRpqFFXxkxHXhKSI2is"
         }
       ],
       "services": {

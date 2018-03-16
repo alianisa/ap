@@ -55,7 +55,7 @@ final class GroupsServiceImpl(groupInviteConfig: GroupInviteConfig)(implicit act
   private val globalNamesStorage = new GlobalNamesStorageKeyValueStorage
   private val dialogExt = DialogExtension(actorSystem)
 
-  /**
+  /**F
    * Loading Full Groups
    *
    * @param groups Groups to load
@@ -681,6 +681,17 @@ final class GroupsServiceImpl(groupInviteConfig: GroupInviteConfig)(implicit act
       } yield ResponseSeq(seq, state.toByteArray)
 
       action.value
+    }
+  }
+
+  /** Update restricted domains */
+  override protected def doHandleUpdateRestrictedDomains(groupPeer: ApiGroupOutPeer, domains: String, clientData: ClientData): Future[HandlerResult[ResponseVoid]] = {
+    authorized(clientData) { implicit client ⇒
+      withGroupOutPeer(groupPeer) {
+        for {
+          _ ← groupExt.updateRestrictionsDomain(groupPeer.groupId, client.userId, client.authId, domains)
+        } yield Ok(ResponseVoid)
+      }
     }
   }
 }

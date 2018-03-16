@@ -126,6 +126,8 @@ private[session] class ReSender(authId: Long, sessionId: Long, firstMessageId: L
 
   def receive = resendingToNewClients
 
+  log.debug("Creatind ReSender AckTimeout:{}, MaxBufferSize:{}, MaxResendSize:{}", AckTimeout, MaxBufferSize, MaxResendSize)
+
   def resendingToNewClients: Receive = subscriber.orElse(publisher).orElse {
     case NewClient(_) ⇒
       log.debug("New client, sending all scheduled for resend")
@@ -134,18 +136,22 @@ private[session] class ReSender(authId: Long, sessionId: Long, firstMessageId: L
       this.resendBufferSize = 0
       this.resendPushBufferSize = 0
 
+      log.debug("newSessionBuffer size: {}", this.newSessionBuffer.size)
       this.newSessionBuffer foreach {
         case (messageId, ni, scheduled) ⇒
           scheduled.cancel()
           enqueueNewSession(ni)
       }
 
+      log.debug("responseBuffer size: {}", this.responseBuffer.size)
       this.responseBuffer foreach {
         case (messageId, (pi, scheduled)) ⇒
           scheduled.cancel()
+          log.debug("It will call enqueueRpc from resendingToNewClients")
           enqueueRpc(pi, nextMessageId())
       }
 
+      log.debug("pushBuffer size: {}", this.pushBuffer.size)
       this.pushBuffer foreach {
         case (messageId, (pi, scheduled)) ⇒
           scheduled.cancel()
@@ -184,34 +190,41 @@ private[session] class ReSender(authId: Long, sessionId: Long, firstMessageId: L
   }
 
   // Subscriber-related
-
   def subscriber: Receive = {
     case OnNext(IncomingAck(messageIds)) ⇒
       log.debug("Received Acks {}", messageIds)
-
       messageIds foreach { messageId ⇒
         getResendableItem(messageId) foreach {
           case (item, scheduledResend) ⇒
+            log.debug("Recovered ResendableItem  {}", messageId)
             decreaseBufferSize(item)
             scheduledResend.cancel()
             item match {
               case PushItem(_, reduceKeyOpt, _) ⇒
+                log.debug("PushItem  {}", messageId)
                 reduceKeyOpt foreach { reduceKey ⇒
                   if (pushReduceMap.get(reduceKey).contains(messageId))
                     pushReduceMap -= reduceKey
                 }
                 pushBuffer -= messageId
               case _: RpcItem ⇒
+                log.debug("RpcItem  {}", messageId)
+                log.debug("Removing from responseBuffer {}", messageId)
+                log.debug("responseBuffer size before {}", responseBuffer.size)
                 responseBuffer -= messageId
                 rpcMap -= messageId
+                log.debug("responseBuffer size after {}", responseBuffer.size)
               case item: NewSessionItem ⇒
+                log.debug("RpcItem  {}", messageId)
                 this.newSessionBuffer = None
             }
         }
       }
     case OnNext(OutgoingAck(messageIds)) ⇒
+      log.debug("Outgoing Acks {}", messageIds)
       enqueueAcks(messageIds)
     case OnNext(IncomingRequestResend(messageId)) ⇒
+      log.debug("IncomingRequestResend {}", messageId)
       getResendableItem(messageId) foreach {
         case (item, scheduled) ⇒
           scheduled.cancel()
@@ -219,44 +232,44 @@ private[session] class ReSender(authId: Long, sessionId: Long, firstMessageId: L
             case pi: PushItem ⇒
               enqueuePush(pi, nextMessageId())
             case ri: RpcItem ⇒
+              log.debug("enqueueRpc IncomingRequestResend {}", messageId)
               enqueueRpc(ri, nextMessageId())
             case ni: NewSessionItem ⇒
               enqueueNewSession(ni)
           }
       }
     case OnNext(RpcResult(rsp, requestMessageId)) ⇒
+      log.debug("RpcResult {}", requestMessageId)
       val item = RpcItem(rsp, requestMessageId)
-
       this.rpcMap get requestMessageId match {
         // we are trying to deliver this response already,
         // so we cancel previous scheduled resend as client already requested a resend by doubling RPC request
         case Some(responseMessageId) ⇒
           responseBuffer.get(responseMessageId) map (_._2.cancel()) match {
             case Some(false) ⇒
-            case _           ⇒ enqueueRpc(item, responseMessageId)
+            case _           ⇒ log.debug("enqueueRpc RpcResult {}", requestMessageId); enqueueRpc(item, responseMessageId)
           }
         // it's a new rpc response
         case None ⇒
           val responseMessageId = nextMessageId()
           this.rpcMap += (requestMessageId → responseMessageId)
+          log.debug("enqueueRpc RpcResult {}", requestMessageId)
           enqueueRpc(item, responseMessageId)
       }
     case OnNext(p @ Push(_, reduceKey))       ⇒ enqueuePush(PushItem(p.ub, reduceKey), nextMessageId())
     case OnNext(SetUpdateOptimizations(opts)) ⇒ this.updateOptimizations = opts
     case OnComplete ⇒
       log.debug("Stopping due to stream completion")
-      // TODO: cleanup scheduled resends
+      cleanupAllResends()
       context.stop(self)
     case OnError(cause) ⇒
       log.error(cause, "Stopping due to stream error")
-      // TODO: cleanup scheduled resends
+      cleanupAllResends()
       context.stop(self)
     case ScheduledResend(messageId, item) ⇒
       if (getResendableItem(messageId).isDefined) {
         log.debug("Scheduled resend for messageId: {}, item: {}, resending", messageId, item)
-
         decreaseBufferSize(item)
-
         item match {
           case ni: NewSessionItem ⇒ enqueueNewSession(ni)
           case pi: PushItem ⇒
@@ -267,12 +280,14 @@ private[session] class ReSender(authId: Long, sessionId: Long, firstMessageId: L
           case ri: RpcItem ⇒
             if (ri.size > MaxResendSize)
               enqueueUnsentRpc(ri, messageId)
-            else
+            else {
+              log.debug("EnqueueRpc ScheduledResend {}", messageId)
               enqueueRpc(ri, messageId)
+            }
         }
       } else log.debug("ScheduledResend for messageId: {}, item: {}, ignoring (absent in buffer)", messageId, item)
     case BufferOverflow ⇒
-      if (this.resendBufferSize > config.maxBufferSize) {
+      if (this.resendBufferSize > MaxBufferSize) {
         log.warning("Buffer overflow, stopping session")
         this.onCompleteThenStop()
       }
@@ -280,7 +295,6 @@ private[session] class ReSender(authId: Long, sessionId: Long, firstMessageId: L
 
   private def increaseBufferSize(item: ResendableItem): Unit = {
     this.resendBufferSize += item.size
-
     item match {
       case p: PushItem ⇒
         if (this.resendPushBufferSize > config.maxPushBufferSize)
@@ -292,8 +306,8 @@ private[session] class ReSender(authId: Long, sessionId: Long, firstMessageId: L
   }
 
   private def decreaseBufferSize(item: ResendableItem): Unit = {
+    log.debug("Decreasing Buffer Size")
     this.resendBufferSize -= item.size
-
     item match {
       case _: PushItem ⇒ this.resendPushBufferSize -= item.size
       case _           ⇒
@@ -333,6 +347,7 @@ private[session] class ReSender(authId: Long, sessionId: Long, firstMessageId: L
     if (isActive && totalDemand > 0 && mbQueue.nonEmpty)
       mbQueue.dequeue() match {
         case (mb, _) ⇒
+          log.debug("deliverBuf mbQueue.dequeue()")
           onNext(mb)
           deliverBuf()
       }
@@ -344,6 +359,8 @@ private[session] class ReSender(authId: Long, sessionId: Long, firstMessageId: L
   }
 
   private def getResendableItem(messageId: Long): Option[(ResendableItem, Cancellable)] = {
+    log.debug("getResendableItem ")
+
     responseBuffer
       .get(messageId)
       .orElse(pushBuffer.get(messageId))
@@ -372,12 +389,9 @@ private[session] class ReSender(authId: Long, sessionId: Long, firstMessageId: L
   private def scheduleResend(item: ResendableItem, messageId: Long) = {
     log.debug("Scheduling resend of messageId: {}, priority: {}, message timeout: {}", messageId, item.priority, AckTimeout)
 
-    // FIXME: increase resendBufferSize by real Unsent
-
     if (resendBufferSize <= MaxBufferSize) {
       val delay = calcScheduleDelay()
       val scheduled = context.system.scheduler.scheduleOnce(delay, self, ScheduledResend(messageId, item))
-
       item match {
         case pi @ PushItem(_, reduceKeyOpt, _) ⇒
           reduceKeyOpt foreach { reduceKey ⇒
@@ -389,7 +403,6 @@ private[session] class ReSender(authId: Long, sessionId: Long, firstMessageId: L
               decreaseBufferSize(ritem)
               resend.cancel()
             }
-
             this.pushReduceMap += (reduceKey → messageId)
           }
 
@@ -400,7 +413,6 @@ private[session] class ReSender(authId: Long, sessionId: Long, firstMessageId: L
           this.responseBuffer = this.responseBuffer.updated(messageId, (ri, scheduled))
       }
     } else bufferOverflow()
-
     increaseBufferSize(item)
   }
 
@@ -448,9 +460,15 @@ private[session] class ReSender(authId: Long, sessionId: Long, firstMessageId: L
   private def enqueue(mb: MessageBox, priority: Priority): Unit = {
     log.debug("Queue size: {}, bufferSize: {}, pushBufferSize: {}", mbQueue.size, resendBufferSize, resendPushBufferSize)
 
+    if(mb.body != null){
+      log.debug("Enqueue class type: {}", mb.body.getClass.getName)
+    }
+
     if (isActive && totalDemand > 0 && mbQueue.isEmpty) {
+      log.debug("It will call onNext")
       onNext(mb)
     } else {
+      log.debug("It will increase mbQueue")
       this.mbQueue.enqueue(mb → priority)
       deliverBuf()
     }
@@ -463,6 +481,7 @@ private[session] class ReSender(authId: Long, sessionId: Long, firstMessageId: L
   private def pushBufferSize = responseBuffer.size + pushBuffer.size + newSessionBuffer.map(_ ⇒ 1).getOrElse(0)
 
   private def cleanupAllResends() = {
+    log.debug("cleanupAllResends")
     responseBuffer.values foreach (_._2.cancel())
     pushBuffer.values foreach (_._2.cancel())
     newSessionBuffer foreach (_._3.cancel())

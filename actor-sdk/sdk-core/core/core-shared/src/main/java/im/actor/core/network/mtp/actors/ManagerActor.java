@@ -364,19 +364,22 @@ public class ManagerActor extends Actor {
         } catch (IOException e) {
             Log.w(TAG, "Closing connection: incorrect package");
             Log.e(TAG, e);
-
-            if (currentConnection != null) {
-                try {
-                    currentConnection.close();
-                } catch (Exception e2) {
-                    Log.e(TAG, e2);
-                }
-                currentConnection = null;
-                currentConnectionId = 0;
-                outSeq = 0;
-                inSeq = 0;
-            }
+            closeConnection();
             checkConnection(false);
+        }
+    }
+
+    private void closeConnection(){
+        if (currentConnection != null) {
+            try {
+                currentConnection.close();
+            } catch (Exception e2) {
+                Log.e(TAG, e2);
+            }
+            currentConnection = null;
+            currentConnectionId = 0;
+            outSeq = 0;
+            inSeq = 0;
         }
     }
 

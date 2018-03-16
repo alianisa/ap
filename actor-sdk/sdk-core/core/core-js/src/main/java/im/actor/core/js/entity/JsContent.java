@@ -7,6 +7,7 @@ package im.actor.core.js.entity;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.core.client.JsArrayString;
+import com.google.gwt.core.client.JsonUtils;
 
 import im.actor.core.api.ApiTextModernAttach;
 import im.actor.core.api.ApiTextModernField;
@@ -25,12 +26,12 @@ import im.actor.core.entity.content.StickerContent;
 import im.actor.core.entity.content.TextContent;
 import im.actor.core.entity.content.VoiceContent;
 import im.actor.core.js.JsMessenger;
+import im.actor.runtime.Log;
 import im.actor.runtime.crypto.Base64Utils;
 
 public abstract class JsContent extends JavaScriptObject {
 
     public static JsContent createContent(AbsContent src, int sender) {
-
         JsMessenger messenger = JsMessenger.getInstance();
         JsContent content;
         if (src instanceof TextContent) {
@@ -132,6 +133,7 @@ public abstract class JsContent extends JavaScriptObject {
         } else {
             content = JsContentUnsupported.create();
         }
+
         return content;
     }
 

@@ -143,7 +143,9 @@ trait GroupQueryHandlers {
           isAsyncMembers = Some(state.isAsyncMembers),
           members = membersAndCount(state, clientUserId)._1,
           shortName = state.shortName,
-          permissions = Some(state.permissions.fullFor(clientUserId))
+          permissions = Some(state.permissions.fullFor(clientUserId)),
+          restrictedDomains = state.restrictedDomains,
+          location = None
         )
       )
     }

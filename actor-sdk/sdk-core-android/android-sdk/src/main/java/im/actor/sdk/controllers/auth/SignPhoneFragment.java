@@ -309,7 +309,10 @@ public class SignPhoneFragment extends BaseAuthFragment {
     public void onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
         menu.clear();
-        getActivity().getMenuInflater().inflate(R.menu.sign_in_phone, menu);
+
+        if ((ActorSDK.sharedActor().getAuthType() & AuthActivity.AUTH_TYPE_EMAIL) == AuthActivity.AUTH_TYPE_EMAIL) {
+            getActivity().getMenuInflater().inflate(R.menu.sign_in_phone, menu);
+        }
     }
 
 }

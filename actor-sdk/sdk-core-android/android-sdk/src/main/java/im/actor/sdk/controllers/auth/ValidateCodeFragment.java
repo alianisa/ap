@@ -107,10 +107,7 @@ public class ValidateCodeFragment extends BaseAuthFragment {
                         }
                     }
                 })
-                .setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
+                .setNegativeButton(R.string.dialog_cancel, (dialog, which) -> {
                 })
                 .show()
                 .setCanceledOnTouchOutside(true));
