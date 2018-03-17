@@ -15,6 +15,7 @@ import im.actor.core.entity.Contact;
 import im.actor.core.entity.Dialog;
 import im.actor.core.entity.FileReference;
 import im.actor.core.entity.Group;
+import im.actor.core.entity.GroupPre;
 import im.actor.core.entity.Message;
 import im.actor.core.entity.Peer;
 import im.actor.core.entity.PeerType;
@@ -28,6 +29,7 @@ import im.actor.core.js.entity.JsDialog;
 import im.actor.core.js.entity.JsDialogGroup;
 import im.actor.core.js.entity.JsEventBusCallback;
 import im.actor.core.js.entity.JsGroup;
+import im.actor.core.js.entity.JsGroupPre;
 import im.actor.core.js.entity.JsMessage;
 import im.actor.core.js.entity.JsOnlineGroup;
 import im.actor.core.js.entity.JsOnlineUser;
@@ -192,6 +194,10 @@ public class JsMessenger extends Messenger {
         modules.getMessagesModule().loadMoreArchivedDialogs(init, callback);
     }
 
+    public void loadGroupsPre(int parentId){
+        modules.getGrupoPreModule().loadGroupPre(parentId);
+    }
+
     public void loadMoreHistory(Peer peer) {
         modules.getMessagesModule().loadMoreHistory(peer);
     }
@@ -275,6 +281,10 @@ public class JsMessenger extends Messenger {
 
     public JsDisplayList<JsMessage, Message> getSharedChatList(Peer peer) {
         return jsBindingModule.getSharedMessageList(peer);
+    }
+
+    public JsDisplayList<JsGroupPre, GroupPre> getSharedGrouppreList(Integer parentId){
+        return jsBindingModule.getGroupspreList(parentId);
     }
 
     public JsBindedValue<JsArray<JsDialogGroup>> getDialogsGroupedList() {

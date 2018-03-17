@@ -48,6 +48,7 @@ import im.actor.core.js.entity.JsDialog;
 import im.actor.core.js.entity.JsDialogShort;
 import im.actor.core.js.entity.JsEventBusCallback;
 import im.actor.core.js.entity.JsGroup;
+import im.actor.core.js.entity.JsGroupPre;
 import im.actor.core.js.entity.JsLogCallback;
 import im.actor.core.js.entity.JsMentionFilterResult;
 import im.actor.core.js.entity.JsMessageSearchEntity;
@@ -725,6 +726,22 @@ public class JsFacade implements Exportable {
             return;
         }
         messenger.getJsGroupOnline(gid).unsubscribe(callback);
+    }
+
+    @UsedByApp
+    public void bindGroupspre(int parentId, JsDisplayListCallback<JsGroupPre> callback) {
+        if (callback == null) {
+            return;
+        }
+        messenger.getSharedGrouppreList(parentId).subscribe(callback, false);
+    }
+
+    @UsedByApp
+    public void unbindGroupspre(int parentId, JsDisplayListCallback<JsGroupPre> callback) {
+        if (callback == null) {
+            return;
+        }
+        messenger.getSharedGrouppreList(parentId).unsubscribe(callback);
     }
 
     // Calls

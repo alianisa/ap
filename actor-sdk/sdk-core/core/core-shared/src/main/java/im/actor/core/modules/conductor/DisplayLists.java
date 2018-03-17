@@ -8,6 +8,7 @@ import java.util.HashMap;
 
 import im.actor.core.entity.Contact;
 import im.actor.core.entity.Dialog;
+import im.actor.core.entity.GroupPre;
 import im.actor.core.entity.Message;
 import im.actor.core.entity.Peer;
 import im.actor.core.entity.SearchEntity;
@@ -25,6 +26,8 @@ public class DisplayLists extends AbsModule {
     private HashMap<Peer, PlatformDisplayList<Message>> chatsDocsGlobalLists = new HashMap<>();
     private HashMap<Peer, PlatformDisplayList<Message>> chatsPhotosGlobalLists = new HashMap<>();
     private HashMap<Peer, PlatformDisplayList<Message>> chatsVideosGlobalLists = new HashMap<>();
+
+    private HashMap<Integer, PlatformDisplayList<GroupPre>> groupspreGlobalLists = new HashMap<>();
 
     public DisplayLists(ModuleContext context) {
         super(context);
@@ -84,6 +87,14 @@ public class DisplayLists extends AbsModule {
             chatsVideosGlobalLists.put(peer, buildChatVideosList(peer, true));
         }
         return chatsVideosGlobalLists.get(peer);
+    }
+
+    public PlatformDisplayList<GroupPre> getGroupspreSharedList(Integer parentId){
+        im.actor.runtime.Runtime.checkMainThread();
+        if(!groupspreGlobalLists.containsKey(parentId)){
+            groupspreGlobalLists.put(parentId, buildGroupspreList(parentId, true));
+        }
+        return groupspreGlobalLists.get(parentId);
     }
 
     public PlatformDisplayList<Dialog> buildDialogsList(boolean isShared) {
@@ -150,6 +161,17 @@ public class DisplayLists extends AbsModule {
 
         PlatformDisplayList<Message> res = Storage.createDisplayList(context().getMessagesModule().getConversationVideosEngine(peer),
                 isShared, Message.ENTITY_NAME);
+
+        res.initTop();
+
+        return res;
+    }
+
+    public PlatformDisplayList<GroupPre> buildGroupspreList(final Integer parentId, boolean isShared) {
+        im.actor.runtime.Runtime.checkMainThread();
+
+        PlatformDisplayList<GroupPre> res = Storage.createDisplayList(context().getGrupoPreModule().getGrupospreEngine(parentId),
+                isShared, GroupPre.ENTITY_NAME);
 
         res.initTop();
 
