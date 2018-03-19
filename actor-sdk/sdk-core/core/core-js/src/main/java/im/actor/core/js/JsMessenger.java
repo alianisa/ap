@@ -194,10 +194,6 @@ public class JsMessenger extends Messenger {
         modules.getMessagesModule().loadMoreArchivedDialogs(init, callback);
     }
 
-    public void loadGroupsPre(int parentId){
-        modules.getGrupoPreModule().loadGroupPre(parentId);
-    }
-
     public void loadMoreHistory(Peer peer) {
         modules.getMessagesModule().loadMoreHistory(peer);
     }
@@ -269,7 +265,6 @@ public class JsMessenger extends Messenger {
     public JsDisplayList<JsDialog, Dialog> getSharedDialogList() {
         return jsBindingModule.getSharedDialogList();
     }
-
 
     public JsDisplayList<JsContact, Contact> getSharedContactList() {
         return jsBindingModule.getSharedContactList();

@@ -10,6 +10,7 @@ import im.actor.core.api.rpc.ResponseLoadGroupsPre;
 import im.actor.core.entity.GroupPre;
 import im.actor.core.modules.ModuleActor;
 import im.actor.core.modules.ModuleContext;
+import im.actor.runtime.Log;
 import im.actor.runtime.actors.messages.Void;
 import im.actor.runtime.function.Tuple2;
 import im.actor.runtime.promise.Promise;
@@ -22,6 +23,8 @@ import im.actor.runtime.promise.PromisesArray;
  */
 
 public class GroupsPreActor extends ModuleActor {
+
+    private static final String TAG = GroupsPreActor.class.getSimpleName();
 
     private static final String KEY_VERSION = "_1";
 
@@ -57,8 +60,9 @@ public class GroupsPreActor extends ModuleActor {
 
         isLoading = true;
 
+        Log.d(TAG, "Loading groupspre, parentId: "+this.idGrupoPai);
         api(new RequestLoadGroupsPre(this.idGrupoPai))
-                .map((ResponseLoadGroupsPre r) -> {
+                .map(r -> {
                     List<ApiGroupOutPeer> groupsOutPeer = new ArrayList<>();
                     for (ApiGroupPre groupPre : r.getGroups()) {
                         groupsOutPeer.add(new ApiGroupOutPeer(groupPre.getGroupId(), groupPre.getAcessHash()));

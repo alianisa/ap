@@ -38,6 +38,7 @@ import im.actor.core.api.rpc.RequestRevokeInviteUrl;
 import im.actor.core.api.rpc.RequestSaveAdminSettings;
 import im.actor.core.api.rpc.RequestShareHistory;
 import im.actor.core.api.rpc.RequestTransferOwnership;
+import im.actor.core.api.rpc.RequestUpdateRestrictedDomains;
 import im.actor.core.api.rpc.ResponseIntegrationToken;
 import im.actor.core.api.rpc.ResponseInviteUrl;
 import im.actor.core.api.rpc.ResponseVoid;
@@ -297,6 +298,14 @@ public class GroupsModule extends AbsModule implements BusSubscriber {
                         new ApiGroupOutPeer(group.getGroupId(), group.getAccessHash()),
                         adminSettings.getApiSettings())))
                 .map(r -> null);
+    }
+
+    public Promise<Void> editRestrictedDomains(final int gid, final String restrictedDomains) {
+        return getGroups().getValueAsync(gid)
+                .flatMap(group ->
+                        api(new RequestUpdateRestrictedDomains(new ApiGroupOutPeer(group.getGroupId(), group.getAccessHash()),
+                                restrictedDomains)))
+                .flatMap(r -> null);
     }
 
     public Promise<GroupMembersSlice> loadMembers(int gid, int limit, byte[] next) {

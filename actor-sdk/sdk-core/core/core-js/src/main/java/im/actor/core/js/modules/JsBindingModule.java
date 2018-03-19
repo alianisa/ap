@@ -283,7 +283,6 @@ public class JsBindingModule extends AbsModule implements JsFileLoadedListener {
         if (!groups.containsKey(gid)) {
             final GroupVM groupVM = context().getGroupsModule().getGroupsCollection().get(gid);
             final JsBindedValue<JsGroup> value = new JsBindedValue<>(JsGroup.fromGroupVM(groupVM, messenger));
-
             // Bind updates
             groupVM.subscribe(new ModelChangedListener<GroupVM>() {
                 @Override

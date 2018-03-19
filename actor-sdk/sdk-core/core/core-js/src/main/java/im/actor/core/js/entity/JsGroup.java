@@ -9,7 +9,6 @@ import com.google.gwt.core.client.JsArray;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 
 import im.actor.core.entity.Avatar;
@@ -41,24 +40,22 @@ public class JsGroup extends JavaScriptObject {
         ArrayList<JsGroupMember> convertedMembers = new ArrayList<JsGroupMember>();
         HashSet<GroupMember> groupMembers = groupVM.getMembers().get();
         GroupMember[] members = groupMembers.toArray(new GroupMember[groupMembers.size()]);
+
         int adminId = 0;
+        int myUid = messenger.myUid();
+
         for (GroupMember g : members) {
             JsPeerInfo peerInfo = messenger.buildPeerInfo(Peer.user(g.getUid()));
-            // Log.d("JsGroup", "PeerInfo: " + peerInfo);
             if (g.isAdministrator()) {
                 adminId = peerInfo.getPeer().getPeerId();
             }
-            convertedMembers.add(JsGroupMember.create(peerInfo,
-                    g.isAdministrator(),
-                    g.getInviterUid() == messenger.myUid()));
+            convertedMembers.add(JsGroupMember.create(peerInfo, g.isAdministrator(),
+                    g.getInviterUid() == myUid));
+
         }
 
-        Collections.sort(convertedMembers, new Comparator<JsGroupMember>() {
-            @Override
-            public int compare(JsGroupMember o1, JsGroupMember o2) {
-                return o1.getPeerInfo().getTitle().compareToIgnoreCase(o2.getPeerInfo().getTitle());
-            }
-        });
+        Collections.sort(convertedMembers,
+                (o1, o2) -> o1.getPeerInfo().getTitle().compareToIgnoreCase(o2.getPeerInfo().getTitle()));
 
         JsArray<JsGroupMember> jsMembers = JsArray.createArray().cast();
         for (JsGroupMember member : convertedMembers) {
@@ -67,15 +64,16 @@ public class JsGroup extends JavaScriptObject {
 
         return create(groupVM.getId(), groupVM.getName().get(), groupVM.getAbout().get(), fileUrl, bigFileUrl,
                 Placeholders.getPlaceholder(groupVM.getId()), presence, adminId,
-                jsMembers);
+                jsMembers, groupVM.isMember().get(), groupVM.getShortName().get());
     }
 
     public static native JsGroup create(int id, String name, String about, String avatar, String bigAvatar,
                                         String placeholder, String presence, int adminId,
-                                        JsArray<JsGroupMember> members)/*-{
+                                        JsArray<JsGroupMember> members, boolean isMember,
+                                        String shortName)/*-{
         return {
             id: id, name: name, about: about, avatar: avatar, bigAvatar: bigAvatar, placeholder: placeholder,
-            presence: presence, adminId:adminId, members: members
+            presence: presence, adminId:adminId, members: members, isMember: isMember, shortName:shortName
         };
     }-*/;
 

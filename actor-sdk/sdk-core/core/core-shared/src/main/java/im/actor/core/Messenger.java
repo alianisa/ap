@@ -1528,6 +1528,19 @@ public class Messenger {
     }
 
     /**
+     * Save Group's permissions
+     *
+     * @param gid           group's id
+     * @param restrictedDomains restrictedDomains
+     * @return promise of void
+     */
+    @NotNull
+    @ObjectiveCName("updateRestrictedDomainsWithGid:restrictedDomains:")
+    public Promise<Void> updateRestrictedDomains(int gid, String restrictedDomains) {
+        return modules.getGroupsModule().editRestrictedDomains(gid, restrictedDomains);
+    }
+
+    /**
      * Change group avatar
      *
      * @param gid        group's id
