@@ -48,6 +48,7 @@ import im.actor.core.js.entity.JsDialog;
 import im.actor.core.js.entity.JsDialogShort;
 import im.actor.core.js.entity.JsEventBusCallback;
 import im.actor.core.js.entity.JsGroup;
+import im.actor.core.js.entity.JsGroupPermissions;
 import im.actor.core.js.entity.JsGroupPre;
 import im.actor.core.js.entity.JsLogCallback;
 import im.actor.core.js.entity.JsMentionFilterResult;
@@ -1088,6 +1089,15 @@ public class JsFacade implements Exportable {
     }
 
     @UsedByApp
+    public JsPromise loadGroupPermissions(int gid) {
+        return JsPromise.from(messenger.loadGroupPermissions(gid)
+                .map(permissions -> {
+                    return JsGroupPermissions.CONVERTER.convert(permissions);
+                })
+        );
+    }
+
+    @UsedByApp
     public void onChatEnd(JsPeer peer) {
         messenger.loadMoreHistory(peer.convert());
     }
@@ -1351,19 +1361,26 @@ public class JsFacade implements Exportable {
         return JsPromise.create(new JsPromiseExecutor() {
             @Override
             public void execute() {
-
                 messenger.editGroupTitle(gid, newTitle)
                         .then(r -> resolve())
                         .failure(e -> reject(e.getMessage()));
             }
-
         });
     }
-
 
     @UsedByApp
     public JsPromise editGroupAbout(final int gid, final String newAbout) {
         return JsPromise.from(messenger.editGroupAbout(gid, newAbout).map(r -> null));
+    }
+
+    @UsedByApp
+    public JsPromise saveAdminSettings(final int gid, final JsGroupPermissions jsGroupPermissions) {
+        return JsPromise.from(messenger.saveGroupPermissions(gid, jsGroupPermissions.convert()).map(r -> null));
+    }
+
+    @UsedByApp
+    public JsPromise updateRestrictedDomains(final int gid, final String restrictedDomains) {
+        return JsPromise.from(messenger.updateRestrictedDomains(gid, restrictedDomains).map(r -> null));
     }
 
     @UsedByApp

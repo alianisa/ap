@@ -91,6 +91,7 @@ private[group] object GroupState {
       restrictedDomains = None,
       members = Map.empty,
       invitedUserIds = Set.empty,
+      banedUserIds = Set.empty,
       accessHash = 0L,
       adminSettings = AdminSettings.PlainDefault,
       bot = None,
@@ -126,6 +127,8 @@ private[group] final case class GroupState(
   members:        Map[Int, Member],
   invitedUserIds: Set[Int],
 
+  banedUserIds: Set[Int],
+
   //security and etc.
   accessHash:         Long,
   adminSettings:      AdminSettings,
@@ -146,6 +149,8 @@ private[group] final case class GroupState(
   def nonMember(userId: Int): Boolean = !isMember(userId)
 
   def isInvited(userId: Int): Boolean = invitedUserIds.contains(userId)
+
+  def isBaned(userId: Int): Boolean = banedUserIds.contains(userId)
 
   def isBot(userId: Int): Boolean = userId == 0 || (bot exists (_.userId == userId))
 
@@ -200,6 +205,7 @@ private[group] final case class GroupState(
           }
         ).toMap,
         invitedUserIds = evt.userIds.filterNot(_ == evt.creatorUserId).toSet,
+        banedUserIds = Set.empty,
         accessHash = evt.accessHash,
         adminSettings =
           if (typeOfGroup.isChannel) AdminSettings.ChannelsDefault

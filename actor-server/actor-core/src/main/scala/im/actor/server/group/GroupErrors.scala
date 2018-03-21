@@ -49,5 +49,5 @@ object GroupErrors {
 
   case object InvalidExtension extends Exception with NoStackTrace
 
-  case object NotDomain extends Exception with NoStackTrace
+  case object NotDomain extends Exception("Does not have an allowed domain")  with NoStackTrace
 }

@@ -16,6 +16,7 @@ import im.actor.core.entity.Message;
 import im.actor.core.entity.SearchEntity;
 import im.actor.core.js.entity.JsContact;
 import im.actor.core.js.entity.JsDialog;
+import im.actor.core.js.entity.JsGroupPermissions;
 import im.actor.core.js.entity.JsGroupPre;
 import im.actor.core.js.entity.JsMessage;
 import im.actor.core.js.entity.JsSearchEntity;

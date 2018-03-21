@@ -141,29 +141,11 @@ private[group] trait InfoCommandHandlers {
         val memberIds = newState.memberIds
 
         val updateNew = UpdateGroupTopicChanged(groupId, topic)
-//        val updateObsolete = UpdateGroupTopicChangedObsolete(
-//          groupId,
-//          randomId = cmd.randomId,
-//          userId = cmd.clientUserId,
-//          topic = topic,
-//          date = dateMillis
-//        )
+
         val serviceMessage = GroupServiceMessages.changedTopic(topic)
         val pushRules = seqUpdExt.pushRules(isFat = false, Some(PushTexts.topicChanged(newState.groupType)))
 
         val result: Future[SeqStateDate] = for {
-
-          ///////////////////////////
-          // Groups V1 API updates //
-          ///////////////////////////
-
-//          _ ← seqUpdExt.broadcastClientUpdate(
-//            cmd.clientUserId,
-//            cmd.clientAuthId,
-//            memberIds - cmd.clientUserId,
-//            updateObsolete,
-//            pushRules
-//          )
 
           ///////////////////////////
           // Groups V2 API updates //
@@ -208,23 +190,11 @@ private[group] trait InfoCommandHandlers {
         val memberIds = newState.memberIds
 
         val updateNew = UpdateGroupAboutChanged(groupId, about)
-//        val updateObsolete = UpdateGroupAboutChangedObsolete(groupId, about)
+
         val serviceMessage = GroupServiceMessages.changedAbout(about)
         val pushRules = seqUpdExt.pushRules(isFat = false, Some(PushTexts.topicChanged(newState.groupType)))
 
         val result: Future[SeqStateDate] = for {
-
-          ///////////////////////////
-          // Groups V1 API updates //
-          ///////////////////////////
-
-//          _ ← seqUpdExt.broadcastClientUpdate(
-//            cmd.clientUserId,
-//            cmd.clientAuthId,
-//            memberIds - cmd.clientUserId,
-//            updateObsolete,
-//            pushRules
-//          )
 
           ///////////////////////////
           // Groups V2 API updates //

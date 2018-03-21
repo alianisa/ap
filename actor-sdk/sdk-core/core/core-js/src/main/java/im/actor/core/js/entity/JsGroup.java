@@ -41,17 +41,11 @@ public class JsGroup extends JavaScriptObject {
         HashSet<GroupMember> groupMembers = groupVM.getMembers().get();
         GroupMember[] members = groupMembers.toArray(new GroupMember[groupMembers.size()]);
 
-        int adminId = 0;
         int myUid = messenger.myUid();
-
         for (GroupMember g : members) {
             JsPeerInfo peerInfo = messenger.buildPeerInfo(Peer.user(g.getUid()));
-            if (g.isAdministrator()) {
-                adminId = peerInfo.getPeer().getPeerId();
-            }
             convertedMembers.add(JsGroupMember.create(peerInfo, g.isAdministrator(),
                     g.getInviterUid() == myUid));
-
         }
 
         Collections.sort(convertedMembers,
@@ -63,17 +57,20 @@ public class JsGroup extends JavaScriptObject {
         }
 
         return create(groupVM.getId(), groupVM.getName().get(), groupVM.getAbout().get(), fileUrl, bigFileUrl,
-                Placeholders.getPlaceholder(groupVM.getId()), presence, adminId,
-                jsMembers, groupVM.isMember().get(), groupVM.getShortName().get());
+                Placeholders.getPlaceholder(groupVM.getId()), presence, groupVM.getOwnerId().get(),
+                jsMembers, groupVM.isMember().get(), groupVM.getShortName().get(),
+                groupVM.getIsCanEditAdministration().get(), groupVM.getRestrictedDomains().get());
     }
 
     public static native JsGroup create(int id, String name, String about, String avatar, String bigAvatar,
-                                        String placeholder, String presence, int adminId,
+                                        String placeholder, String presence, int ownerId,
                                         JsArray<JsGroupMember> members, boolean isMember,
-                                        String shortName)/*-{
+                                        String shortName, boolean isCanEditAdministration,
+                                        String restrictedDomains)/*-{
         return {
             id: id, name: name, about: about, avatar: avatar, bigAvatar: bigAvatar, placeholder: placeholder,
-            presence: presence, adminId:adminId, members: members, isMember: isMember, shortName:shortName
+            presence: presence, ownerId:ownerId, members: members, isMember: isMember, shortName: shortName,
+            isCanEditAdministration: isCanEditAdministration, restrictedDomains: restrictedDomains
         };
     }-*/;
 
