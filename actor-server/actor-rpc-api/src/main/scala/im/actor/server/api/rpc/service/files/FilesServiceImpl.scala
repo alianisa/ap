@@ -6,20 +6,24 @@ import java.time.temporal.ChronoUnit
 import akka.actor._
 import akka.http.scaladsl.util.FastFuture
 import cats.data.Xor
-import im.actor.api.rpc.CommonRpcErrors.InternalError
 import im.actor.api.rpc.FileRpcErrors.UnsupportedSignatureAlgorithm
+import im.actor.api.rpc.FileRpcErrors.FileTooLarge
 import im.actor.api.rpc._
 import im.actor.api.rpc.files._
+import im.actor.api.rpc.messaging.ApiServiceMessage
+import im.actor.api.rpc.peers.{ApiPeer, ApiPeerType}
 import im.actor.concurrent.FutureExt
 import im.actor.server.acl.ACLUtils
 import im.actor.server.api.http.HttpApiConfig
 import im.actor.server.db.DbExtension
+import im.actor.server.dialog.DialogExtension
 import im.actor.server.file._
-import im.actor.server.persist.files.{ FilePartRepo, FileRepo }
+import im.actor.server.file.local.LocalFileStorageConfig
+import im.actor.server.persist.files.{FilePartRepo, FileRepo}
 import org.apache.commons.codec.binary.Hex
 import slick.driver.PostgresDriver.api._
 
-import scala.concurrent.{ ExecutionContext, Future }
+import scala.concurrent.{ExecutionContext, Future}
 
 class FilesServiceImpl(implicit actorSystem: ActorSystem) extends FilesService {
 
@@ -30,6 +34,8 @@ class FilesServiceImpl(implicit actorSystem: ActorSystem) extends FilesService {
   private implicit val db: Database = DbExtension(actorSystem).db
   private val fsAdapter: FileStorageAdapter = FileStorageExtension(actorSystem).fsAdapter
   private val httpConfig = HttpApiConfig.load.get
+  private val fileStorageConfig = LocalFileStorageConfig.load.get
+  protected val dialogExt = DialogExtension(actorSystem)
 
   override def doHandleGetFileUrl(location: ApiFileLocation, clientData: ClientData): Future[HandlerResult[ResponseGetFileUrl]] =
     authorized(clientData) { _ ⇒
@@ -59,14 +65,20 @@ class FilesServiceImpl(implicit actorSystem: ActorSystem) extends FilesService {
       } yield ResponseGetFileUrls(urlDescs.toVector)).value
     }
 
+
   override def doHandleGetFileUploadUrl(expectedSize: Int, clientData: ClientData): Future[HandlerResult[ResponseGetFileUploadUrl]] =
     authorized(clientData) { _ ⇒
-      val id = ACLUtils.randomLong()
-      (for {
-        uploadKeyUrl ← fromFuture(fsAdapter.getFileUploadUrl(id))
-        (uploadKey, url) = uploadKeyUrl
-        _ ← fromFuture(db.run(FileRepo.create(id, expectedSize.toLong, accessSalt = ACLUtils.nextAccessSalt(), uploadKey.key)))
-      } yield ResponseGetFileUploadUrl(url, uploadKey.toByteArray)).value
+      if(expectedSize <= fileStorageConfig.maxFileSize){
+        val id = ACLUtils.randomLong()
+        (for {
+          uploadKeyUrl ← fromFuture(fsAdapter.getFileUploadUrl(id))
+          (uploadKey, url) = uploadKeyUrl
+          _ ← fromFuture(db.run(FileRepo.create(id, expectedSize.toLong, accessSalt = ACLUtils.nextAccessSalt(), uploadKey.key)))
+        } yield ResponseGetFileUploadUrl(url, uploadKey.toByteArray)).value
+      }else{
+        val rid = ACLUtils.randomLong()
+        FastFuture.successful(Error(FileTooLarge))
+      }
     }
 
   override def doHandleGetFileUploadPartUrl(partNumber: Int, partSize: Int, keyBytes: Array[Byte], clientData: ClientData): Future[HandlerResult[ResponseGetFileUploadPartUrl]] =

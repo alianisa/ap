@@ -13,11 +13,11 @@ import scala.concurrent.Future
 
 object SearchServiceErrors {
   val InvalidLoadState = RpcError(400, "INVALID_LOAD_STATE", "", false, None)
-  def invalodSearchCondition(message: String) = RpcError(400, "INVALID_SEARCH_CONDITION", message, false, None)
+  def invalidSearchCondition(message: String) = RpcError(400, "INVALID_SEARCH_CONDITION", message, false, None)
 
   def convertToRpcError: PartialFunction[SearchError, RpcError] = {
     case SearchErrors.InvalidLoadState            ⇒ InvalidLoadState
-    case SearchErrors.InvalidSearchCondition(msg) ⇒ invalodSearchCondition(msg)
+    case SearchErrors.InvalidSearchCondition(msg) ⇒ invalidSearchCondition(msg)
   }
 }
 

@@ -1810,7 +1810,8 @@ public class Messenger {
     @NotNull
     @ObjectiveCName("joinGroupWithGid:")
     public Promise<Void> joinGroup(int gid) {
-        return modules.getGroupsModule().joinGroup(gid);
+        return modules.getGroupsModule()
+                .joinGroup(gid);
     }
 
     /**

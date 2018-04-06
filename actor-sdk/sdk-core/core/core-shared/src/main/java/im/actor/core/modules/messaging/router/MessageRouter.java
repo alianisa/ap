@@ -427,13 +427,10 @@ public class MessageRouter extends ModuleActor {
         Message msg = conversation(peer).getValue(rid);
         // If we have pending message
         if (msg != null && (msg.getMessageState() == MessageState.PENDING)) {
-
             // Updating message
             Message updatedMsg = msg
                     .changeState(MessageState.ERROR);
             conversation(peer).addOrUpdateItem(updatedMsg);
-            updateDocMessage(peer, updatedMsg);
-
             updateChatState(peer);
         }
         return Promise.success(null);
@@ -530,7 +527,6 @@ public class MessageRouter extends ModuleActor {
 
         Log.d(TAG, "History Docs Loaded");
         updateDocsMessages(peer, messages);
-
         return Promise.success(null);
     }
 
@@ -803,6 +799,7 @@ public class MessageRouter extends ModuleActor {
     private void updateChatState(Peer peer) {
         boolean isEmpty = conversation(peer).isEmpty();
         ConversationState state = conversationStates.getValue(peer.getUnuqueId());
+
         if (state.isEmpty() != isEmpty) {
             state = state.changeIsEmpty(isEmpty);
         }

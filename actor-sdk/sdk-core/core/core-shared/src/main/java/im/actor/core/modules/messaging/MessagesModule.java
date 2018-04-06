@@ -382,7 +382,6 @@ public class MessagesModule extends AbsModule implements BusSubscriber {
         }
     }
 
-
     public Promise<Void> addReaction(final Peer peer, final long rid, final String reaction) {
         return buildOutPeer(peer)
                 .flatMap(apiOutPeer ->

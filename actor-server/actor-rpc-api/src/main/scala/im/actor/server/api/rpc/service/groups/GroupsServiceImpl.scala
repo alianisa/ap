@@ -539,7 +539,7 @@ final class GroupsServiceImpl(groupInviteConfig: GroupInviteConfig)(implicit act
       }
     }
 
-  private val inviteUriBase = s"${groupInviteConfig.baseUrl}/join/"
+  private val inviteUriBase = s"${groupInviteConfig.baseUrl}/#/join/"
 
   private def genInviteUrl(token: String) = s"$inviteUriBase$token"
 
@@ -650,6 +650,7 @@ final class GroupsServiceImpl(groupInviteConfig: GroupInviteConfig)(implicit act
     case GroupErrors.AboutTooLong            ⇒ GroupRpcErrors.AboutTooLong
     case GroupErrors.TopicTooLong            ⇒ GroupRpcErrors.TopicTooLong
     case GroupErrors.BlockedByUser           ⇒ GroupRpcErrors.BlockedByUser
+    case e: GroupErrors.NotDomain            ⇒ CommonRpcErrors.forbidden(e.getMessage)
     case FileErrors.LocationInvalid          ⇒ FileRpcErrors.LocationInvalid
     case GroupErrors.UserAlreadyInvited      ⇒ GroupRpcErrors.AlreadyInvited
     case GroupErrors.UserAlreadyJoined       ⇒ GroupRpcErrors.AlreadyJoined

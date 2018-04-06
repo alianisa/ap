@@ -168,20 +168,20 @@ public class GroupsPreFragment extends SimpleDisplayListFragment<GroupPre, Grupo
         });
     }
 
-
     private void enterInGroupById(GroupPre groupPre) {
         GroupVM groupVM = groups().get(groupPre.getGroupId());
         if (groupVM.isMember().get()) {
             startActivity(Intents.openGroupDialog(groupPre.getGroupId(), true, getActivity()));
         } else {
-            final ProgressDialog dialog = ProgressDialog.show(getContext(), "", getString(im.actor.sdk.R.string.entering), true, false);
+            final ProgressDialog dialog = ProgressDialog.show(getContext(), "",
+                    getString(im.actor.sdk.R.string.entering), true, false);
             messenger().joinGroupById(groupPre.getGroupId()).then(aVoid -> {
                 dialog.dismiss();
                 startActivity(Intents.openGroupDialog(groupPre.getGroupId(), true, getActivity()));
             }).failure(e -> {
                 dialog.dismiss();
                 Log.e(TAG, e);
-                SnackUtils.showError(getView(), getString(im.actor.sdk.R.string.you_can_not_enter), Snackbar.LENGTH_INDEFINITE,
+                SnackUtils.showError(getView(), e.getMessage(), Snackbar.LENGTH_LONG,
                         view -> enterInGroupById(groupPre), getString(im.actor.sdk.R.string.dialog_try_again));
             });
         }

@@ -212,13 +212,18 @@ private[group] trait MemberCommandHandlers extends GroupsImplicits {
 
   private def isBlockedByEmail(userId:Int, authId:Long): Future[Boolean] = {
     val domains = state.restrictedDomains.getOrElse("").split(",")
-    if(!domains.isEmpty){
+    if(!domains.isEmpty && !"".eq(domains(0))){
       for{
         contactsInfo <- userExt.getApiStruct(userId, userId, authId).map(apiUser => {
           apiUser.contactInfo.filter(contact => {
             contact.`type` == ApiContactType.Email
           }).filter(contact => {
-            domains.exists(d => d.contains(contact.stringValue))
+            contact.stringValue match {
+              case Some(email) =>
+                domains.exists(d => email.contains(d))
+              case None =>
+                false
+            }
           })
         })
       }yield(contactsInfo.isEmpty)
@@ -247,7 +252,7 @@ private[group] trait MemberCommandHandlers extends GroupsImplicits {
         } else {
           onSuccess(isBlockedByEmail(cmd.joiningUserId, cmd.joiningUserAuthId)){ isEmailBlocked =>
             if(isEmailBlocked){
-              replyTo ! Status.Failure(GroupErrors.NotDomain)
+              replyTo ! Status.Failure(GroupErrors.NotDomain(state.restrictedDomains.get))
             }else{
                 // user was invited in group by other group user
                 val wasInvited = state.isInvited(cmd.joiningUserId)

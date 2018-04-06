@@ -47,6 +47,7 @@ import im.actor.core.js.entity.JsContent;
 import im.actor.core.js.entity.JsDialog;
 import im.actor.core.js.entity.JsDialogShort;
 import im.actor.core.js.entity.JsEventBusCallback;
+import im.actor.core.js.entity.JsFileUploadListener;
 import im.actor.core.js.entity.JsGroup;
 import im.actor.core.js.entity.JsGroupPermissions;
 import im.actor.core.js.entity.JsGroupPre;
@@ -71,10 +72,12 @@ import im.actor.core.js.utils.IdentityUtils;
 import im.actor.core.network.RpcCallback;
 import im.actor.core.network.RpcException;
 import im.actor.core.viewmodel.CommandCallback;
+import im.actor.core.viewmodel.UploadFileCallback;
 import im.actor.core.viewmodel.UserVM;
 import im.actor.runtime.Log;
 import im.actor.runtime.Storage;
 import im.actor.runtime.actors.messages.Void;
+import im.actor.runtime.files.FileSystemReference;
 import im.actor.runtime.js.JsFileSystemProvider;
 import im.actor.runtime.js.JsLogProvider;
 import im.actor.runtime.js.fs.JsBlob;
@@ -856,6 +859,28 @@ public class JsFacade implements Exportable {
     }
 
     @UsedByApp
+    public void requestUploadState(int fileId, JsFileUploadListener listener){
+        if(listener == null)
+            return;
+
+        messenger.requestUploadState(fileId, new UploadFileCallback() {
+            @Override
+            public void onNotUploading() {
+                listener.onStatusUpdate(0, false);
+            }
+            @Override
+            public void onUploading(float progress) {
+                listener.onStatusUpdate(progress, true);
+            }
+            @Override
+            public void onUploaded(FileSystemReference reference) {
+                listener.onStatusUpdate(100f, false);
+            }
+        });
+    }
+
+
+    @UsedByApp
     public void sendPhoto(final JsPeer peer, final JsFile file) {
         messenger.sendPhoto(peer.convert(), file);
     }
@@ -1264,7 +1289,7 @@ public class JsFacade implements Exportable {
                     messenger.buildPeerInfo(Peer.user(e.getSenderId())),
                     messenger.getFormatter().formatDate(e.getDate()),
                     JsContent.createContent(e.getContent(),
-                            e.getSenderId())));
+                            e.getSenderId(), -1)));
         }
         return jsRes;
     }
@@ -1282,13 +1307,10 @@ public class JsFacade implements Exportable {
                         for (PeerSearchEntity s : res) {
                             if (s.getPeer().getPeerType() == PeerType.GROUP) {
                                 jsRes.push(JsPeerSearchResult.create(messenger.buildPeerInfo(s.getPeer())));
-                            } /*else if (s.getPeer().getPeerType() == PeerType.PRIVATE) {
-                                jsRes.push(JsPeerSearchResult.create(messenger.buildPeerInfo(s.getPeer())));
-                            }*/
+                            }
                         }
                         resolve(jsRes);
                     }
-
                     @Override
                     public void onError(Exception e) {
                         Log.d(TAG, "findGroups:error");

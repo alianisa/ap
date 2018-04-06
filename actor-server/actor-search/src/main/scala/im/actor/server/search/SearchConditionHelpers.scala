@@ -145,7 +145,7 @@ trait SearchConditionHelpers extends PeersImplicits
   private def userQuery(clientId: Int) =
     filter(
       termQuery("users", clientId),
-      termQuery("isPublic", true)
+      termQuery("isPublic", false)
     )
 
   private def searchCondition(searchCondition: ApiSearchCondition, clientId: Int)(implicit config: SearchQueryConfig, langFields: Vector[String]): Either[QueryDefinition, QueryDefinition] =

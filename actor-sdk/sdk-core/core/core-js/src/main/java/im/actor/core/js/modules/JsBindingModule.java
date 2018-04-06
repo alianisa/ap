@@ -14,6 +14,7 @@ import java.util.HashSet;
 import im.actor.core.entity.Avatar;
 import im.actor.core.entity.Contact;
 import im.actor.core.entity.Dialog;
+import im.actor.core.entity.Group;
 import im.actor.core.entity.GroupPre;
 import im.actor.core.entity.Message;
 import im.actor.core.entity.Peer;
@@ -439,12 +440,7 @@ public class JsBindingModule extends AbsModule implements JsFileLoadedListener {
         if (globalCounter == null) {
             ValueModel<Integer> counter = context().getConductor().getGlobalStateVM().getGlobalCounter();
             globalCounter = new JsBindedValue<>(JsCounter.create(counter.get()));
-            counter.subscribe(new ValueChangedListener<Integer>() {
-                @Override
-                public void onChanged(Integer val, Value<Integer> valueModel) {
-                    globalCounter.changeValue(JsCounter.create(val));
-                }
-            }, false);
+            counter.subscribe((val, valueModel) -> globalCounter.changeValue(JsCounter.create(val)), false);
         }
         return globalCounter;
     }
@@ -453,12 +449,7 @@ public class JsBindingModule extends AbsModule implements JsFileLoadedListener {
         if (tempGlobalCounter == null) {
             ValueModel<Integer> counter = context().getConductor().getGlobalStateVM().getGlobalTempCounter();
             tempGlobalCounter = new JsBindedValue<>(JsCounter.create(counter.get()));
-            counter.subscribe(new ValueChangedListener<Integer>() {
-                @Override
-                public void onChanged(Integer val, Value<Integer> valueModel) {
-                    tempGlobalCounter.changeValue(JsCounter.create(val));
-                }
-            }, false);
+            counter.subscribe((val, valueModel) -> tempGlobalCounter.changeValue(JsCounter.create(val)), false);
         }
         return tempGlobalCounter;
     }

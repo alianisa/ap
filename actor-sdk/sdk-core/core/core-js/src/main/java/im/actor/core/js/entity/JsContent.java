@@ -13,6 +13,9 @@ import im.actor.core.api.ApiTextModernAttach;
 import im.actor.core.api.ApiTextModernField;
 import im.actor.core.api.ApiTextModernMessage;
 import im.actor.core.entity.ImageLocation;
+import im.actor.core.entity.Message;
+import im.actor.core.entity.MessageState;
+import im.actor.core.entity.Peer;
 import im.actor.core.entity.content.AbsContent;
 import im.actor.core.entity.content.AnimationContent;
 import im.actor.core.entity.content.ContactContent;
@@ -31,7 +34,7 @@ import im.actor.runtime.crypto.Base64Utils;
 
 public abstract class JsContent extends JavaScriptObject {
 
-    public static JsContent createContent(AbsContent src, int sender) {
+    public static JsContent createContent(AbsContent src, int sender, int messageState) {
         JsMessenger messenger = JsMessenger.getInstance();
         JsContent content;
         if (src instanceof TextContent) {
@@ -74,6 +77,10 @@ public abstract class JsContent extends JavaScriptObject {
             }
 
             boolean isUploading = doc.getSource() instanceof FileLocalSource;
+
+            if(messageState == MessageState.ERROR){
+                isUploading = false;
+            }
 
             String thumb = null;
             if (doc.getFastThumb() != null) {

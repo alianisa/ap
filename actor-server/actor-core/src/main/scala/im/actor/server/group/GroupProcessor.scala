@@ -104,7 +104,8 @@ object GroupProcessor {
       22022 → classOf[GroupEvents.GroupDeleted],
       22023 → classOf[GroupEvents.MembersBecameAsync],
       22024 → classOf[GroupEvents.ExtAdded],
-      22025 → classOf[GroupEvents.ExtRemoved]
+      22025 → classOf[GroupEvents.ExtRemoved],
+      22026 → classOf[GroupEvents.RestrictedDomainsUpdated]
     )
 
   def persistenceIdFor(groupId: Int): String = s"Group-${groupId}"

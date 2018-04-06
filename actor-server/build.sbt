@@ -78,8 +78,8 @@ lazy val protobuffSettings = Seq(
     file("actor-fs-adapters/src/main/protobuf"),
     file("actor-session-messages/src/main/protobuf"),
     file("actor-bots/src/main/protobuf"),
-    file("actor-notify/src/main/protobuf")//,
-    //file("actor-search/src/main/protobuf")
+    file("actor-notify/src/main/protobuf"),
+    file("actor-search/src/main/protobuf")
     ),
 
     PB.targets in Compile := Seq(
@@ -375,7 +375,8 @@ lazy val actorServerSdk = Project(
     actorHttpApi,
     actorNotify,
     actorOAuth,
-    actorRpcApi
+    actorRpcApi,
+    actorSearch
   ).aggregate(
   actorActivation,
   actorBots,
@@ -393,7 +394,7 @@ lazy val actorServerSdk = Project(
   actorPersist,
   actorRpcApi,
   actorRuntime,
-  //actorSearch,
+  actorSearch,
   actorSession,
   actorSessionMessages,
   actorSms

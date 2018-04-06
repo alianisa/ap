@@ -450,7 +450,6 @@ public class SenderActor extends ModuleActor {
         if (msg == null) {
             return;
         }
-
         self().send(new MessageError(msg.getPeer(), msg.getRid()));
         fileUplaodingWakeLocks.remove(rid).releaseLock();
     }

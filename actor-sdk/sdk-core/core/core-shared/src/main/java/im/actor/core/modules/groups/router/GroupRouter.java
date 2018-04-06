@@ -40,6 +40,7 @@ import im.actor.core.modules.groups.router.entity.RouterGroupUpdate;
 import im.actor.core.modules.groups.router.entity.RouterLoadFullGroup;
 import im.actor.core.modules.messaging.router.MessageRouterInt;
 import im.actor.core.network.parser.Update;
+import im.actor.runtime.Log;
 import im.actor.runtime.actors.messages.Void;
 import im.actor.runtime.annotations.Verified;
 import im.actor.runtime.function.Function;
@@ -48,6 +49,8 @@ import im.actor.runtime.promise.Promise;
 import im.actor.runtime.promise.PromisesArray;
 
 public class GroupRouter extends ModuleActor {
+
+    private static final String TAG = GroupRouter.class.getName();
 
     // j2objc workaround
     private static final Void DUMB = null;
@@ -218,6 +221,8 @@ public class GroupRouter extends ModuleActor {
     @Verified
     private Promise<Void> applyGroups(List<ApiGroup> groups) {
         freeze();
+
+        Log.d(TAG, "applyGroups: "+groups);
         return PromisesArray.of(groups)
                 .map((Function<ApiGroup, Promise<Tuple2<ApiGroup, Boolean>>>) u -> groups().containsAsync(u.getId())
                         .map(v -> new Tuple2<>(u, v)))
@@ -230,6 +235,7 @@ public class GroupRouter extends ModuleActor {
                         res.add(group);
                     }
                     if (res.size() > 0) {
+                        Log.d(TAG, "setting groups, size"+res.size());
                         groups().addOrUpdateItems(res);
                     }
                 })

@@ -137,7 +137,7 @@ public class UploadTask extends ModuleActor {
                 })
                 .failure(e -> {
                     if (LOG) {
-                        Log.w(TAG, "Error during initialization of upload");
+                        Log.w(TAG, "Error during initialization of upload: "+e.getMessage());
                     }
                     reportError();
                 });

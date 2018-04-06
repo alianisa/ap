@@ -59,6 +59,7 @@ import im.actor.core.modules.profile.avatar.GroupAvatarChangeActor;
 import im.actor.core.util.RandomUtils;
 import im.actor.core.viewmodel.GroupAvatarVM;
 import im.actor.core.viewmodel.GroupVM;
+import im.actor.runtime.Log;
 import im.actor.runtime.Storage;
 import im.actor.runtime.actors.ActorRef;
 import im.actor.runtime.actors.messages.Void;
@@ -128,7 +129,7 @@ public class GroupsModule extends AbsModule implements BusSubscriber {
     //
     // Actions
     //
-
+    
     public Promise<Integer> createGroup(String title, String avatarDescriptor, int[] uids) {
         return createGroup(title, avatarDescriptor, uids, ApiGroupType.GROUP);
     }
