@@ -8,4 +8,6 @@ import scala.concurrent.Future
   */
 final class PlivioSmsEngine(plivioClient: PlivioClient) extends AuthSmsEngine{
   override def sendCode(phoneNumber: Long, systemName: String, code: String): Future[Unit] = plivioClient.sendSmsCode(phoneNumber, code, systemName)
+
 }
+
