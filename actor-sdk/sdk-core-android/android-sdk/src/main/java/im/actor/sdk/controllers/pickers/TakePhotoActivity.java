@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.widget.Toast;
@@ -12,8 +11,6 @@ import android.widget.Toast;
 import com.soundcloud.android.crop.Crop;
 
 import org.jetbrains.annotations.NotNull;
-
-import java.io.File;
 
 import im.actor.sdk.R;
 import im.actor.sdk.controllers.Intents;
@@ -60,31 +57,29 @@ public class TakePhotoActivity extends Activity {
                         getString(R.string.pick_photo_gallery)};
             }
             dialog = new AlertDialog.Builder(this)
-                    .setItems(args, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog2, int which) {
-                            if (which == 0) {
-                                externalFile = Files.getExternalTempFile("capture", "jpg");
-                                if (externalFile == null) {
-                                    Toast.makeText(getApplicationContext(),
-                                            R.string.toast_no_sdcard, Toast.LENGTH_LONG).show();
-                                    return;
-                                }
-
-                                startActivityForResult(
-                                        new Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                                                .putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(externalFile))),
-                                        REQUEST_PHOTO);
-                            } else if (which == 1) {
-                                Intent i = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                                i.setType("image/*");
-                                startActivityForResult(i, REQUEST_GALLERY);
-                            } else if (which == 2) {
-                                setResult(RESULT_OK, new Intent().putExtra(Intents.EXTRA_RESULT, Intents.RESULT_DELETE));
-                                finish();
+                    .setItems(args, (dialog2, which) -> {
+                        if (which == 0) {
+                            externalFile = Files.getExternalTempFile("capture", ".jpg");
+                            if (externalFile == null) {
+                                Toast.makeText(getApplicationContext(),
+                                        R.string.toast_no_sdcard, Toast.LENGTH_LONG).show();
+                                return;
                             }
-                            isPerformedAction = true;
+
+                            startActivityForResult(
+                                    new Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                                            .putExtra(MediaStore.EXTRA_OUTPUT,
+                                                    Files.getUri(getApplicationContext(), externalFile)/*Uri.fromFile(new File(externalFile))*/),
+                                    REQUEST_PHOTO);
+                        } else if (which == 1) {
+                            Intent i = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                            i.setType("image/*");
+                            startActivityForResult(i, REQUEST_GALLERY);
+                        } else if (which == 2) {
+                            setResult(RESULT_OK, new Intent().putExtra(Intents.EXTRA_RESULT, Intents.RESULT_DELETE));
+                            finish();
                         }
+                        isPerformedAction = true;
                     })
                     .setOnCancelListener(new DialogInterface.OnCancelListener() {
                         @Override
@@ -100,14 +95,14 @@ public class TakePhotoActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_GALLERY && resultCode == Activity.RESULT_OK) {
             tempAvatarPath = Files.getInternalTempFile("avatar", "jpg");
-            Crop.of(data.getData(), Uri.fromFile(new File(tempAvatarPath)))
-
+            Crop.of(data.getData(), Files.getUri(this, tempAvatarPath) /* Uri.fromFile(new File(tempAvatarPath))*/)
                     .asSquare()
                     .start(this);
             return;
         } else if (requestCode == REQUEST_PHOTO && resultCode == Activity.RESULT_OK) {
             tempAvatarPath = Files.getInternalTempFile("avatar", "jpg");
-            Crop.of(Uri.fromFile(new File(externalFile)), Uri.fromFile(new File(tempAvatarPath)))
+            Crop.of(/*Uri.fromFile(new File(externalFile))*/ Files.getUri(this, externalFile),
+                    /*Uri.fromFile(new File(tempAvatarPath))*/ Files.getUri(this, tempAvatarPath))
                     .asSquare()
                     .start(this);
             return;

@@ -162,23 +162,20 @@ public class BindedDisplayList<T extends BserObject & ListEngineItem> extends Di
         window.startInitForward();
         pendingModifications.clear();
 
-        listEngine.loadForward(pageSize, cover(new ListEngineDisplayLoadCallback<T>() {
-            @Override
-            public void onLoaded(List<T> items, long topSortKey, long bottomSortKey) {
-                im.actor.runtime.Runtime.checkMainThread();
+        listEngine.loadForward(pageSize, cover((items, topSortKey, bottomSortKey) -> {
+            im.actor.runtime.Runtime.checkMainThread();
 
-                window.completeInitForward(bottomSortKey);
+            window.completeInitForward(bottomSortKey);
 
-                if (items.size() != 0) {
-                    editList(Modifications.replace(items), true);
-                } else {
-                    window.onForwardCompleted();
-                }
-                for (Modification<T> m : pendingModifications) {
-                    editList(m);
-                }
-                pendingModifications.clear();
+            if (items.size() != 0) {
+                editList(Modifications.replace(items), true);
+            } else {
+                window.onForwardCompleted();
             }
+            for (Modification<T> m : pendingModifications) {
+                editList(m);
+            }
+            pendingModifications.clear();
         }, currentGeneration));
     }
 
@@ -207,23 +204,20 @@ public class BindedDisplayList<T extends BserObject & ListEngineItem> extends Di
         window.startInitBackward();
         pendingModifications.clear();
 
-        listEngine.loadBackward(pageSize, cover(new ListEngineDisplayLoadCallback<T>() {
-            @Override
-            public void onLoaded(List<T> items, long topSortKey, long bottomSortKey) {
-                im.actor.runtime.Runtime.checkMainThread();
+        listEngine.loadBackward(pageSize, cover((items, topSortKey, bottomSortKey) -> {
+            im.actor.runtime.Runtime.checkMainThread();
 
-                window.completeInitBackward(topSortKey);
+            window.completeInitBackward(topSortKey);
 
-                if (items.size() != 0) {
-                    editList(Modifications.replace(items), true);
-                } else {
-                    window.onBackwardCompleted();
-                }
-                for (Modification<T> m : pendingModifications) {
-                    editList(m);
-                }
-                pendingModifications.clear();
+            if (items.size() != 0) {
+                editList(Modifications.replace(items), true);
+            } else {
+                window.onBackwardCompleted();
             }
+            for (Modification<T> m : pendingModifications) {
+                editList(m);
+            }
+            pendingModifications.clear();
         }, currentGeneration));
     }
 
@@ -296,23 +290,20 @@ public class BindedDisplayList<T extends BserObject & ListEngineItem> extends Di
         window.startInitForward();
         pendingModifications.clear();
 
-        listEngine.loadForward(query, pageSize, cover(new ListEngineDisplayLoadCallback<T>() {
-            @Override
-            public void onLoaded(List<T> items, long topSortKey, long bottomSortKey) {
-                im.actor.runtime.Runtime.checkMainThread();
+        listEngine.loadForward(query, pageSize, cover((items, topSortKey, bottomSortKey) -> {
+            im.actor.runtime.Runtime.checkMainThread();
 
-                window.completeInitForward(bottomSortKey);
+            window.completeInitForward(bottomSortKey);
 
-                editList(Modifications.replace(items), true);
+            editList(Modifications.replace(items), true);
 
-                if (items.size() == 0) {
-                    window.onForwardCompleted();
-                }
-                for (Modification<T> m : pendingModifications) {
-                    editList(m);
-                }
-                pendingModifications.clear();
+            if (items.size() == 0) {
+                window.onForwardCompleted();
             }
+            for (Modification<T> m : pendingModifications) {
+                editList(m);
+            }
+            pendingModifications.clear();
         }, currentGeneration));
     }
 
@@ -338,37 +329,34 @@ public class BindedDisplayList<T extends BserObject & ListEngineItem> extends Di
         final int gen = currentGeneration;
         // Log.d(TAG, "Loading more items...");
         final long start = System.currentTimeMillis();
-        ListEngineDisplayLoadCallback<T> callback = cover(new ListEngineDisplayLoadCallback<T>() {
-            @Override
-            public void onLoaded(List<T> items, long topSortKey, long bottomSortKey) {
-                im.actor.runtime.Runtime.checkMainThread();
+        ListEngineDisplayLoadCallback<T> callback = cover((items, topSortKey, bottomSortKey) -> {
+            im.actor.runtime.Runtime.checkMainThread();
 
-                // Log.d(TAG, "Items loaded in " + (System.currentTimeMillis() - start) + " ms");
+            // Log.d(TAG, "Items loaded in " + (System.currentTimeMillis() - start) + " ms");
 
-                window.completeForwardLoading();
+            window.completeForwardLoading();
 
-                if (items.size() == 0) {
-                    window.onForwardCompleted();
-                    if (bindHook != null) {
-                        bindHook.onScrolledToEnd();
-                    }
-                    // Log.d(TAG, "isLoadMoreForwardRequested = false: sync");
-                    isLoadMoreForwardRequested = false;
-                } else {
-                    window.onForwardSliceLoaded(bottomSortKey);
-                    if (linearLayoutCallback != null) {
-                        linearLayoutCallback.setStackFromEnd(false);
-                    }
-                    editList(Modifications.addLoadMore(items), new Runnable() {
-                        @Override
-                        public void run() {
-                            if (gen == currentGeneration) {
-                                // Log.d(TAG, "isLoadMoreForwardRequested = false");
-                                isLoadMoreForwardRequested = false;
-                            }
-                        }
-                    }, true);
+            if (items.size() == 0) {
+                window.onForwardCompleted();
+                if (bindHook != null) {
+                    bindHook.onScrolledToEnd();
                 }
+                // Log.d(TAG, "isLoadMoreForwardRequested = false: sync");
+                isLoadMoreForwardRequested = false;
+            } else {
+                window.onForwardSliceLoaded(bottomSortKey);
+                if (linearLayoutCallback != null) {
+                    linearLayoutCallback.setStackFromEnd(false);
+                }
+                editList(Modifications.addLoadMore(items), new Runnable() {
+                    @Override
+                    public void run() {
+                        if (gen == currentGeneration) {
+                            // Log.d(TAG, "isLoadMoreForwardRequested = false");
+                            isLoadMoreForwardRequested = false;
+                        }
+                    }
+                }, true);
             }
         }, currentGeneration);
 
@@ -441,14 +429,11 @@ public class BindedDisplayList<T extends BserObject & ListEngineItem> extends Di
     }
 
     private ListEngineDisplayLoadCallback<T> cover(final ListEngineDisplayLoadCallback<T> callback, final int generation) {
-        return (items, topSortKey, bottomSortKey) -> im.actor.runtime.Runtime.postToMainThread(new Runnable() {
-            @Override
-            public void run() {
-                if (generation != currentGeneration) {
-                    return;
-                }
-                callback.onLoaded(items, topSortKey, bottomSortKey);
+        return (items, topSortKey, bottomSortKey) -> im.actor.runtime.Runtime.postToMainThread(() -> {
+            if (generation != currentGeneration) {
+                return;
             }
+            callback.onLoaded(items, topSortKey, bottomSortKey);
         });
     }
 

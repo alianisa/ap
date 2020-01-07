@@ -228,7 +228,7 @@ object HistoryMessageRepo {
   def uniqueAsc(fromTs: Long, limit: Int): SqlStreamingAction[Vector[HistoryMessage], HistoryMessage, Effect] = {
 
     val date = new DateTime(fromTs)
-    sql"""select distinct on (date, random_id) user_id, peer_type, peer_id, date, sender_user_id, random_id, message_content_header, message_content_data, deleted_at from history_messages
+    sql"""select distinct on (date, random_id) user_id, peer_type, peer_id, date, sender_user_id, random_id, message_content_header, message_content_data, deleted_at, message_type from history_messages
          where message_content_header != $ServiceHeader
          and date > $date
          and deleted_at is null
@@ -238,10 +238,10 @@ object HistoryMessageRepo {
   }
 
   def uniqueAsc(fromDate: DateTime, lastRandomId: Long, limit: Int): SqlStreamingAction[Vector[HistoryMessage], HistoryMessage, Effect] = {
-    sql"""select distinct on (date, random_id) user_id, peer_type, peer_id, date, sender_user_id, random_id, message_content_header, message_content_data, deleted_at from history_messages
+    sql"""select distinct on (date, random_id) user_id, peer_type, peer_id, date, sender_user_id, random_id, message_content_header, message_content_data, deleted_at, message_type from history_messages
          where message_content_header != $ServiceHeader
          and date >= $fromDate
-         and random_id != lastRandomId
+         and random_id != $lastRandomId
          and deleted_at is null
          order by date asc, random_id asc
          limit $limit"""

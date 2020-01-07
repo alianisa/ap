@@ -56,6 +56,7 @@ class AAMessagesFlowLayout : UICollectionViewLayout {
             
             // Validate sections
             let sectionsCount = self.collectionView!.numberOfSections
+            
             if sectionsCount == 0 {
                 items.removeAll(keepingCapacity: false)
                 contentHeight = 0.0
@@ -70,25 +71,24 @@ class AAMessagesFlowLayout : UICollectionViewLayout {
             } else {
                 contentHeight = 6.0
             }
-            // items.removeAll(keepCapacity: false)
-            // frames.removeAll(keepCapacity: false)
+      
             items.removeAll(keepingCapacity: true)
             frames.removeAll(keepingCapacity: true)
             
             if list != nil {
                 
-//                items = [AALayoutItem?](count: Int(list!.items.count), repeatedValue: nil)
-//                frames = [CGRect?](count: Int(list!.items.count), repeatedValue: nil)
-                
                 for i in 0..<list!.items.count {
                     let itemId = list!.items[i].rid
                     var height = list!.heights[i]
+                    
                     if itemId == unread {
                         height += AABubbleCell.newMessageSize
                     }
+                    
                     let itemSize = CGSize(width: self.collectionView!.bounds.width, height: height)
                     
                     let frame = CGRect(origin: CGPoint(x: 0, y: contentHeight), size: itemSize)
+                    
                     var item = AALayoutItem(id: itemId)
                     
                     item.size = itemSize
@@ -97,10 +97,6 @@ class AAMessagesFlowLayout : UICollectionViewLayout {
                     attrs.frame = frame
                     item.attrs = attrs
                     
-//                    attrs.frame.size = itemSize
-                    
-//                    items[i] = item
-//                    frames[i] = frame
                     items.append(item)
                     frames.append(frame)
                     
@@ -110,8 +106,6 @@ class AAMessagesFlowLayout : UICollectionViewLayout {
                 items = []
                 frames = []
             }
-            
-            contentHeight += 100
         }
     }
     
@@ -169,7 +163,7 @@ class AAMessagesFlowLayout : UICollectionViewLayout {
         super.finalizeCollectionViewUpdates()
         
         let start = CFAbsoluteTimeGetCurrent()
-        
+
         if isLoadMore {
             var delta: CGFloat! = nil
             outer: for item in items {
@@ -182,7 +176,7 @@ class AAMessagesFlowLayout : UICollectionViewLayout {
                     }
                 }
             }
-            
+
             if delta != nil {
                 self.collectionView!.contentOffset = CGPoint(x: 0, y: self.collectionView!.contentOffset.y - delta)
             }

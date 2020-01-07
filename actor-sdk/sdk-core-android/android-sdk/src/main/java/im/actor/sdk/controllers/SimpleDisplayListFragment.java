@@ -8,14 +8,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import im.actor.core.entity.GroupPre;
-import im.actor.runtime.android.view.BindedListAdapter;
 import im.actor.runtime.android.view.SimpleBindedListAdapter;
 import im.actor.runtime.bser.BserObject;
-import im.actor.runtime.generic.mvvm.BindedDisplayList;
-import im.actor.runtime.generic.mvvm.DisplayList;
 import im.actor.runtime.generic.mvvm.SimpleBindedDisplayList;
-import im.actor.runtime.storage.ListEngineDisplayExt;
 import im.actor.runtime.storage.ListEngineItem;
 import im.actor.sdk.R;
 import im.actor.sdk.view.adapters.HeaderViewRecyclerAdapter;
@@ -25,7 +20,7 @@ import im.actor.sdk.view.adapters.HeaderViewRecyclerAdapter;
  */
 
 public abstract class SimpleDisplayListFragment<T extends BserObject & ListEngineItem,
-        V extends RecyclerView.ViewHolder> extends BaseFragment{
+        V extends RecyclerView.ViewHolder> extends BaseFragment {
 
     private RecyclerView collection;
     private SimpleBindedDisplayList<T> displayList;
@@ -33,26 +28,21 @@ public abstract class SimpleDisplayListFragment<T extends BserObject & ListEngin
 
     protected View inflate(LayoutInflater inflater, ViewGroup container, int resource, SimpleBindedDisplayList<T> displayList) {
         View res = inflater.inflate(resource, container, false);
+        afterViewInflate(res, displayList);
         return res;
     }
 
     protected void afterViewInflate(View view, SimpleBindedDisplayList<T> displayList) {
         collection = (RecyclerView) view.findViewById(R.id.collection);
-
-//        if (displayList.getCount() == 0) {
-//            collection.setVisibility(View.INVISIBLE);
-//        } else {
-//            collection.setVisibility(View.VISIBLE);
-//        }
-
         setAnimationsEnabled(true);
-
         this.displayList = displayList;
         configureRecyclerView(collection);
-
         adapter = onCreateAdapter(displayList, getActivity());
-
         collection.setAdapter(adapter);
+        afterAdapterCreated();
+    }
+
+    protected void afterAdapterCreated() {
     }
 
     public void setAnimationsEnabled(boolean isEnabled) {
@@ -102,6 +92,14 @@ public abstract class SimpleDisplayListFragment<T extends BserObject & ListEngin
 
     protected abstract SimpleBindedListAdapter<T, V> onCreateAdapter(SimpleBindedDisplayList<T> displayList, Activity activity);
 
+    protected void onListStateChange(SimpleBindedDisplayList.State state) {
+        if (state == SimpleBindedDisplayList.State.LOADED) {
+            getCollection().setVisibility(View.VISIBLE);
+        } else {
+            getCollection().setVisibility(View.GONE);
+        }
+    }
+
     public SimpleBindedListAdapter<T, V> getAdapter() {
         return adapter;
     }
@@ -118,41 +116,25 @@ public abstract class SimpleDisplayListFragment<T extends BserObject & ListEngin
     public void onResume() {
         super.onResume();
         adapter.resume();
-//        displayList.addListener(this);
-//        if (displayList.getSize() == 0) {
-//            hideView(collection, false);
-//        } else {
-//            showView(collection, false);
-//        }
-    }
+        setUnbindOnPause(true);
 
-//    @Override
-//    public void onCollectionChanged() {
-//        if (displayList.getSize() == 0) {
-//            hideView(collection, false);
-//        } else {
-//            showView(collection, false);
-//        }
-//    }
+        bind(displayList.getState(), val -> {
+            onListStateChange(val);
+        });
+    }
 
     @Override
     public void onPause() {
         super.onPause();
         adapter.pause();
-       // displayList.removeListener(this);
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-
         if (adapter != null) {
             adapter.dispose();
         }
-
         collection = null;
     }
-
-
-
 }

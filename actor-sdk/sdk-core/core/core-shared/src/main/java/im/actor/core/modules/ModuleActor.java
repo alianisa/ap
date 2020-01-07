@@ -25,7 +25,6 @@ import im.actor.runtime.eventbus.Event;
 import im.actor.runtime.promise.Promise;
 import im.actor.runtime.promise.PromiseFunc;
 import im.actor.runtime.storage.KeyValueEngine;
-import im.actor.runtime.storage.ListEngine;
 import im.actor.runtime.storage.PreferencesStorage;
 
 public class ModuleActor extends AskcableActor implements BusSubscriber {

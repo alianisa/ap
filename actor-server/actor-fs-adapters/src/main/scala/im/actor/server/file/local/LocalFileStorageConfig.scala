@@ -6,13 +6,14 @@ import im.actor.config.ActorConfig
 
 import scala.util.Try
 
-case class LocalFileStorageConfig(location: String)
+case class LocalFileStorageConfig(location: String, maxFileSize: Int)
 
 object LocalFileStorageConfig {
   def load(config: Config): Try[LocalFileStorageConfig] = {
     for {
       location ← config.get[Try[String]]("location")
-    } yield LocalFileStorageConfig(location)
+      maxFileSize ← config.get[Try[Int]]("max-file-size")
+    } yield LocalFileStorageConfig(location, maxFileSize)
   }
 
   def load: Try[LocalFileStorageConfig] =

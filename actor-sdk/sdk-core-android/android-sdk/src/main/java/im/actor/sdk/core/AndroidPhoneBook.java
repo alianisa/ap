@@ -8,10 +8,7 @@ import android.database.Cursor;
 import android.os.SystemClock;
 import android.provider.ContactsContract;
 import android.support.v4.content.ContextCompat;
-
-import com.google.i18n.phonenumbers.NumberParseException;
-import com.google.i18n.phonenumbers.PhoneNumberUtil;
-import com.google.i18n.phonenumbers.Phonenumber;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,6 +21,9 @@ import im.actor.core.providers.PhoneBookProvider;
 import im.actor.runtime.Log;
 import im.actor.runtime.android.AndroidContext;
 import im.actor.sdk.util.Devices;
+import io.michaelrocks.libphonenumber.android.NumberParseException;
+import io.michaelrocks.libphonenumber.android.PhoneNumberUtil;
+import io.michaelrocks.libphonenumber.android.Phonenumber;
 
 public class AndroidPhoneBook implements PhoneBookProvider {
 
@@ -74,14 +74,12 @@ public class AndroidPhoneBook implements PhoneBookProvider {
             return new ArrayList<>();
         }
 
-        // Loading records
-        // TODO: Better logic for duplicate phones
-        //Check have permission for this
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_CONTACTS) != PackageManager.PERMISSION_GRANTED &&
                 ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
             Log.d("Permissions", "contacts - no permission :c");
             return new ArrayList<>();
         }
+
         Cursor cur = cr.query(ContactsContract.Contacts.CONTENT_URI,
                 new String[]
                         {
@@ -102,7 +100,7 @@ public class AndroidPhoneBook implements PhoneBookProvider {
                     try {
                         Thread.sleep(READ_ITEM_DELAY);
                     } catch (InterruptedException e) {
-                        e.printStackTrace();
+                        Log.e(TAG, e);
                     }
                 }
             }
@@ -163,7 +161,7 @@ public class AndroidPhoneBook implements PhoneBookProvider {
             if (PHONE_UTIL == null) {
                 synchronized (initSync) {
                     if (PHONE_UTIL == null) {
-                        PHONE_UTIL = PhoneNumberUtil.getInstance();
+                        PHONE_UTIL = PhoneNumberUtil.createInstance(context);
                     }
                 }
             }

@@ -116,19 +116,9 @@ public abstract class BaseContactFragment extends DisplayListFragment<Contact, C
             footer.setBackgroundColor(ActorSDK.sharedActor().style.getBackyardBackgroundColor());
             addFooterView(footer);
         } else {
-            addFooterOrHeaderAction(ActorSDK.sharedActor().style.getActionShareColor(), R.drawable.ic_share_white_24dp, R.string.contacts_share, false, new Runnable() {
-                @Override
-                public void run() {
-                    sendInvites();
-                }
-            }, true);
+            addFooterOrHeaderAction(ActorSDK.sharedActor().style.getActionShareColor(), R.drawable.ic_share_white_24dp, R.string.contacts_share, false, () -> sendInvites(), true);
 
-            addFooterOrHeaderAction(ActorSDK.sharedActor().style.getActionAddContactColor(), R.drawable.ic_person_add_white_24dp, R.string.contacts_add, false, new Runnable() {
-                @Override
-                public void run() {
-                    startActivity(new Intent(getActivity(), AddContactActivity.class));
-                }
-            }, true);
+            addFooterOrHeaderAction(ActorSDK.sharedActor().style.getActionAddContactColor(), R.drawable.ic_person_add_white_24dp, R.string.contacts_add, false, () -> startActivity(new Intent(getActivity(), AddContactActivity.class)), true);
 
             FrameLayout footer = new FrameLayout(getActivity());
             footer.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Screen.dp(112)));
@@ -140,20 +130,17 @@ public abstract class BaseContactFragment extends DisplayListFragment<Contact, C
     public void sendInvites() {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setItems(new String[]{getString(R.string.invites_share_link_one), getString(R.string.invites_share_link_multiple)}, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                switch (which) {
-                    case 0:
-                        sendOneInvite();
-                        break;
+        builder.setItems(new String[]{getString(R.string.invites_share_link_one), getString(R.string.invites_share_link_multiple)}, (dialog, which) -> {
+            switch (which) {
+                case 0:
+                    sendOneInvite();
+                    break;
 
-                    case 1:
-                        sendMultipleInvites();
-                        break;
-                }
-                dialog.dismiss();
+                case 1:
+                    sendMultipleInvites();
+                    break;
             }
+            dialog.dismiss();
         }).show();
     }
 
@@ -180,12 +167,7 @@ public abstract class BaseContactFragment extends DisplayListFragment<Contact, C
 
         FrameLayout invitePanel = new FrameLayout(getActivity());
         invitePanel.setBackgroundResource(R.drawable.selector_fill);
-        invitePanel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                action.run();
-            }
-        });
+        invitePanel.setOnClickListener(v -> action.run());
         {
             FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Screen.dp(64));
             params.leftMargin = Screen.dp(40);

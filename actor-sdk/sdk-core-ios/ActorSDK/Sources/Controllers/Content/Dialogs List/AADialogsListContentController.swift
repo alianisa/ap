@@ -31,14 +31,13 @@ open class AADialogsListContentController: AAContentTableController, UISearchBar
         
         if enableSearch {
             search(AADialogSearchCell.self) { (s) -> () in
-            
                 s.searchModel = Actor.buildGlobalSearchModel()
-            
                 s.selectAction = { (itm) -> () in
                     self.delegate?.searchDidTap(self, entity: itm)
                 }
             }
         }
+       
         
         section { (s) -> () in
             
@@ -131,7 +130,7 @@ open class AADialogsListContentController: AAContentTableController, UISearchBar
             }
         }
         
-        
+     
         
         placeholder.setImage(
             UIImage.bundled("chat_list_placeholder"),

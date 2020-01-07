@@ -1,7 +1,6 @@
 package im.actor.runtime.generic;
 
 import im.actor.runtime.EnginesRuntime;
-import im.actor.runtime.Log;
 import im.actor.runtime.bser.BserCreator;
 import im.actor.runtime.bser.BserObject;
 import im.actor.runtime.generic.mvvm.BindedDisplayList;

@@ -83,7 +83,7 @@ public class MessagesModule extends AbsModule implements BusSubscriber {
     private static final Void DUMB = null;
 
     private ListEngine<Dialog> dialogs;
-    
+
     private DialogsInt dialogsInt;
     private ActorRef dialogsHistoryActor;
     private ActorRef archivedDialogsActor;
@@ -258,7 +258,6 @@ public class MessagesModule extends AbsModule implements BusSubscriber {
     //
     // Sending Message
     //
-
     public void sendMessage(@NotNull Peer peer, @NotNull String message, @Nullable String markDownText,
                             @Nullable ArrayList<Integer> mentions, boolean autoDetect) {
         context().getTypingModule().onMessageSent(peer);
@@ -361,7 +360,6 @@ public class MessagesModule extends AbsModule implements BusSubscriber {
         return new Promise<>(resolver -> resolver.result(getConversationEngine(peer).getCount() == 0));
     }
 
-
     public void forwardContent(Peer peer, AbsContent content) {
         sendMessageActor.send(new SenderActor.ForwardContent(peer, content));
     }
@@ -370,7 +368,6 @@ public class MessagesModule extends AbsModule implements BusSubscriber {
                             @NotNull Sticker sticker) {
         sendMessageActor.send(new SenderActor.SendSticker(peer, sticker));
     }
-
 
     public void saveDraft(Peer peer, String draft) {
         context().getSettingsModule().setStringValue("drafts_" + peer.getUnuqueId(), draft);
@@ -384,7 +381,6 @@ public class MessagesModule extends AbsModule implements BusSubscriber {
             return res;
         }
     }
-
 
     public Promise<Void> addReaction(final Peer peer, final long rid, final String reaction) {
         return buildOutPeer(peer)
@@ -490,22 +486,21 @@ public class MessagesModule extends AbsModule implements BusSubscriber {
         im.actor.runtime.Runtime.dispatch(() -> getHistoryActor(peer).loadMore());
     }
 
-    public void loadMoreDocsHistory(final Peer peer){
+    public void loadMoreDocsHistory(final Peer peer) {
         im.actor.runtime.Runtime.dispatch(() -> getDocsHistoryActor(peer).loadMore());
     }
 
-    public void loadMorePhotosHistory(final Peer peer){
+    public void loadMorePhotosHistory(final Peer peer) {
         im.actor.runtime.Runtime.dispatch(() -> getPhotosHistoryActor(peer).loadMore());
     }
 
-    public void loadMoreVideosHistory(final Peer peer){
+    public void loadMoreVideosHistory(final Peer peer) {
         im.actor.runtime.Runtime.dispatch(() -> getVideosHistoryActor(peer).loadMore());
     }
 
     //
     // Misc
     //
-
     public void resetModule() {
         // TODO: Implement
     }

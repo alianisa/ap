@@ -27,7 +27,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -39,6 +38,7 @@ import im.actor.sdk.ActorSDK;
 import im.actor.sdk.R;
 import im.actor.sdk.controllers.tools.MediaPickerCallback;
 import im.actor.sdk.controllers.tools.MediaPickerFragment;
+import im.actor.sdk.util.Files;
 import im.actor.sdk.util.SDKFeatures;
 import im.actor.sdk.util.Screen;
 import im.actor.sdk.view.ShareMenuButtonFactory;
@@ -228,7 +228,7 @@ public class AttachFragment extends AbsAttachFragment implements MediaPickerCall
             Set<String> paths = fastAttachAdapter.getSelectedVM().get();
             if (paths.size() > 0) {
                 List<Uri> uris = ManagedList.of(paths)
-                        .map((x) -> Uri.fromFile(new File(x)));
+                        .map((x) -> Files.getUri(getContext(), x)/* Uri.fromFile(new File(x))*/);
                 onUrisPicked(uris);
             }
             hide();
@@ -367,10 +367,12 @@ public class AttachFragment extends AbsAttachFragment implements MediaPickerCall
                 if (activity == null) {
                     return;
                 }
-                if (ContextCompat.checkSelfPermission(activity,
-                        Manifest.permission.READ_EXTERNAL_STORAGE)
-                        != PackageManager.PERMISSION_GRANTED) {
-                    requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_REQ_MEDIA);
+                if (ContextCompat.checkSelfPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE)
+                        != PackageManager.PERMISSION_GRANTED ||
+                        ContextCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                                != PackageManager.PERMISSION_GRANTED) {
+                    requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQ_MEDIA);
                     return;
                 }
             }
@@ -384,19 +386,16 @@ public class AttachFragment extends AbsAttachFragment implements MediaPickerCall
 //            fastShare.startAnimation(animation);
 //            bottomBackground.startAnimation(animation);
 
-            shareButtons.post(new Runnable() {
-                @Override
-                public void run() {
-                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                        View internal = fastShare;
-                        int cx = internal.getWidth() - Screen.dp(56 + 56);
-                        int cy = internal.getHeight() - Screen.dp(56 / 2);
-                        float finalRadius = (float) Math.hypot(cx, cy);
-                        Animator anim = ViewAnimationUtils.createCircularReveal(internal, cx, cy, 0, finalRadius);
-                        anim.setDuration(200);
-                        anim.start();
-                        internal.setAlpha(1);
-                    }
+            shareButtons.post(() -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    View internal = fastShare;
+                    int cx = internal.getWidth() - Screen.dp(56 + 56);
+                    int cy = internal.getHeight() - Screen.dp(56 / 2);
+                    float finalRadius = (float) Math.hypot(cx, cy);
+                    Animator anim = ViewAnimationUtils.createCircularReveal(internal, cx, cy, 0, finalRadius);
+                    anim.setDuration(200);
+                    anim.start();
+                    internal.setAlpha(1);
                 }
             });
 
@@ -483,9 +482,9 @@ public class AttachFragment extends AbsAttachFragment implements MediaPickerCall
     protected void onItemClicked(int id) {
         MediaPickerFragment picker = (MediaPickerFragment) getChildFragmentManager().findFragmentByTag("picker");
         if (id == R.id.share_gallery) {
-            picker.requestGallery();
+            picker.requestGalleryEdited();
         } else if (id == R.id.share_camera) {
-            picker.requestPhoto();
+            picker.requestPhotoEdited();
         } else if (id == R.id.share_video) {
             picker.requestVideo();
         } else if (id == R.id.share_file) {
@@ -503,8 +502,8 @@ public class AttachFragment extends AbsAttachFragment implements MediaPickerCall
     }
 
     protected void onUrisPicked(List<Uri> uris) {
-        for (Uri s : uris) {
-            execute(messenger().sendUri(getPeer(), s, ActorSDK.sharedActor().getAppName()));
+        for (Uri uri : uris) {
+            execute(messenger().sendUri(getPeer(), uri, ActorSDK.sharedActor().getAppName()));
         }
     }
 

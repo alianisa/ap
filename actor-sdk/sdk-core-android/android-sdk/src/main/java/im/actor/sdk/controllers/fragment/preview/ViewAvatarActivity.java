@@ -3,11 +3,9 @@ package im.actor.sdk.controllers.fragment.preview;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.PersistableBundle;
@@ -24,8 +22,6 @@ import android.widget.Toast;
 import com.github.chrisbanes.photoview.PhotoView;
 import com.soundcloud.android.crop.Crop;
 
-import java.io.File;
-
 import im.actor.core.entity.Avatar;
 import im.actor.core.entity.Peer;
 import im.actor.core.entity.PeerType;
@@ -35,8 +31,6 @@ import im.actor.core.viewmodel.FileVMCallback;
 import im.actor.runtime.Log;
 import im.actor.runtime.files.FileSystemReference;
 import im.actor.runtime.mvvm.Value;
-import im.actor.runtime.mvvm.ValueChangedListener;
-import im.actor.runtime.mvvm.ValueDoubleChangedListener;
 import im.actor.sdk.ActorSDK;
 import im.actor.sdk.R;
 import im.actor.sdk.controllers.Intents;
@@ -51,8 +45,6 @@ import static im.actor.sdk.util.ActorSDKMessenger.myUid;
 import static im.actor.sdk.util.ActorSDKMessenger.users;
 import static im.actor.sdk.util.ViewUtils.goneView;
 import static im.actor.sdk.util.ViewUtils.showView;
-
-//import uk.co.senab.photoview.PhotoView;
 
 public class ViewAvatarActivity extends BaseActivity {
 
@@ -121,26 +113,11 @@ public class ViewAvatarActivity extends BaseActivity {
         super.onResume();
 
         if (peer.getPeerType() == PeerType.PRIVATE && peer.getPeerId() == myUid()) {
-            bind(getAvatar(), messenger().getOwnAvatarVM().getUploadState(), new ValueDoubleChangedListener<Avatar, AvatarUploadState>() {
-                @Override
-                public void onChanged(Avatar val, Value<Avatar> Value, AvatarUploadState val2, Value<AvatarUploadState> Value2) {
-                    performBind(val, val2);
-                }
-            });
+            bind(getAvatar(), messenger().getOwnAvatarVM().getUploadState(), (val, Value, val2, Value2) -> performBind(val, val2));
         } else if (peer.getPeerType() == PeerType.GROUP) {
-            bind(getAvatar(), messenger().getGroupAvatarVM(peer.getPeerId()).getUploadState(), new ValueDoubleChangedListener<Avatar, AvatarUploadState>() {
-                @Override
-                public void onChanged(Avatar val, Value<Avatar> Value, AvatarUploadState val2, Value<AvatarUploadState> Value2) {
-                    performBind(val, val2);
-                }
-            });
+            bind(getAvatar(), messenger().getGroupAvatarVM(peer.getPeerId()).getUploadState(), (val, Value, val2, Value2) -> performBind(val, val2));
         } else if (peer.getPeerType() == PeerType.PRIVATE) {
-            bind(getAvatar(), new ValueChangedListener<Avatar>() {
-                @Override
-                public void onChanged(Avatar val, Value<Avatar> Value) {
-                    performBind(val, null);
-                }
-            });
+            bind(getAvatar(), (val, Value) -> performBind(val, null));
         } else {
             throw new RuntimeException("Unknown peer type:" + peer.getPeerType());
         }
@@ -160,7 +137,7 @@ public class ViewAvatarActivity extends BaseActivity {
 
         if (uploadState != null && uploadState.isUploading()) {
             if (uploadState.getDescriptor() != null) {
-                photoView.setImageURI(Uri.fromFile(new File(uploadState.getDescriptor())));
+                photoView.setImageURI(Files.getUri(this, uploadState.getDescriptor()) /*Uri.fromFile(new File(uploadState.getDescriptor()))*/);
             } else {
                 photoView.setImageURI(null);
             }
@@ -204,7 +181,7 @@ public class ViewAvatarActivity extends BaseActivity {
                     photoView.setZoomable(false);
                     isAppliedPreview = true;
                 } catch (ImageLoadException e) {
-                    e.printStackTrace();
+                    Log.e(ViewAvatarActivity.class.getName(), e);
                 }
             }
             if (!isAppliedPreview) {
@@ -276,36 +253,33 @@ public class ViewAvatarActivity extends BaseActivity {
             }
 
             new AlertDialog.Builder(this)
-                    .setItems(args, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface d, int which) {
-                            if (which == 0) {
-                                externalFile = Files.getExternalTempFile("capture", "jpg");
-                                if (externalFile == null) {
-                                    Toast.makeText(ViewAvatarActivity.this, R.string.toast_no_sdcard, Toast.LENGTH_LONG).show();
-                                    return;
-                                }
-                                if (ContextCompat.checkSelfPermission(ViewAvatarActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-                                    Log.d("Permissions", "camera - no permission :c");
-                                    ActivityCompat.requestPermissions(ViewAvatarActivity.this,
-                                            new String[]{Manifest.permission.CAMERA},
-                                            PERMISSIONS_REQUEST_CAMERA);
+                    .setItems(args, (d, which) -> {
+                        if (which == 0) {
+                            externalFile = Files.getExternalTempFile("capture", ".jpg");
+                            if (externalFile == null) {
+                                Toast.makeText(ViewAvatarActivity.this, R.string.toast_no_sdcard, Toast.LENGTH_LONG).show();
+                                return;
+                            }
+                            if (ContextCompat.checkSelfPermission(ViewAvatarActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                                Log.d("Permissions", "camera - no permission :c");
+                                ActivityCompat.requestPermissions(ViewAvatarActivity.this,
+                                        new String[]{Manifest.permission.CAMERA},
+                                        PERMISSIONS_REQUEST_CAMERA);
 
-                                } else {
-                                    startCamera();
+                            } else {
+                                startCamera();
+                            }
+                        } else if (which == 1) {
+                            Intent i = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                            i.setType("image/*");
+                            startActivityForResult(i, REQUEST_GALLERY);
+                        } else if (which == 2) {
+                            if (peer.getPeerType() == PeerType.PRIVATE) {
+                                if (peer.getPeerId() == myUid()) {
+                                    messenger().removeMyAvatar();
                                 }
-                            } else if (which == 1) {
-                                Intent i = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                                i.setType("image/*");
-                                startActivityForResult(i, REQUEST_GALLERY);
-                            } else if (which == 2) {
-                                if (peer.getPeerType() == PeerType.PRIVATE) {
-                                    if (peer.getPeerId() == myUid()) {
-                                        messenger().removeMyAvatar();
-                                    }
-                                } else if (peer.getPeerType() == PeerType.GROUP) {
-                                    messenger().removeGroupAvatar(peer.getPeerId());
-                                }
+                            } else if (peer.getPeerType() == PeerType.GROUP) {
+                                messenger().removeGroupAvatar(peer.getPeerId());
                             }
                         }
                     })
@@ -328,7 +302,7 @@ public class ViewAvatarActivity extends BaseActivity {
         } else {
             startActivityForResult(
                     new Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                            .putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(externalFile))),
+                            .putExtra(MediaStore.EXTRA_OUTPUT, Files.getUri(this, externalFile) /*Uri.fromFile(new File(externalFile))*/),
                     REQUEST_PHOTO);
         }
     }
@@ -337,12 +311,12 @@ public class ViewAvatarActivity extends BaseActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_GALLERY && resultCode == Activity.RESULT_OK) {
             avatarPath = Files.getInternalTempFile("avatar", "jpg");
-            Crop.of(data.getData(), Uri.fromFile(new File(avatarPath)))
+            Crop.of(data.getData(), Files.getUri(this, avatarPath))
                     .asSquare()
                     .start(this);
         } else if (requestCode == REQUEST_PHOTO && resultCode == Activity.RESULT_OK) {
             avatarPath = Files.getInternalTempFile("avatar", "jpg");
-            Crop.of(Uri.fromFile(new File(externalFile)), Uri.fromFile(new File(avatarPath)))
+            Crop.of(Files.getUri(this, externalFile), Files.getUri(this, avatarPath))
                     .asSquare()
                     .start(this);
         } else if (requestCode == Crop.REQUEST_CROP && resultCode == Activity.RESULT_OK) {

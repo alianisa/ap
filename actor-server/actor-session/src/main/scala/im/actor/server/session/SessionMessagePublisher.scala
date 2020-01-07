@@ -19,14 +19,12 @@ private[session] class SessionMessagePublisher extends ActorPublisher[SessionStr
 
   import SessionStreamMessage._
 
-  // TODO: MaxQueueSize
   private[this] var messageQueue = immutable.Queue.empty[SessionStreamMessage]
 
   def receive = {
     case (mb: MessageBox, clientData: ClientData) ⇒
       log.debug("MessageBox: {} clientData: {}", mb, clientData)
 
-      // TODO: tail-recursive function for container unpacking
       mb.body match {
         case Container(bodies) ⇒
           val ackMessage = HandleOutgoingAck(
@@ -43,7 +41,6 @@ private[session] class SessionMessagePublisher extends ActorPublisher[SessionStr
           publishMessages(ackMessage :: handleMessages)
         case _ ⇒
           val handleMessage = HandleMessageBox(mb, clientData)
-
           mb.body match {
             case _: MessageAck      ⇒ publishMessage(handleMessage)
             case _: ProtoRpcRequest ⇒ publishMessages(List(handleMessage))
@@ -62,7 +59,6 @@ private[session] class SessionMessagePublisher extends ActorPublisher[SessionStr
 
   private def publishMessage(message: SessionStreamMessage): Unit = {
     log.debug("Publish message {}", message)
-
     if (messageQueue.isEmpty && totalDemand > 0)
       onNext(message)
     else {
@@ -80,14 +76,17 @@ private[session] class SessionMessagePublisher extends ActorPublisher[SessionStr
   }
 
   @tailrec final def deliverBuf(): Unit =
-    if (isActive && totalDemand > 0)
+    if (isActive && totalDemand > 0) {
+      log.debug("deliverBuf messageQueue.dequeueOption")
       messageQueue.dequeueOption match {
         case Some((el, queue)) ⇒
+          log.debug("Some")
           messageQueue = queue
           onNext(el)
           deliverBuf()
         case None ⇒
       }
+    }
 
   override def preRestart(reason: Throwable, message: Option[Any]): Unit = {
     log.error(reason, "Exception thrown, message: {}", message)

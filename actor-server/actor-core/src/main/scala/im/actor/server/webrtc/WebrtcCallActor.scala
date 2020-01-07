@@ -612,9 +612,9 @@ private final class WebrtcCallActor extends StashingActor with ActorLogging with
         } yield ()
 
         def googlePushMessage(regId: String) = GooglePushMessage(
-          regId,
-          None,
-          Some(Map("callId" → id.toString, "attemptIndex" → "1")),
+          to = regId,
+          collapse_key = None,
+          data = Some(Map("callId" → id.toString, "attemptIndex" → "1")),
           time_to_live = Some(0)
         )
 

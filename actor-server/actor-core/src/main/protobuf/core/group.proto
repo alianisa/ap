@@ -149,6 +149,13 @@ message GroupEvents {
         required int32 settings_bit_mask = 2;
     }
 
+    message RestrictedDomainsUpdated {
+        option (scalapb.message).extends = "im.actor.server.group.GroupEvent";
+
+        required int64 ts = 1 [(scalapb.field).type = "java.time.Instant"];
+        required string domains = 2;
+    }
+
     message HistoryBecameShared {
         option (scalapb.message).extends = "im.actor.server.group.GroupEvent";
 

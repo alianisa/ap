@@ -116,6 +116,12 @@ private[group] sealed trait Commands extends UserAcl {
       GroupEnvelope(groupId)
       .withUpdateAdminSettings(UpdateAdminSettings(clientUserId, AdminSettings.apiToBitMask(settings)))).mapTo[UpdateAdminSettingsAck] map (_ ⇒ ())
 
+  def updateRestrictionsDomain(groupId: Int, clientUserId:Int, clientAuthId:Long, domains:String): Future[Unit] = {
+    (processorRegion.ref ?
+      GroupEnvelope(groupId)
+        .withUpdateRestrictedDomains(UpdateRestrictedDomains(clientUserId, clientAuthId, domains))).mapTo[UpdateRestrictedAck] map(_=>())
+  }
+
   def makeHistoryShared(groupId: Int, clientUserId: Int, clientAuthId: Long): Future[SeqState] =
     (processorRegion.ref ?
       GroupEnvelope(groupId)

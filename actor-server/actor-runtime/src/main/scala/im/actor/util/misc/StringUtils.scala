@@ -49,4 +49,12 @@ object StringUtils {
       Some(trimmed)
     else None
   }
+
+  def unnacent(src:String): String = {
+    return Normalizer.normalize(src, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "")
+  }
+
+  def createShortName(name:String): String ={
+    return unnacent(name).replaceAll("\\s", "")
+  }
 }

@@ -1,0 +1,17 @@
+{
+  "buildFiles": [
+    "/home/diego/projetos/actor-platform/actor-sdk/sdk-core-android/android-sdk/jni/Android.mk",
+    "/home/diego/projetos/actor-platform/actor-sdk/sdk-core-android/android-sdk/jni/Application.mk"
+  ],
+  "cleanCommands": [
+    "/home/diego/Android/Sdk/ndk-bundle/ndk-build NDK_PROJECT_PATH\u003dnull APP_BUILD_SCRIPT\u003d/home/diego/projetos/actor-platform/actor-sdk/sdk-core-android/android-sdk/jni/Android.mk NDK_APPLICATION_MK\u003d/home/diego/projetos/actor-platform/actor-sdk/sdk-core-android/android-sdk/jni/Application.mk APP_ABI\u003darmeabi-v7a NDK_ALL_ABIS\u003darmeabi-v7a NDK_DEBUG\u003d0 APP_PLATFORM\u003dandroid-15 NDK_OUT\u003d/home/diego/projetos/actor-platform/actor-sdk/sdk-core-android/android-sdk/build/intermediates/ndkBuild/release/obj NDK_LIBS_OUT\u003d/home/diego/projetos/actor-platform/actor-sdk/sdk-core-android/android-sdk/build/intermediates/ndkBuild/release/lib NDK_APPLICATION_MK:\u003djni/Application.mk APP_PLATFORM:\u003dandroid-14 clean"
+  ],
+  "libraries": {
+    "gnustl_shared-release-armeabi-v7a": {
+      "artifactName": "gnustl_shared",
+      "buildCommand": "/home/diego/Android/Sdk/ndk-bundle/ndk-build NDK_PROJECT_PATH\u003dnull APP_BUILD_SCRIPT\u003d/home/diego/projetos/actor-platform/actor-sdk/sdk-core-android/android-sdk/jni/Android.mk NDK_APPLICATION_MK\u003d/home/diego/projetos/actor-platform/actor-sdk/sdk-core-android/android-sdk/jni/Application.mk APP_ABI\u003darmeabi-v7a NDK_ALL_ABIS\u003darmeabi-v7a NDK_DEBUG\u003d0 APP_PLATFORM\u003dandroid-15 NDK_OUT\u003d/home/diego/projetos/actor-platform/actor-sdk/sdk-core-android/android-sdk/build/intermediates/ndkBuild/release/obj NDK_LIBS_OUT\u003d/home/diego/projetos/actor-platform/actor-sdk/sdk-core-android/android-sdk/build/intermediates/ndkBuild/release/lib NDK_APPLICATION_MK:\u003djni/Application.mk APP_PLATFORM:\u003dandroid-14 /home/diego/projetos/actor-platform/actor-sdk/sdk-core-android/android-sdk/build/intermediates/ndkBuild/release/obj/local/armeabi-v7a/libgnustl_shared.so",
+      "abi": "armeabi-v7a",
+      "output": "/home/diego/projetos/actor-platform/actor-sdk/sdk-core-android/android-sdk/build/intermediates/ndkBuild/release/obj/local/armeabi-v7a/libgnustl_shared.so"
+    }
+  }
+}

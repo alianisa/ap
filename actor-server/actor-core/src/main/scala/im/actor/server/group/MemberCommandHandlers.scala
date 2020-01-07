@@ -1,6 +1,6 @@
 package im.actor.server.group
 
-import java.time.{ Instant, LocalDateTime, ZoneOffset }
+import java.time.Instant
 
 import akka.actor.Status
 import akka.http.scaladsl.util.FastFuture
@@ -8,14 +8,14 @@ import akka.pattern.pipe
 import com.github.ghik.silencer.silent
 import im.actor.api.rpc.Update
 import im.actor.api.rpc.groups._
-import im.actor.api.rpc.messaging.{ ApiServiceMessage, UpdateChatDropCache, UpdateMessage }
+import im.actor.api.rpc.messaging.{ApiServiceMessage, UpdateChatDropCache, UpdateMessage}
+import im.actor.api.rpc.users.ApiContactType
 import im.actor.concurrent.FutureExt
 import im.actor.server.acl.ACLUtils
-import im.actor.server.group.GroupCommands.{ Invite, Join, Kick, Leave }
+import im.actor.server.group.GroupCommands.{Invite, Join, Kick, Leave}
 import im.actor.server.group.GroupErrors.CantLeaveGroup
-import im.actor.server.group.GroupEvents.{ UserInvited, UserJoined, UserKicked, UserLeft }
-import im.actor.server.persist.{ GroupInviteTokenRepo, GroupUserRepo }
-import im.actor.server.sequence.{ Optimization, SeqState, SeqStateDate }
+import im.actor.server.group.GroupEvents.{UserInvited, UserJoined, UserKicked, UserLeft}
+import im.actor.server.sequence.{Optimization, SeqState, SeqStateDate}
 
 import scala.concurrent.Future
 
@@ -37,7 +37,7 @@ private[group] trait MemberCommandHandlers extends GroupsImplicits {
       val isBlockedFu = checkIsBlocked(cmd.inviteeUserId, state.ownerUserId)
 
       onSuccess(isBlockedFu) { isBlocked ⇒
-        if (isBlocked) {
+        if (isBlocked || state.isBaned(cmd.inviteeUserId)) {
           replyTo ! Status.Failure(GroupErrors.UserIsBanned)
         } else {
           val inviteeIsExUser = state.isExUser(cmd.inviteeUserId)
@@ -210,6 +210,27 @@ private[group] trait MemberCommandHandlers extends GroupsImplicits {
     }
   }
 
+  private def isBlockedByEmail(userId:Int, authId:Long): Future[Boolean] = {
+    val domains = state.restrictedDomains.getOrElse("").split(",")
+    if(!domains.isEmpty && !"".eq(domains(0))){
+      for{
+        contactsInfo <- userExt.getApiStruct(userId, userId, authId).map(apiUser => {
+          apiUser.contactInfo.filter(contact => {
+            contact.`type` == ApiContactType.Email
+          }).filter(contact => {
+            contact.stringValue match {
+              case Some(email) =>
+                domains.exists(d => email.contains(d))
+              case None =>
+                false
+            }
+          })
+        })
+      }yield(contactsInfo.isEmpty)
+    }else{
+      FastFuture.successful(false)
+    }
+  }
   /**
    * User can join
    * • after invite(was invited by other user previously). In this case he already have group on devices
@@ -224,212 +245,209 @@ private[group] trait MemberCommandHandlers extends GroupsImplicits {
 
       val isBlockedFu = checkIsBlocked(cmd.joiningUserId, state.ownerUserId)
 
-      onSuccess(isBlockedFu) { isBlocked ⇒
-        if (isBlocked) {
+      onSuccess(isBlockedFu) { (isBlocked) ⇒
+
+        if (isBlocked || state.isBaned(cmd.joiningUserId)) {
           replyTo ! Status.Failure(GroupErrors.UserIsBanned)
         } else {
-          // user was invited in group by other group user
-          val wasInvited = state.isInvited(cmd.joiningUserId)
+          onSuccess(isBlockedByEmail(cmd.joiningUserId, cmd.joiningUserAuthId)){ isEmailBlocked =>
+            if(isEmailBlocked){
+              replyTo ! Status.Failure(GroupErrors.NotDomain(state.restrictedDomains.get))
+            }else{
+                // user was invited in group by other group user
+                val wasInvited = state.isInvited(cmd.joiningUserId)
 
-          // trying to figure out who invited joining user.
-          // Descending priority:
-          // • inviter defined in `Join` command (when invited via token)
-          // • inviter from members list (when invited by other user)
-          // • group creator (safe fallback)
-          val optMember = state.members.get(cmd.joiningUserId)
-          val inviterUserId = cmd.invitingUserId
-            .orElse(optMember.map(_.inviterUserId))
-            .getOrElse(state.ownerUserId)
+                // trying to figure out who invited joining user.
+                // Descending priority:
+                // • inviter defined in `Join` command (when invited via token)
+                // • inviter from members list (when invited by other user)
+                // • group creator (safe fallback)
+                val optMember = state.members.get(cmd.joiningUserId)
+                val inviterUserId = cmd.invitingUserId
+                  .orElse(optMember.map(_.inviterUserId))
+                  .getOrElse(state.ownerUserId)
 
-          persist(UserJoined(Instant.now, cmd.joiningUserId, inviterUserId)) { evt ⇒
-            val newState = commit(evt)
+                persist(UserJoined(Instant.now, cmd.joiningUserId, inviterUserId)) { evt ⇒
+                  val newState = commit(evt)
 
-            val date = evt.ts
-            val dateMillis = date.toEpochMilli
-            val showJoinMessage = newState.adminSettings.showJoinLeaveMessages
-            val memberIds = newState.memberIds
-            val apiMembers = newState.members.values.map(_.asStruct).toVector
-            val randomId = ACLUtils.randomLong()
+                  val date = evt.ts
+                  val dateMillis = date.toEpochMilli
+                  val showJoinMessage = newState.adminSettings.showJoinLeaveMessages
+                  val memberIds = newState.memberIds
+                  val apiMembers = newState.members.values.map(_.asStruct).toVector
+                  val randomId = ACLUtils.randomLong()
 
-            // If user was never invited to group - he don't have group on devices,
-            // that means we need to push all group-info related updates
-            //
-            // If user was invited to group by other member - we don't need to push group updates,
-            // cause they were pushed already on invite step
-            // TODO: unify isHistoryShared usage
-            val joiningUserUpdatesNew: Vector[Update] = {
-              if (wasInvited) {
-                Vector.empty[Update]
-              } else {
-                val optDrop = if (newState.isHistoryShared) Some(UpdateChatDropCache(apiGroupPeer)) else None
-                optDrop ++: refreshGroupUpdates(newState, cmd.joiningUserId)
-              }
+                  // If user was never invited to group - he don't have group on devices,
+                  // that means we need to push all group-info related updates
+                  //
+                  // If user was invited to group by other member - we don't need to push group updates,
+                  // cause they were pushed already on invite step
+                  // TODO: unify isHistoryShared usage
+                  val joiningUserUpdatesNew: Vector[Update] = {
+                    if (wasInvited) {
+                      Vector.empty[Update]
+                    } else {
+                      val optDrop = if (newState.isHistoryShared) Some(UpdateChatDropCache(apiGroupPeer)) else None
+                      optDrop ++: refreshGroupUpdates(newState, cmd.joiningUserId)
+                    }
+                  }
+
+                  // For groups with not async members we should push:
+                  // • Diff for members;
+                  // • Diff for joining user if he was previously invited;
+                  // • Members for joining user if he wasn't previously invited.
+                  //
+                  // For groups with async members we should push:
+                  // • UpdateGroupMembersCountChanged for both joining user and members
+                  val (joiningUpdateNew, membersUpdateNew): (Update, Update) =
+                    if (newState.isAsyncMembers) {
+                      val u = UpdateGroupMembersCountChanged(groupId, newState.membersCount)
+                      (u, u)
+                    } else {
+                      val joiningMember = apiMembers.find(_.userId == cmd.joiningUserId)
+                      val diff = UpdateGroupMemberDiff(
+                        groupId,
+                        addedMembers = joiningMember.toVector,
+                        membersCount = newState.membersCount,
+                        removedUsers = Vector.empty
+                      )
+
+                      if (wasInvited) {
+                        (diff, diff)
+                      } else {
+                        (
+                          UpdateGroupMembersUpdated(groupId, apiMembers),
+                          diff
+                        )
+                      }
+                    }
+
+                  // TODO: not sure how it should be in old API
+      //            val membersUpdateObsolete = UpdateGroupMembersUpdateObsolete(groupId, apiMembers)
+
+                  val serviceMessage = GroupServiceMessages.userJoined
+
+                  def joinGROUPUpdates: Future[SeqStateDate] =
+                    for {
+                      // push all group updates to joiningUserId
+                      _ ← FutureExt.ftraverse(joiningUserUpdatesNew) { update ⇒
+                        seqUpdExt.deliverUserUpdate(userId = cmd.joiningUserId, update)
+                      }
+
+                      // push updated members list/count/difference to joining user,
+                      // make it `FatSeqUpdate` if this user invited to group for first time.
+                      // TODO???: isFat = !wasInvited - is it correct?
+                      SeqState(seq, state) ← seqUpdExt.deliverClientUpdate(
+                        userId = cmd.joiningUserId,
+                        authId = cmd.joiningUserAuthId,
+                        update = joiningUpdateNew,
+                        pushRules = seqUpdExt.pushRules(isFat = !wasInvited, None), //!wasInvited means that user came for first time here
+                        deliveryId = s"join_${groupId}_${randomId}"
+
+                      )
+
+                      // push updated members list/count to all group members except joiningUserId
+                      _ ← seqUpdExt.broadcastPeopleUpdate(
+                        memberIds - cmd.joiningUserId,
+                        membersUpdateNew,
+                        deliveryId = s"userjoined_${groupId}_${randomId}"
+                      )
+
+                      date ← if (showJoinMessage) {
+                        dialogExt.sendServerMessage(
+                          apiGroupPeer,
+                          senderUserId = cmd.joiningUserId,
+                          senderAuthId = cmd.joiningUserAuthId,
+                          randomId = randomId,
+                          serviceMessage // no delivery tag. This updated handled this way in Groups V1
+                        ) map (_.date)
+                      } else {
+                        // write service message only for joining user
+                        // and push join message
+                        for {
+                          _ ← dialogExt.writeMessageSelf(
+                            userId = cmd.joiningUserId,
+                            peer = apiGroupPeer,
+                            senderUserId = cmd.joiningUserId,
+                            dateMillis = dateMillis,
+                            randomId = randomId,
+                            serviceMessage
+                          )
+                          _ ← seqUpdExt.deliverUserUpdate(
+                            userId = cmd.joiningUserId,
+                            update = serviceMessageUpdate(
+                              cmd.joiningUserId,
+                              dateMillis,
+                              randomId,
+                              serviceMessage
+                            ),
+                            deliveryTag = Some(Optimization.GroupV2)
+                          )
+                        } yield dateMillis
+                      }
+                    } yield SeqStateDate(seq, state, date)
+
+                  def joinCHANNELUpdates: Future[SeqStateDate] =
+                    for {
+                      // push all group updates to joiningUserId
+                      _ ← FutureExt.ftraverse(joiningUserUpdatesNew) { update ⇒
+                        seqUpdExt.deliverUserUpdate(userId = cmd.joiningUserId, update)
+                      }
+
+                      // push updated members count to joining user
+                      SeqState(seq, state) ← seqUpdExt.deliverClientUpdate(
+                        userId = cmd.joiningUserId,
+                        authId = cmd.joiningUserAuthId,
+                        update = joiningUpdateNew,
+                        deliveryId = s"join_${groupId}_${randomId}"
+                      )
+
+                      // push updated members count to all group members except joining user
+                      _ ← seqUpdExt.broadcastPeopleUpdate(
+                        memberIds - cmd.joiningUserId,
+                        membersUpdateNew,
+                        deliveryId = s"userjoined_${groupId}_${randomId}"
+                      )
+
+                      // push join message only to joining user
+                      _ ← seqUpdExt.deliverUserUpdate(
+                        userId = cmd.joiningUserId,
+                        update = serviceMessageUpdate(
+                          cmd.joiningUserId,
+                          dateMillis,
+                          randomId,
+                          serviceMessage
+                        ),
+                        deliveryTag = Some(Optimization.GroupV2)
+                      )
+                      _ ← dialogExt.bump(cmd.joiningUserId, apiGroupPeer.asModel)
+                    } yield SeqStateDate(seq, state, dateMillis)
+
+                  val result: Future[(SeqStateDate, Vector[Int], Long)] =
+                    for {
+                      ///////////////////////////
+                      // Groups V1 API updates //
+                      ///////////////////////////
+
+                      // push update about members to all users, except joining user
+      //                _ ← seqUpdExt.broadcastPeopleUpdate(
+      //                  memberIds - cmd.joiningUserId,
+      //                  membersUpdateObsolete,
+      //                  pushRules = seqUpdExt.pushRules(isFat = true, None),
+      //                  deliveryId = s"userjoined_obsolete_${groupId}_${randomId}"
+      //                )
+
+                      ///////////////////////////
+                      // Groups V2 API updates //
+                      ///////////////////////////
+
+                      seqStateDate ← if (newState.groupType.isChannel) joinCHANNELUpdates else joinGROUPUpdates
+
+                    } yield (seqStateDate, memberIds.toVector :+ inviterUserId, randomId)
+
+                  result pipeTo replyTo
+                }
             }
-
-            // For groups with not async members we should push:
-            // • Diff for members;
-            // • Diff for joining user if he was previously invited;
-            // • Members for joining user if he wasn't previously invited.
-            //
-            // For groups with async members we should push:
-            // • UpdateGroupMembersCountChanged for both joining user and members
-            val (joiningUpdateNew, membersUpdateNew): (Update, Update) =
-              if (newState.isAsyncMembers) {
-                val u = UpdateGroupMembersCountChanged(groupId, newState.membersCount)
-                (u, u)
-              } else {
-                val joiningMember = apiMembers.find(_.userId == cmd.joiningUserId)
-                val diff = UpdateGroupMemberDiff(
-                  groupId,
-                  addedMembers = joiningMember.toVector,
-                  membersCount = newState.membersCount,
-                  removedUsers = Vector.empty
-                )
-
-                if (wasInvited) {
-                  (diff, diff)
-                } else {
-                  (
-                    UpdateGroupMembersUpdated(groupId, apiMembers),
-                    diff
-                  )
-                }
-              }
-
-            // TODO: not sure how it should be in old API
-            val membersUpdateObsolete = UpdateGroupMembersUpdateObsolete(groupId, apiMembers)
-
-            val serviceMessage = GroupServiceMessages.userJoined
-
-            //TODO: remove deprecated
-            db.run(GroupUserRepo.create(
-              groupId,
-              userId = cmd.joiningUserId,
-              inviterUserId = inviterUserId,
-              invitedAt = optMember.map(_.invitedAt).getOrElse(date),
-              joinedAt = Some(LocalDateTime.now(ZoneOffset.UTC)),
-              isAdmin = false
-            ): @silent)
-
-            def joinGROUPUpdates: Future[SeqStateDate] =
-              for {
-                // push all group updates to joiningUserId
-                _ ← FutureExt.ftraverse(joiningUserUpdatesNew) { update ⇒
-                  seqUpdExt.deliverUserUpdate(userId = cmd.joiningUserId, update)
-                }
-
-                // push updated members list/count/difference to joining user,
-                // make it `FatSeqUpdate` if this user invited to group for first time.
-                // TODO???: isFat = !wasInvited - is it correct?
-                SeqState(seq, state) ← seqUpdExt.deliverClientUpdate(
-                  userId = cmd.joiningUserId,
-                  authId = cmd.joiningUserAuthId,
-                  update = joiningUpdateNew,
-                  pushRules = seqUpdExt.pushRules(isFat = !wasInvited, None), //!wasInvited means that user came for first time here
-                  deliveryId = s"join_${groupId}_${randomId}"
-
-                )
-
-                // push updated members list/count to all group members except joiningUserId
-                _ ← seqUpdExt.broadcastPeopleUpdate(
-                  memberIds - cmd.joiningUserId,
-                  membersUpdateNew,
-                  deliveryId = s"userjoined_${groupId}_${randomId}"
-                )
-
-                date ← if (showJoinMessage) {
-                  dialogExt.sendServerMessage(
-                    apiGroupPeer,
-                    senderUserId = cmd.joiningUserId,
-                    senderAuthId = cmd.joiningUserAuthId,
-                    randomId = randomId,
-                    serviceMessage // no delivery tag. This updated handled this way in Groups V1
-                  ) map (_.date)
-                } else {
-                  // write service message only for joining user
-                  // and push join message
-                  for {
-                    _ ← dialogExt.writeMessageSelf(
-                      userId = cmd.joiningUserId,
-                      peer = apiGroupPeer,
-                      senderUserId = cmd.joiningUserId,
-                      dateMillis = dateMillis,
-                      randomId = randomId,
-                      serviceMessage
-                    )
-                    _ ← seqUpdExt.deliverUserUpdate(
-                      userId = cmd.joiningUserId,
-                      update = serviceMessageUpdate(
-                        cmd.joiningUserId,
-                        dateMillis,
-                        randomId,
-                        serviceMessage
-                      ),
-                      deliveryTag = Some(Optimization.GroupV2)
-                    )
-                  } yield dateMillis
-                }
-              } yield SeqStateDate(seq, state, date)
-
-            def joinCHANNELUpdates: Future[SeqStateDate] =
-              for {
-                // push all group updates to joiningUserId
-                _ ← FutureExt.ftraverse(joiningUserUpdatesNew) { update ⇒
-                  seqUpdExt.deliverUserUpdate(userId = cmd.joiningUserId, update)
-                }
-
-                // push updated members count to joining user
-                SeqState(seq, state) ← seqUpdExt.deliverClientUpdate(
-                  userId = cmd.joiningUserId,
-                  authId = cmd.joiningUserAuthId,
-                  update = joiningUpdateNew,
-                  deliveryId = s"join_${groupId}_${randomId}"
-                )
-
-                // push updated members count to all group members except joining user
-                _ ← seqUpdExt.broadcastPeopleUpdate(
-                  memberIds - cmd.joiningUserId,
-                  membersUpdateNew,
-                  deliveryId = s"userjoined_${groupId}_${randomId}"
-                )
-
-                // push join message only to joining user
-                _ ← seqUpdExt.deliverUserUpdate(
-                  userId = cmd.joiningUserId,
-                  update = serviceMessageUpdate(
-                    cmd.joiningUserId,
-                    dateMillis,
-                    randomId,
-                    serviceMessage
-                  ),
-                  deliveryTag = Some(Optimization.GroupV2)
-                )
-                _ ← dialogExt.bump(cmd.joiningUserId, apiGroupPeer.asModel)
-              } yield SeqStateDate(seq, state, dateMillis)
-
-            val result: Future[(SeqStateDate, Vector[Int], Long)] =
-              for {
-                ///////////////////////////
-                // Groups V1 API updates //
-                ///////////////////////////
-
-                // push update about members to all users, except joining user
-                _ ← seqUpdExt.broadcastPeopleUpdate(
-                  memberIds - cmd.joiningUserId,
-                  membersUpdateObsolete,
-                  pushRules = seqUpdExt.pushRules(isFat = true, None),
-                  deliveryId = s"userjoined_obsolete_${groupId}_${randomId}"
-                )
-
-                ///////////////////////////
-                // Groups V2 API updates //
-                ///////////////////////////
-
-                seqStateDate ← if (newState.groupType.isChannel) joinCHANNELUpdates else joinGROUPUpdates
-
-              } yield (seqStateDate, memberIds.toVector :+ inviterUserId, randomId)
-
-            result pipeTo replyTo
           }
         }
       }
@@ -475,14 +493,6 @@ private[group] trait MemberCommandHandlers extends GroupsImplicits {
 
         val serviceMessage = GroupServiceMessages.userLeft
 
-        //TODO: remove deprecated. GroupInviteTokenRepo don't have replacement yet.
-//        db.run(
-//          for {
-//            _ ← GroupUserRepo.delete(groupId, cmd.userId): @silent
-//            _ ← GroupInviteTokenRepo.revoke(groupId, cmd.userId): @silent
-//          } yield ()
-//        )
-
         val leaveGROUPUpdates: Future[SeqStateDate] =
           for {
             // push updated members list to all group members
@@ -506,7 +516,7 @@ private[group] trait MemberCommandHandlers extends GroupsImplicits {
             }
 
             // push left user that he is no longer a member
-            SeqState(seq, state) ← seqUpdExt.deliverClientUpdate(
+            SeqState(seq, st) ← seqUpdExt.deliverClientUpdate(
               userId = cmd.userId,
               authId = cmd.authId,
               update = UpdateGroupMemberChanged(groupId, isMember = false)
@@ -515,11 +525,11 @@ private[group] trait MemberCommandHandlers extends GroupsImplicits {
             // push left user updates
             // • with empty group members
             // • that he can't view and invite members
-            leftUpdates = updatePermissions :+ UpdateGroupMembersUpdated(groupId, members = Vector.empty)
+            leftUpdates = updatePermissions :+ UpdateGroupMembersUpdated(groupId, members = (state.members - cmd.userId).values.map(_.asStruct).toVector)
             _ ← FutureExt.ftraverse(leftUpdates) { update ⇒
               seqUpdExt.deliverUserUpdate(userId = cmd.userId, update)
             }
-          } yield SeqStateDate(seq, state, date)
+          } yield SeqStateDate(seq, st, date)
 
         val leaveCHANNELUpdates: Future[SeqStateDate] =
           for {
@@ -537,10 +547,10 @@ private[group] trait MemberCommandHandlers extends GroupsImplicits {
             )
 
             // push left user updates that he has no group rights
-            leftUpdates = updatePermissions :+ UpdateGroupMembersCountChanged(groupId, membersCount = 0)
-            _ ← FutureExt.ftraverse(leftUpdates) { update ⇒
-              seqUpdExt.deliverUserUpdate(userId = cmd.userId, update)
-            }
+//            leftUpdates = updatePermissions :+ UpdateGroupMembersCountChanged(groupId, membersCount = 0)
+//            _ ← FutureExt.ftraverse(leftUpdates) { update ⇒
+//              seqUpdExt.deliverUserUpdate(userId = cmd.userId, update)
+//            }
           } yield SeqStateDate(seq, state, dateMillis)
 
         // read this dialog by user that leaves group. don't wait for ack
@@ -610,18 +620,10 @@ private[group] trait MemberCommandHandlers extends GroupsImplicits {
 
         val serviceMessage = GroupServiceMessages.userKicked(cmd.kickedUserId)
 
-        //TODO: remove deprecated. GroupInviteTokenRepo don't have replacement yet.
-        db.run(
-          for {
-            _ ← GroupUserRepo.delete(groupId, cmd.kickedUserId): @silent
-            _ ← GroupInviteTokenRepo.revoke(groupId, cmd.kickedUserId): @silent
-          } yield ()
-        )
-
         val kickGROUPUpdates: Future[SeqStateDate] =
           for {
             // push updated members list to all group members. Don't push to kicked user!
-            SeqState(seq, state) ← seqUpdExt.broadcastClientUpdate(
+            SeqState(seq, stt) ← seqUpdExt.broadcastClientUpdate(
               userId = cmd.kickerUserId,
               authId = cmd.kickerAuthId,
               bcastUserIds = newState.memberIds - cmd.kickerUserId,
@@ -642,13 +644,13 @@ private[group] trait MemberCommandHandlers extends GroupsImplicits {
             // • that he is no longer a member of group
             // • that he can't view and invite members
             kickedUserUpdates = updatePermissions ++ Vector(
-              UpdateGroupMembersUpdated(groupId, members = Vector.empty),
+              UpdateGroupMembersUpdated(groupId, members = (state.members - cmd.kickedUserId).values.map(_.asStruct).toVector),
               UpdateGroupMemberChanged(groupId, isMember = false)
             )
             _ ← FutureExt.ftraverse(kickedUserUpdates) { update ⇒
               seqUpdExt.deliverUserUpdate(userId = cmd.kickedUserId, update)
             }
-          } yield SeqStateDate(seq, state, date)
+          } yield SeqStateDate(seq, stt, date)
 
         val kickCHANNELUpdates: Future[SeqStateDate] =
           for {

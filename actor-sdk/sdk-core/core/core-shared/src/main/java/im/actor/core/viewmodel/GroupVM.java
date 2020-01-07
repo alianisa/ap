@@ -64,7 +64,6 @@ public class GroupVM extends BaseValueModel<Group> {
     @NotNull
     @Property("nonatomic, readonly")
     private BooleanValueModel isCanViewInfo;
-
     @NotNull
     @Property("nonatomic, readonly")
     private ValueModel<HashSet<GroupMember>> members;
@@ -116,7 +115,6 @@ public class GroupVM extends BaseValueModel<Group> {
     @NotNull
     @Property("nonatomic, readonly")
     private BooleanValueModel isDeleted;
-
     @NotNull
     @Property("nonatomic, readonly")
     private StringValueModel theme;
@@ -134,6 +132,9 @@ public class GroupVM extends BaseValueModel<Group> {
     @NotNull
     @Property("nonatomic, readonly")
     private ValueModel<ApiMapValue> ext;
+    @NotNull
+    @Property("nonatomic, readonly")
+    private StringValueModel restrictedDomains;
 
     @NotNull
     private ArrayList<ModelChangedListener<GroupVM>> listeners = new ArrayList<>();
@@ -174,13 +175,14 @@ public class GroupVM extends BaseValueModel<Group> {
         this.isCanJoin = new BooleanValueModel("group." + groupId + ".isCanJoin", rawObj.isCanJoin());
         this.isCanViewInfo = new BooleanValueModel("group." + groupId + ".isCanViewInfo", rawObj.isCanViewInfo());
 
-        this.ownerId = new IntValueModel("group." + groupId + ".membersCount", rawObj.getOwnerId());
+        this.ownerId = new IntValueModel("group." + groupId + ".ownerId", rawObj.getOwnerId());
         this.members = new ValueModel<>("group." + groupId + ".members", new HashSet<>(rawObj.getMembers()));
         this.presence = new ValueModel<>("group." + groupId + ".presence", 0);
         this.theme = new StringValueModel("group." + groupId + ".theme", rawObj.getTopic());
         this.about = new StringValueModel("group." + groupId + ".about", rawObj.getAbout());
         this.shortName = new StringValueModel("group." + groupId + ".shortname", rawObj.getShortName());
         this.ext = new ValueModel<>("group." + groupId + ".ext", rawObj.getExt());
+        this.restrictedDomains = new StringValueModel("group." + groupId + ".restricteddomains", rawObj.getRestrictedDomains());
     }
 
     /**
@@ -531,6 +533,12 @@ public class GroupVM extends BaseValueModel<Group> {
         return presence;
     }
 
+    @NotNull
+    @ObjectiveCName("getRestrictedDomains")
+    public StringValueModel getRestrictedDomains() {
+        return restrictedDomains;
+    }
+
     /**
      * Get ext Value Model
      *
@@ -623,6 +631,7 @@ public class GroupVM extends BaseValueModel<Group> {
         isChanged |= isCanJoin.change(rawObj.isCanJoin());
         isChanged |= isCanCall.change(rawObj.isCanCall());
         isChanged |= ext.change(rawObj.getExt());
+        isChanged |= restrictedDomains.change(rawObj.getRestrictedDomains());
 
         if (isChanged) {
             notifyIfNeeded();

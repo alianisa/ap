@@ -186,9 +186,9 @@ public class ArrayUtils {
         return cur;
     }
 
-    public static long[] toPrimitive(Long[] curr){
+    public static long[] toPrimitive(Long[] curr) {
         long[] returned = new long[curr.length];
-        for(int i =0; i < curr.length; i++){
+        for (int i = 0; i < curr.length; i++) {
             returned[i] = curr[i];
         }
         return returned;
