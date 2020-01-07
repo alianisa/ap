@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "9F4ABAD675FCC9D14CB007D9689561C2601597D9",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "9F4ABAD675FCC9D14CB007D9689561C2601597D9" : 9223372036854775807,
+    "2DE28C00870CD2331D948782F2A41789E06656E4" : 9223372036854775807
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "7BDC4968-247D-452A-A5D1-DF0F51833DFE",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "9F4ABAD675FCC9D14CB007D9689561C2601597D9" : "actor-platform-git\/",
+    "2DE28C00870CD2331D948782F2A41789E06656E4" : "actor-platform-git\/actor-sdk\/sdk-core-ios\/Messenger\/VoIP\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "Messenger",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "actor-sdk\/sdk-core-ios\/Messenger.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/SereiPonna\/vKclub-iOS.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "2DE28C00870CD2331D948782F2A41789E06656E4"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/actorapp\/actor-platform.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "9F4ABAD675FCC9D14CB007D9689561C2601597D9"
+    }
+  ]
+}

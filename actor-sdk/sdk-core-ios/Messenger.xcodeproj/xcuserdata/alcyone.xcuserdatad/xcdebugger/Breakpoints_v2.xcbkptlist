@@ -1,0 +1,396 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Bucket
+   type = "1"
+   version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Messenger/Supporting Files/main.m"
+            timestampString = "545904786.241709"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "3"
+            endingLineNumber = "3"
+            landmarkName = "unknown"
+            landmarkType = "0">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "ActorSDK/Sources/Controllers/Calls/AACallsViewController.swift"
+            timestampString = "548429678.184714"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "38"
+            endingLineNumber = "38"
+            landmarkName = "AACallsViewController"
+            landmarkType = "3">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "ActorSDK/Sources/Controllers/Calls/AACallsViewController.swift"
+            timestampString = "548429678.1848201"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "55"
+            endingLineNumber = "55"
+            landmarkName = "presentCallView()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "ActorSDK/Sources/Controllers/Calls/AACallsViewController.swift"
+            timestampString = "548429678.184868"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "54"
+            endingLineNumber = "54"
+            landmarkName = "presentCallView()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Messenger/Supporting Files/main.m"
+            timestampString = "545904786.243621"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "7"
+            endingLineNumber = "7"
+            landmarkName = "main"
+            landmarkType = "9">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "ActorSDK/Sources/Controllers/Calls/AACallsViewController.swift"
+            timestampString = "548429678.184926"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "35"
+            endingLineNumber = "35"
+            landmarkName = "viewDidLoad()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "ActorSDK/Sources/Controllers/Calls/AACallsViewController.swift"
+            timestampString = "548429678.1849689"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "36"
+            endingLineNumber = "36"
+            landmarkName = "viewDidLoad()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "ActorSDK/Sources/Controllers/Calls/AACallsViewController.swift"
+            timestampString = "548429678.18501"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "28"
+            endingLineNumber = "28"
+            landmarkName = "AACallsViewController"
+            landmarkType = "3">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "AloSDK.AACallsViewController.__allocating_init (coder : __ObjC.NSCoder) -&gt; AloSDK.AACallsViewController"
+                  moduleName = "AloSDK"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/alcyone/Desktop/projects/actor-platform-git/actor-sdk/sdk-core-ios/ActorSDK/Sources/Controllers/Calls/AACallsViewController.swift"
+                  timestampString = "525480476.132458"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0"
+                  offsetFromSymbolStart = "12">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "AloSDK.AACallsViewController.init (coder : __ObjC.NSCoder) -&gt; AloSDK.AACallsViewController"
+                  moduleName = "AloSDK"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/alcyone/Desktop/projects/actor-platform-git/actor-sdk/sdk-core-ios/ActorSDK/Sources/Controllers/Calls/AACallsViewController.swift"
+                  timestampString = "525480476.13604"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "30"
+                  endingLineNumber = "30"
+                  offsetFromSymbolStart = "20">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Pods/J2ObjC-Framework/Distributive/include/J2ObjC_source.h"
+            timestampString = "529436597.194932"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "46"
+            endingLineNumber = "46"
+            landmarkName = "cast_chk(id __unsafe_unretained p, Class clazz)"
+            landmarkType = "9">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[ARBserWriter writeUnmappedWithInt:withId:]"
+                  moduleName = "AloSDK"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/alcyone/Desktop/projects/actor-platform-git/actor-sdk/sdk-core-ios/Pods/J2ObjC-Framework/Distributive/include/J2ObjC_source.h"
+                  timestampString = "529272942.890145"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "53"
+                  endingLineNumber = "53"
+                  offsetFromSymbolStart = "1048">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "ARBserParser_putWithInt_withId_withARSparseArray_"
+                  moduleName = "AloSDK"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/alcyone/Desktop/projects/actor-platform-git/actor-sdk/sdk-core-ios/Pods/J2ObjC-Framework/Distributive/include/J2ObjC_source.h"
+                  timestampString = "529272942.891974"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "53"
+                  endingLineNumber = "53"
+                  offsetFromSymbolStart = "460">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[ARBserValues getRepeatedCountWithInt:]"
+                  moduleName = "AloSDK"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/alcyone/Desktop/projects/actor-platform-git/actor-sdk/sdk-core-ios/Pods/J2ObjC-Framework/Distributive/include/J2ObjC_source.h"
+                  timestampString = "529272942.893473"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "53"
+                  endingLineNumber = "53"
+                  offsetFromSymbolStart = "532">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[ARBserValues getRepeatedLongWithInt:]"
+                  moduleName = "AloSDK"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/alcyone/Desktop/projects/actor-platform-git/actor-sdk/sdk-core-ios/Pods/J2ObjC-Framework/Distributive/include/J2ObjC_source.h"
+                  timestampString = "529272942.894962"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "53"
+                  endingLineNumber = "53"
+                  offsetFromSymbolStart = "948">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[ARBserValues getRepeatedBytesWithInt:]"
+                  moduleName = "AloSDK"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/alcyone/Desktop/projects/actor-platform-git/actor-sdk/sdk-core-ios/Pods/J2ObjC-Framework/Distributive/include/J2ObjC_source.h"
+                  timestampString = "529272942.896426"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "53"
+                  endingLineNumber = "53"
+                  offsetFromSymbolStart = "948">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "ARArrayReflect_getWithId_withInt_"
+                  moduleName = "AloSDK"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/alcyone/Desktop/projects/actor-platform-git/actor-sdk/sdk-core-ios/Pods/J2ObjC-Framework/Distributive/include/J2ObjC_source.h"
+                  timestampString = "529272942.898169"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "53"
+                  endingLineNumber = "53"
+                  offsetFromSymbolStart = "296">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "ARArrayReflect_getLengthWithId_"
+                  moduleName = "AloSDK"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/alcyone/Desktop/projects/actor-platform-git/actor-sdk/sdk-core-ios/Pods/J2ObjC-Framework/Distributive/include/J2ObjC_source.h"
+                  timestampString = "529272942.89969"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "53"
+                  endingLineNumber = "53"
+                  offsetFromSymbolStart = "280">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "ARJSONObject_wrapWithId_"
+                  moduleName = "AloSDK"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/alcyone/Desktop/projects/actor-platform-git/actor-sdk/sdk-core-ios/Pods/J2ObjC-Framework/Distributive/include/J2ObjC_source.h"
+                  timestampString = "529272942.901195"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "53"
+                  endingLineNumber = "53"
+                  offsetFromSymbolStart = "568">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "ARJSONObject_wrapWithId_"
+                  moduleName = "AloSDK"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/alcyone/Desktop/projects/actor-platform-git/actor-sdk/sdk-core-ios/Pods/J2ObjC-Framework/Distributive/include/J2ObjC_source.h"
+                  timestampString = "529272942.902803"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "53"
+                  endingLineNumber = "53"
+                  offsetFromSymbolStart = "1184">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "ARActor_intHandleWithId_withARActorRef_"
+                  moduleName = "AloSDK"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/alcyone/Desktop/projects/actor-platform-git/actor-sdk/sdk-core-ios/Pods/J2ObjC-Framework/Distributive/include/J2ObjC_source.h"
+                  timestampString = "529272942.904858"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "53"
+                  endingLineNumber = "53"
+                  offsetFromSymbolStart = "928">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[ARActor scheduleWithId:withLong:]"
+                  moduleName = "AloSDK"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/alcyone/Desktop/projects/actor-platform-git/actor-sdk/sdk-core-ios/Pods/J2ObjC-Framework/Distributive/include/J2ObjC_source.h"
+                  timestampString = "529272942.906557"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "53"
+                  endingLineNumber = "53"
+                  offsetFromSymbolStart = "404">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[ARGenericEnginesProvider createListEngineWithARListStorage:withARBserCreator:]"
+                  moduleName = "AloSDK"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/alcyone/Desktop/projects/actor-platform-git/actor-sdk/sdk-core-ios/Pods/J2ObjC-Framework/Distributive/include/J2ObjC_source.h"
+                  timestampString = "529272942.908026"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "53"
+                  endingLineNumber = "53"
+                  offsetFromSymbolStart = "156">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[ImActorCoreModulesSearchSourcesGlobalSearchSource loadResultsWithNSString:withARConsumer:]"
+                  moduleName = "AloSDK"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/alcyone/Desktop/projects/actor-platform-git/actor-sdk/sdk-core-ios/Pods/J2ObjC-Framework/Distributive/include/J2ObjC_source.h"
+                  timestampString = "529272942.909497"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "53"
+                  endingLineNumber = "53"
+                  offsetFromSymbolStart = "508">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "ActorSDK/Sources/Utils/AudioRecorder/AANativeAudioPlayer.h"
+            timestampString = "530061667.23049"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "3"
+            endingLineNumber = "3"
+            landmarkName = "unknown"
+            landmarkType = "0">
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
+</Bucket>
