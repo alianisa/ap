@@ -5,25 +5,27 @@
 import UIKit
 
 final class AADialogCell: AATableViewCell, AABindedCell {
+
+    
     
     fileprivate let binder = AABinder()
-    
+
     // Binding data type
     
     public typealias BindData = ACDialog
     
     // Hight of cell
     
-    open static func bindedCellHeight(_ table: AAManagedTable, item: ACDialog) -> CGFloat {
+    public static func bindedCellHeight(_ table: AAManagedTable, item: ACDialog) -> CGFloat {
         return 76
     }
     
     // Cached design
     
     fileprivate static let counterBgImage = Imaging
-        .imageWithColor(ActorSDK.sharedActor().style.dialogCounterBgColor, size: CGSize(width: 18, height: 18))
-        .roundImage(18)
-        .resizableImage(withCapInsets: UIEdgeInsetsMake(9, 9, 9, 9))
+        .imageWithColor(ActorSDK.sharedActor().style.dialogCounterBgColor, size: CGSize(width: 21, height: 21))
+        .roundImage(21)
+        .resizableImage(withCapInsets: UIEdgeInsets(top: 9, left: 9, bottom: 9, right: 9))
     fileprivate lazy var dialogTextActiveColor = ActorSDK.sharedActor().style.dialogTextActiveColor
     fileprivate lazy var dialogTextColor = ActorSDK.sharedActor().style.dialogTextColor
     fileprivate lazy var dialogStatusSending = ActorSDK.sharedActor().style.dialogStatusSending
@@ -36,42 +38,57 @@ final class AADialogCell: AATableViewCell, AABindedCell {
     fileprivate lazy var chatIconCheck2 = ActorSDK.sharedActor().style.chatIconCheck2
     fileprivate lazy var chatIconCheck1 = ActorSDK.sharedActor().style.chatIconCheck1
     fileprivate lazy var chatIconError = ActorSDK.sharedActor().style.chatIconError
-    
+    fileprivate lazy var chatIconDialogSent = Imaging
+        .imageWithColor(UIColor.gray, size: CGSize(width: 12, height: 12))
+        .roundImage(12)
+        .resizableImage(withCapInsets: UIEdgeInsets(top: 9, left: 9, bottom: 9, right: 9))
+    fileprivate lazy var chatIconDialogRead = Imaging
+        .imageWithColor(UIColor(red:0.00, green:0.40, blue:0.80, alpha:1.0), size: CGSize(width: 12, height: 12))
+        .roundImage(12)
+        .resizableImage(withCapInsets: UIEdgeInsets(top: 9, left: 9, bottom: 9, right: 9))
     // Views
-
+    
     fileprivate var cellRenderer: AABackgroundCellRenderer<AADialogCellConfig, AADialogCellLayout>!
     
-    open let avatarView = AAAvatarView()
-    open let titleView = YYLabel()
-    open let dialogTypeView = UIImageView()
-    open let messageView = YYLabel()
-    open let typingView = YYLabel()
+    public let avatarView = AAAvatarView()
+    public let titleView = YYLabel()
+    public let dialogTypeView = UIImageView()
+    public let messageView = YYLabel()
+    public let typingView = YYLabel()
     
-    open let dateView = YYLabel()
-    open let statusView = UIImageView()
-    open let counterView = YYLabel()
-    open let counterViewBg = UIImageView()
-        
+    public let dateView = YYLabel()
+    public let statusView = UIImageView()
+    public let counterView = YYLabel()
+    public let counterViewBg = UIImageView()
+    
+    public let onlineView = YYLabel()
+    public let onlineViewBg = UIImageView()
+    
+    fileprivate var pre: ConversationViewController?
     // Binding Data
     
     fileprivate var bindedItem: ACDialog?
+    fileprivate var bindedPresence: ACUserPresence?
+    fileprivate var presenceBind: AAGroupMemberCell?
 
     private var typingMessage = ""
     
-    public override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    
+    
+    public override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-    
+        
         cellRenderer = AABackgroundCellRenderer<AADialogCellConfig, AADialogCellLayout>(renderer: cellRender, receiver: cellApply)
         
         titleView.displaysAsynchronously = true
         titleView.ignoreCommonProperties = true
-//        titleView.fadeOnAsynchronouslyDisplay = true
+        //        titleView.fadeOnAsynchronouslyDisplay = true
         titleView.clearContentsBeforeAsynchronouslyDisplay = true
-    
+        
         messageView.displaysAsynchronously = true
         messageView.ignoreCommonProperties = true
-//        messageView.fadeOnAsynchronouslyDisplay = true
+        //        messageView.fadeOnAsynchronouslyDisplay = true
         messageView.clearContentsBeforeAsynchronouslyDisplay = true
         
         typingView.displaysAsynchronously = true
@@ -80,15 +97,21 @@ final class AADialogCell: AATableViewCell, AABindedCell {
         
         dateView.displaysAsynchronously = true
         dateView.ignoreCommonProperties = true
-//        dateView.fadeOnAsynchronouslyDisplay = true
+        //        dateView.fadeOnAsynchronouslyDisplay = true
         dateView.clearContentsBeforeAsynchronouslyDisplay = true
         
         counterView.displaysAsynchronously = true
         counterView.ignoreCommonProperties = true
-//        counterView.fadeOnAsynchronouslyDisplay = true
+        //        counterView.fadeOnAsynchronouslyDisplay = true
         counterView.clearContentsBeforeAsynchronouslyDisplay = true
-
+        
         counterViewBg.image = AADialogCell.counterBgImage
+        
+        
+        
+        onlineView.displaysAsynchronously = true
+        onlineView.ignoreCommonProperties = true
+        onlineView.clearContentsBeforeAsynchronouslyDisplay = true
         
         statusView.contentMode = .center
         
@@ -101,35 +124,72 @@ final class AADialogCell: AATableViewCell, AABindedCell {
         self.contentView.addSubview(statusView)
         self.contentView.addSubview(counterViewBg)
         self.contentView.addSubview(counterView)
+        self.contentView.addSubview(onlineViewBg)
     }
-
+    
     public required init(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    open func bind(_ item: ACDialog, table: AAManagedTable, index: Int, totalCount: Int) {
-
+    public func bind(_ item: ACDialog, table: AAManagedTable, index: Int, totalCount: Int) {
+        
         //
         // Checking dialog rebinding
         //
+        
+
+
         if (item.peer.peerType == ACPeerType.private()) {
             let user = Actor.getUserWithUid(item.peer.peerId)
+
             binder.bind(Actor.getTypingWithUid(item.peer.peerId), valueModel2: user.getPresenceModel(), closure:{ (typing:JavaLangBoolean?, presence:ACUserPresence?) -> () in
+//                let state = presence!.state.ordinal()
+                
+                let user2 = Actor.getUserWithUid(item.peer.peerId)
+                let presence2 = user2.getPresenceModel().get()
+                let presenceText = Actor.getFormatter().formatPresence(presence2, withSex: user.getSex())
+                let state2 = ACUserPresence_State.online().ordinal()
+                // Notify to request onlines
+                Actor.onUserVisible(withUid: item.peer.peerId)
+                if (item.peer.peerType == ACPeerType.group()) {
+                    self.onlineViewBg.isHidden = true
+                } else {
+                    if presence != nil {
+                        if presence!.state.ordinal() == ACUserPresence_State.online().ordinal() {
+                            
+                            self.onlineViewBg.isHidden = false
+                            self.onlineViewBg.image = UIImage.bundled("online_label")
+                            
+                        } else {
+                            self.onlineViewBg.isHidden = true
+                            self.onlineViewBg.image = UIImage.bundled("offline_label")
+                        }
+                    } else {
+                        
+                    }
+                }
+                
                 if (typing != nil && typing!.booleanValue()) {
                     self.typingMessage = Actor.getFormatter().formatTyping()
                     self.typingView.isHidden = false
                     self.messageView.isHidden = true
+                    
+                    
                 } else {
                     self.typingView.isHidden = true
                     self.messageView.isHidden = false
+                    
                 }
+
+
+                
                 self.cellRenderer.cancelRender()
                 self.setNeedsLayout()
             })
         } else if (item.peer.peerType == ACPeerType.group()) {
             let group = Actor.getGroupWithGid(item.peer.peerId)
-            binder.bind(Actor.getGroupTyping(withGid: group.getId()), valueModel2: group.membersCount, valueModel3: group.getPresenceModel(), closure: { (typingValue:IOSIntArray?, membersCount: JavaLangInteger?, onlineCount:JavaLangInteger?) -> () in
-                if (group.isMemberModel().get().booleanValue()) {
+            binder.bind(Actor.getGroupTyping(withGid: group.getId()), valueModel2: group.membersCount, valueModel3: group.presence, closure: { (typingValue:IOSIntArray?, membersCount: JavaLangInteger?, onlineCount:JavaLangInteger?) -> () in
+                if (group.isMember.get().booleanValue()) {
                     if (typingValue != nil && typingValue!.length() > 0) {
                         self.typingView.textColor = self.appStyle.navigationSubtitleActiveColor
                         if (typingValue!.length() == 1) {
@@ -149,6 +209,7 @@ final class AADialogCell: AATableViewCell, AABindedCell {
                     self.setNeedsLayout()
                 }
             })
+            self.onlineViewBg.isHidden = true
         }
         
         // Nothing changed
@@ -168,7 +229,13 @@ final class AADialogCell: AATableViewCell, AABindedCell {
         // Avatar View
         //
         avatarView.bind(item.dialogTitle, id: Int(item.peer.peerId), avatar: item.dialogAvatar)
-        
+//        let user = Actor.getUserWithUid(item.peer.peerId)
+        let peerId = item.peer.peerId
+//        print("user state = \(peerId)")
+//        avatarView.bindPresence(user)
+//        presenceBind?.bind(user, isAdmin: false)
+
+//        onlineViewBg.bin
         // Forcing Async Rendering.
         // This flag can became false when cell was resized
         if !titleView.displaysAsynchronously {
@@ -182,7 +249,8 @@ final class AADialogCell: AATableViewCell, AABindedCell {
         if !typingView.displaysAsynchronously {
             typingView.displaysAsynchronously = true
         }
-
+        
+//        onlineView.frame = CGRect(x: 76, y: 47, width: 20, height: 20)
         
         // Reseting Text Layout on new peer binding
         if !isRebind {
@@ -194,12 +262,15 @@ final class AADialogCell: AATableViewCell, AABindedCell {
             dateView.alpha = 0
             counterView.alpha = 0
             counterViewBg.alpha = 0
+            onlineView.alpha = 0
+            onlineViewBg.alpha = 0
         } else {
             titleView.clearContentsBeforeAsynchronouslyDisplay = false
             messageView.clearContentsBeforeAsynchronouslyDisplay = false
             typingView.clearContentsBeforeAsynchronouslyDisplay = false
-            dateView.clearContentsBeforeAsynchronouslyDisplay = false            
+            dateView.clearContentsBeforeAsynchronouslyDisplay = false
             counterView.clearContentsBeforeAsynchronouslyDisplay = false
+            onlineView.clearContentsBeforeAsynchronouslyDisplay = false
         }
         
         //
@@ -210,33 +281,33 @@ final class AADialogCell: AATableViewCell, AABindedCell {
             self.statusView.isHidden = true
         } else {
             if item.isRead() {
-                self.statusView.tintColor = dialogStatusRead
-                self.statusView.image = chatIconCheck2
+//                self.statusView.tintColor = UIColor(red:0.00, green:0.35, blue:1.00, alpha:1.0)
+                self.statusView.image = chatIconDialogRead
                 self.statusView.isHidden = false
             } else if item.isReceived() {
-                self.statusView.tintColor = dialogStatusReceived
-                self.statusView.image = chatIconCheck2
+//                self.statusView.tintColor = UIColor.gray
+                self.statusView.image = chatIconDialogSent
                 self.statusView.isHidden = false
             } else {
-                self.statusView.tintColor = dialogStatusSent
-                self.statusView.image = chatIconCheck1
+//                self.statusView.tintColor = UIColor.gray
+                self.statusView.image = chatIconDialogSent
                 self.statusView.isHidden = false
             }
         }
+    
         
-       
-
+        
         // Cancelling Renderer and forcing layouting to start new rendering
         cellRenderer.cancelRender()
         setNeedsLayout()
     }
     
-    open override func prepareForReuse() {
+    public override func prepareForReuse() {
         super.prepareForReuse()
         binder.unbindAll()
     }
     
-    open func addImageDialogType(_ image: UIImage!){
+    public func addImageDialogType(_ image: UIImage!){
         dialogTypeView.image = image
         let dialogTypeFrame = CGRect(x: 76, y: 17, width: 18, height: 18)
         dialogTypeView.frame = dialogTypeFrame
@@ -244,17 +315,17 @@ final class AADialogCell: AATableViewCell, AABindedCell {
         
     }
     
-    open func removeImageDialogType(){
+    public func removeImageDialogType(){
         dialogTypeView.image = UIImage()
         let dialogTypeFrame = CGRect(x: 76, y: 17, width: 18, height: 18)
         dialogTypeView.frame = dialogTypeFrame
         self.titleView.left = 76
     }
- 
     
-    open override func layoutSubviews() {
+    
+    public override func layoutSubviews() {
         super.layoutSubviews()
-
+        
         // We expect height == 76;
         let width = self.contentView.frame.width
         let leftPadding = CGFloat(76)
@@ -279,9 +350,21 @@ final class AADialogCell: AATableViewCell, AABindedCell {
         // Status Icon
         //
         if (!self.statusView.isHidden) {
-            statusView.frame = CGRect(x: leftPadding, y: 44, width: 20, height: 18)
+//            statusView.frame = CGRect(x: leftPadding, y: 44, width: 20, height: 18)
+//            let textW = status .textBoundingSize.width
+//            let unreadW = max(8 + 8, 22)
+            statusView.frame = CGRect(x: contentView.width - padding - 18, y: 47, width: 20, height: 20)
         }
         
+        //
+        // Online Icon
+        //
+        if (!self.onlineViewBg.isHidden) {
+            //            statusView.frame = CGRect(x: leftPadding, y: 44, width: 20, height: 18)
+            //            let textW = status .textBoundingSize.width
+            //            let unreadW = max(8 + 8, 22)
+            onlineViewBg.frame = CGRect(x: leftPadding - 21, y: 52, width: 12, height: 12)
+        }
         
         //
         // Rest of Elements are layouted on the last phase
@@ -290,6 +373,7 @@ final class AADialogCell: AATableViewCell, AABindedCell {
             let config = AADialogCellConfig(
                 item: binItem,
                 isStatusVisible: !statusView.isHidden,
+                isOnlineVisible: !onlineViewBg.isHidden,
                 titleWidth: titleFrame.width,
                 contentWidth: width,
                 typingText:self.typingMessage)
@@ -307,6 +391,8 @@ final class AADialogCell: AATableViewCell, AABindedCell {
                 dateView.clearContentsBeforeAsynchronouslyDisplay = false
                 counterView.displaysAsynchronously = false
                 counterView.clearContentsBeforeAsynchronouslyDisplay = false
+                onlineView.displaysAsynchronously = false
+                onlineView.clearContentsBeforeAsynchronouslyDisplay = false
             }
             
             
@@ -326,6 +412,7 @@ final class AADialogCell: AATableViewCell, AABindedCell {
             }else if(binItem.peer.peerType == ACPeerType.private()){
                 if(isBot){
                     addImageDialogType(UIImage.bundled("ic_robot"))
+                    self.onlineViewBg.isHidden = true
                 }else{
                     removeImageDialogType()
                 }
@@ -357,7 +444,10 @@ final class AADialogCell: AATableViewCell, AABindedCell {
         if config.isStatusVisible {
             messagePadding = 22
         }
-        
+        if config.isOnlineVisible {
+            messagePadding = 22
+        }
+
         
         //
         // Counter
@@ -370,11 +460,26 @@ final class AADialogCell: AATableViewCell, AABindedCell {
             counter.yy_font = UIFont.systemFont(ofSize: 14)
             counter.yy_color = appStyle.dialogCounterColor
             counterLayout = YYTextLayout(containerSize: CGSize(width: 1000, height: 1000), text: counter)!
-            unreadPadding = max(counterLayout!.textBoundingSize.width + 8, 18)
+            unreadPadding = max(counterLayout!.textBoundingSize.width + 8, 21)
         } else {
             counterLayout = nil
         }
         
+        //
+        // Online
+        //
+        
+////        var unreadPadding: CGFloat = 0
+//        let onlineLayout: YYTextLayout?
+////        if config.item.peer. > 0 {
+//            let online = NSMutableAttributedString(string: "online")
+//            online.yy_font = UIFont.systemFont(ofSize: 14)
+//            online.yy_color = appStyle.dialogCounterColor
+//            onlineLayout = YYTextLayout(containerSize: CGSize(width: 1000, height: 1000), text: online)!
+////            unreadPadding = max(counterLayout!.textBoundingSize.width + 8, 22)
+////        } else {
+//            onlineLayout = nil
+////        }
         
         //
         // Message
@@ -401,7 +506,7 @@ final class AADialogCell: AATableViewCell, AABindedCell {
         typingText.yy_font = UIFont.systemFont(ofSize: 16)
         typingText.yy_color = dialogTextActiveColor
         
-
+        
         let typingContainer = YYTextContainer(size: CGSize(width: messageWidth, height: 1000))
         typingContainer.maximumNumberOfRows = 1
         typingContainer.truncationType = .end
@@ -418,8 +523,21 @@ final class AADialogCell: AATableViewCell, AABindedCell {
             dateStr = ""
         }
         let dateAtrStr = NSMutableAttributedString(string: dateStr)
-        dateAtrStr.yy_color = appStyle.dialogDateColor
-        dateAtrStr.yy_font = UIFont.systemFont(ofSize: 14)
+//        if render.counterLayout != nil {
+            dateAtrStr.yy_color = appStyle.dialogDateColor
+//        }
+//        dateAtrStr.yy_color = UIColor(red:0.00, green:0.40, blue:0.80, alpha:1.0)
+//        dateAtrStr.yy_font = UIFont.systemFont(ofSize: 14)
+//        dateAtrStr.yy_font = UIFont.systemFont(ofSize: 14, weight: .regular)
+        
+        if #available(iOS 13.0, *) {
+            let descriptor = UIFont.systemFont(ofSize: 12, weight: .medium).fontDescriptor.withDesign(.rounded)
+            dateAtrStr.yy_font = UIFont(descriptor: descriptor!, size: 12)
+
+        } else {
+            dateAtrStr.yy_font = UIFont(name: ".SFCompactRounded-Semibold", size: 12)
+        }
+        
         let dateContainer = YYTextContainer(size: CGSize(width: 60, height: 1000))
         let dateLayout = YYTextLayout(container: dateContainer, text: dateAtrStr)!
         
@@ -466,7 +584,7 @@ final class AADialogCell: AATableViewCell, AABindedCell {
         
         var padding: CGFloat = 76
         if !statusView.isHidden {
-            padding += 22
+//            padding += 22
         }
         let messageViewFrame = CGRect(x: padding, y: 44, width: render.messageWidth, height: 22)
         UIView.performWithoutAnimation {
@@ -488,7 +606,7 @@ final class AADialogCell: AATableViewCell, AABindedCell {
         }
         typingView.textLayout = render.typingLayout
         if !self.typingView.isHidden{
-             presentView(typingView)
+            presentView(typingView)
         }
         
         //
@@ -507,10 +625,12 @@ final class AADialogCell: AATableViewCell, AABindedCell {
             self.counterView.textLayout = render.counterLayout
             
             let textW = render.counterLayout!.textBoundingSize.width
-            let unreadW = max(textW + 8, 18)
+            let unreadW = max(textW + 8, 21)
             
-            counterView.frame = CGRect(x: contentView.width - leftPadding - unreadW + (unreadW - textW) / 2, y: 44, width: textW, height: 18)
-            counterViewBg.frame = CGRect(x: contentView.width - leftPadding - unreadW, y: 44, width: unreadW, height: 18)
+            counterView.frame = CGRect(x: contentView.width - leftPadding - unreadW + (unreadW - textW) / 2, y: 44, width: textW, height: 21)
+            counterViewBg.frame = CGRect(x: contentView.width - leftPadding - unreadW, y: 44, width: unreadW, height: 21)
+            
+            
             
             presentView(counterView)
             presentView(counterViewBg)
@@ -518,6 +638,13 @@ final class AADialogCell: AATableViewCell, AABindedCell {
             
             dismissView(counterView)
             dismissView(counterViewBg)
+        }
+        
+        //
+        // Online
+        //
+        if !self.onlineViewBg.isHidden {
+            presentView(self.onlineViewBg)
         }
     }
     
@@ -539,14 +666,17 @@ private class AADialogCellConfig {
     let item: ACDialog
     let titleWidth: CGFloat
     let isStatusVisible: Bool
+    let isOnlineVisible: Bool
     let contentWidth: CGFloat
     let typingText:String
     
-    init(item: ACDialog, isStatusVisible: Bool, titleWidth: CGFloat, contentWidth: CGFloat, typingText:String) {
+    
+    init(item: ACDialog, isStatusVisible: Bool, isOnlineVisible: Bool, titleWidth: CGFloat, contentWidth: CGFloat, typingText:String) {
         self.item = item
         self.titleWidth = titleWidth
         self.contentWidth = contentWidth
         self.isStatusVisible = isStatusVisible
+        self.isOnlineVisible = isOnlineVisible
         self.typingText = typingText
     }
 }
@@ -567,6 +697,7 @@ private class AADialogCellLayout {
     let typingLayout: YYTextLayout
     let messageWidth: CGFloat
     let dateLayout: YYTextLayout
+//    let onlineLayout: YYTextLayout
     
     init(
         titleLayout: YYTextLayout,
@@ -575,14 +706,14 @@ private class AADialogCellLayout {
         messageWidth: CGFloat,
         counterLayout: YYTextLayout?,
         dateLayout: YYTextLayout) {
-            self.titleLayout = titleLayout
-            self.counterLayout = counterLayout
-            self.messageLayout = messageLayout
-            self.typingLayout = typingLayout
-            self.messageWidth = messageWidth
-            self.dateLayout = dateLayout
+        self.titleLayout = titleLayout
+        self.counterLayout = counterLayout
+        self.messageLayout = messageLayout
+        self.typingLayout = typingLayout
+        self.messageWidth = messageWidth
+        self.dateLayout = dateLayout
+//        self.onlineLayout = onlineLayout
     }
 }
-
 
 

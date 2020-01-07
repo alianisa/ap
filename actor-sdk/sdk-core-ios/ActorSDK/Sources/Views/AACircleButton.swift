@@ -8,7 +8,7 @@ open class AACircleButton: UIView {
     
     fileprivate let buttonSize: CGFloat
     
-    open let button = UIButton()
+    public let button = UIButton()
     fileprivate let titleView = UILabel()
     fileprivate let borderView = UIImageView()
     
@@ -78,10 +78,10 @@ open class AACircleButton: UIView {
         titleView.textColor = mainColor
         if (filled) {
             borderView.image = Imaging.roundedImage(mainColor, radius: buttonSize / 2)
-            button.setImage(image?.tintImage(selectedColor), for: UIControlState())
+            button.setImage(image?.tintImage(selectedColor), for: UIControl.State())
         } else {
             borderView.image = Imaging.circleImage(mainColor, radius: buttonSize / 2)
-            button.setImage(image?.tintImage(mainColor), for: UIControlState())
+            button.setImage(image?.tintImage(mainColor), for: UIControl.State())
         }
     }
     

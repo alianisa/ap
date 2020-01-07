@@ -16,7 +16,7 @@
 #import "NYTPhotosOverlayView.h"
 #import "NYTPhotoCaptionView.h"
 #import "NSBundle+NYTPhotoViewer.h"
-#import <ActorSDK/ActorSDK-Swift.h>
+#import <AloSDK/AloSDK-Swift.h>
 
 #ifdef ANIMATED_GIF_SUPPORT
 #import <FLAnimatedImage/FLAnimatedImage.h>
@@ -167,23 +167,23 @@ static const UIEdgeInsets NYTPhotosViewControllerCloseButtonImageInsets = {3, 0,
 }
 
 - (void)commonInitWithPhotos:(NSArray *)photos initialPhoto:(id <NYTPhoto>)initialPhoto {
-    _dataSource = [[NYTPhotosDataSource alloc] initWithPhotos:photos];
-    _panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(didPanWithGestureRecognizer:)];
-    _singleTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didSingleTapWithGestureRecognizer:)];
-
-    _transitionController = [[NYTPhotoTransitionController alloc] init];
-    self.modalPresentationStyle = UIModalPresentationCustom;
-    self.transitioningDelegate = _transitionController;
-    self.modalPresentationCapturesStatusBarAppearance = YES;
-
-    _overlayView = [[NYTPhotosOverlayView alloc] initWithFrame:CGRectZero];
-    _overlayView.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage bundled:@"NYTPhotoViewerCloseButtonX.png"] landscapeImagePhone:[UIImage bundled:@"NYTPhotoViewerCloseButtonXLandscape.png"] style:UIBarButtonItemStylePlain target:self action:@selector(doneButtonTapped:)];
-    _overlayView.leftBarButtonItem.imageInsets = NYTPhotosViewControllerCloseButtonImageInsets;
-    _overlayView.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(actionButtonTapped:)];
-
-    _notificationCenter = [[NSNotificationCenter alloc] init];
-
-    [self setupPageViewControllerWithInitialPhoto:initialPhoto];
+//    _dataSource = [[NYTPhotosDataSource alloc] initWithPhotos:photos];
+//    _panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(didPanWithGestureRecognizer:)];
+//    _singleTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didSingleTapWithGestureRecognizer:)];
+//
+//    _transitionController = [[NYTPhotoTransitionController alloc] init];
+//    self.modalPresentationStyle = UIModalPresentationCustom;
+//    self.transitioningDelegate = _transitionController;
+//    self.modalPresentationCapturesStatusBarAppearance = YES;
+//
+//    _overlayView = [[NYTPhotosOverlayView alloc] initWithFrame:CGRectZero];
+//    _overlayView.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage bundled:@"NYTPhotoViewerCloseButtonX.png"] landscapeImagePhone:[UIImage bundled:@"NYTPhotoViewerCloseButtonXLandscape.png"] style:UIBarButtonItemStylePlain target:self action:@selector(doneButtonTapped:)];
+//    _overlayView.leftBarButtonItem.imageInsets = NYTPhotosViewControllerCloseButtonImageInsets;
+//    _overlayView.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(actionButtonTapped:)];
+//
+//    _notificationCenter = [[NSNotificationCenter alloc] init];
+//
+//    [self setupPageViewControllerWithInitialPhoto:initialPhoto];
 }
 
 - (void)setupPageViewControllerWithInitialPhoto:(id <NYTPhoto>)initialPhoto {
@@ -331,7 +331,8 @@ static const UIEdgeInsets NYTPhotosViewControllerCloseButtonImageInsets = {3, 0,
 #pragma mark - Gesture Recognizers
 
 - (void)didSingleTapWithGestureRecognizer:(UITapGestureRecognizer *)tapGestureRecognizer {
-    [self setOverlayViewHidden:!self.overlayView.hidden animated:YES];
+//    [self setOverlayViewHidden:!self.overlayView.hidden animated:YES];
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)didPanWithGestureRecognizer:(UIPanGestureRecognizer *)panGestureRecognizer {

@@ -17,7 +17,7 @@ open class AATableViewCell: UITableViewCell {
         }
     }
     
-    public override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    public override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         bottomSeparator.backgroundColor = AATableViewCell.separatorColor
@@ -54,7 +54,7 @@ open class AATableViewCell: UITableViewCell {
             
             if topSeparatorVisible {
                 contentView.addSubview(topSeparator)
-                contentView.bringSubview(toFront: topSeparator)
+                contentView.bringSubviewToFront(topSeparator)
             } else {
                 topSeparator.removeFromSuperview()
             }
@@ -85,12 +85,12 @@ open class AATableViewCell: UITableViewCell {
         
         if topSeparatorVisible {
             topSeparator.frame = CGRect(x: topSeparatorLeftInset, y: 0, width: bounds.width - topSeparatorLeftInset, height: 0.5)
-            contentView.bringSubview(toFront: topSeparator)
+            contentView.bringSubviewToFront(topSeparator)
         }
         
         if bottomSeparatorVisible {
             bottomSeparator.frame = CGRect(x: bottomSeparatorLeftInset, y: contentView.bounds.height - 0.5, width: bounds.width - bottomSeparatorLeftInset, height: 0.5)
-            contentView.bringSubview(toFront: bottomSeparator)
+            contentView.bringSubviewToFront(bottomSeparator)
         }
     }
     

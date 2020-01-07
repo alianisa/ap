@@ -1,20 +1,22 @@
-platform :ios, '8.0'
+platform :ios, '9.0'
 use_frameworks!
 
-workspace 'ActorSDK'
-project 'ActorSDK.xcodeproj'
-project 'ActorApp.xcodeproj'
+workspace 'AloSDK'
+project 'AloSDK.xcodeproj'
+project 'Messenger.xcodeproj'
 
 inhibit_all_warnings!
 
-target 'ActorApp' do
-    project 'ActorApp.xcodeproj'
+target 'Messenger' do
+    project 'Messenger.xcodeproj'
 
     # Core Tools
     pod 'RegexKitLite'
     # pod 'CocoaAsyncSocket'
     pod 'zipzap'
-    pod 'ReachabilitySwift', '~> 4'
+    pod 'ReachabilitySwift', '= 4.3.0'
+#    pod 'AFNetworking'
+
 
     # Main UI
     pod 'TTTAttributedLabel'
@@ -25,32 +27,44 @@ target 'ActorApp' do
     pod 'YYWebImage'
     pod 'YYCategories'
     pod 'DZNWebViewController'
+    #pod 'AGEmojiKeyboard'
+    pod 'SDWebImage', '~> 4.2.2'
 
     # Small UI
     pod 'VBFPopFlatButton'
     pod 'SZTextView'
-        
+
     # Progress
     pod 'M13ProgressSuite'
     pod 'MBProgressHUD'
-    
+
     # Calls
-    pod 'libjingle_peerconnection'
+#    pod 'libjingle_peerconnection'
+#    pod 'WebRTC'
+pod 'GoogleWebRTC'
+
+#pod 'paper-onboarding'
+#pod 'TWMessageBarManager'
+pod 'ISEmojiView'
 end
 
-target 'ActorSDK' do
-    project 'ActorSDK.xcodeproj'
+target 'AloSDK' do
+    project 'AloSDK.xcodeproj'
 
     # J2Objc Runtime
     #pod 'J2ObjC-Framework'
-    
- 
-    pod 'J2ObjC-Framework', :podspec => 'https://raw.githubusercontent.com/dfsilva/J2ObjC-Framework/v2.0.5/J2ObjC-Framework.podspec'
+
+#    pod 'J2ObjC-Framework', :podspec => 'https://raw.githubusercontent.com/dfsilva/J2ObjC-Framework/v1.2a/J2ObjC-Framework.podspec'
+    pod 'J2ObjC-Framework', :podspec => 'https://raw.githubusercontent.com/aloim/J2ObjC-Framework/master/J2ObjC-Framework.podspec'
+#    pod 'J2ObjC-Framework', :podspec => 'https://raw.githubusercontent.com/dfsilva/J2ObjC-Framework/v2.0.5/J2ObjC-Framework.podspec'
+
     # Core Tools
     pod 'RegexKitLite'
     # pod 'CocoaAsyncSocket'
     pod 'zipzap'
-    pod 'ReachabilitySwift', '~> 4'
+    pod 'ReachabilitySwift', '= 4.3.0'
+    pod 'Alamofire'
+
 
     # Main UI
     pod 'TTTAttributedLabel'
@@ -61,15 +75,44 @@ target 'ActorSDK' do
     pod 'YYWebImage'
     pod 'YYCategories'
     pod 'DZNWebViewController'
+    #pod 'AGEmojiKeyboard'
+    pod 'SDWebImage', '~> 4.2.2'
 
     # Small UI
     pod 'VBFPopFlatButton'
     pod 'SZTextView'
-        
+
     # Progress
     pod 'M13ProgressSuite'
     pod 'MBProgressHUD'
-    
+
     # Calls
-    pod 'libjingle_peerconnection'
+#    pod 'libjingle_peerconnection'
+#    pod 'WebRTC'
+#pod 'WebRTC', '58.17.16937'
+#pod 'WebRTC', '63.11.20455'
+#    pod 'webrtc-framework'
+#    pod 'DialogWebRTC', :git => 'https://bitbucket.transmit.im/scm/dlg/dialog-webrtc-ios-pod.git'
+pod 'GoogleWebRTC'
+#pod 'GoogleWebRTC', '1.1.22700'
+
+
+    # ActionSheet
+#    pod "RevealMenuController"
+
+    # Photo Editor
+#    pod 'iOSPhotoEditor'
+
+#    pod 'paper-onboarding'
+
+    pod 'PromiseKit'
+
+pod 'YPImagePicker', '= 3.5.3'
+pod 'Gallery', '=2.2.0'
+pod 'Lightbox'
+pod 'Hue'
+#pod 'TWMessageBarManager'
+pod 'ISEmojiView'
+pod 'NVActivityIndicatorView', :git => 'https://github.com/ninjaprox/NVActivityIndicatorView.git', :branch => '4.6.1'
+
 end

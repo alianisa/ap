@@ -37,7 +37,7 @@ open class AAWebActionController: AAViewController, UIWebViewDelegate {
         webView.frame = view.bounds
     }
     
-    open func webView(_ webView: UIWebView, shouldStartLoadWith request: URLRequest, navigationType: UIWebViewNavigationType) -> Bool {
+    open func webView(_ webView: UIWebView, shouldStartLoadWith request: URLRequest, navigationType: UIWebView.NavigationType) -> Bool {
         if let url = request.url {
             let rawUrl = url.absoluteString
             

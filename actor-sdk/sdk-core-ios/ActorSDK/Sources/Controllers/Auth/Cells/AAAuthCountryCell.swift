@@ -20,11 +20,11 @@ open class AAAuthCountryCell: UITableViewCell {
     // MARK: -
     // MARK: Constructors
     
-    public override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    public override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         titleLabel = UILabel()
-        titleLabel.autoresizingMask = UIViewAutoresizing.flexibleWidth
+        titleLabel.autoresizingMask = UIView.AutoresizingMask.flexibleWidth
         titleLabel.font = UIFont.systemFont(ofSize: 17.0)
         titleLabel.textColor = UIColor.black
         titleLabel.backgroundColor = UIColor.white
@@ -34,8 +34,8 @@ open class AAAuthCountryCell: UITableViewCell {
         codeLabel.font = UIFont.boldSystemFont(ofSize: 17)
         codeLabel.backgroundColor = UIColor.white
         codeLabel.textColor = UIColor.black
-        codeLabel.autoresizingMask = UIViewAutoresizing.flexibleLeftMargin
-        codeLabel.contentMode = UIViewContentMode.right
+        codeLabel.autoresizingMask = UIView.AutoresizingMask.flexibleLeftMargin
+        codeLabel.contentMode = UIView.ContentMode.right
         codeLabel.textAlignment = NSTextAlignment.right
         contentView.addSubview(codeLabel)
     }

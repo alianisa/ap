@@ -43,12 +43,12 @@ open class AAExecutions {
     }
     
     open class func executePromise(_ promice: ARPromise){
-        promice.startUserAction()
+        _ = promice.startUserAction()
     }
     
     open class func executePromise(_ promice: ARPromise, successBlock: ((_ val: Any?) -> Void)?, failureBlock: ((_ val: Any?) -> Void)? ){
-        promice.startUserAction()
-        promice.then { result in
+        _ = promice.startUserAction()
+        _ = promice.then { result in
             successBlock!(result)
         }
     }
@@ -140,13 +140,15 @@ open class AAExecutions {
         }
     }
 
-    class func showProgress() -> MBProgressHUD {
+    class fileprivate func showProgress() -> MBProgressHUD {
         let window = UIApplication.shared.windows[0]
         let hud = MBProgressHUD(view: window)
         hud.mode = MBProgressHUDMode.indeterminate
         hud.removeFromSuperViewOnHide = true
+//        hud.backgroundView.style = MBProgressHUDBackgroundStyle.blur
+
         window.addSubview(hud)
-        window.bringSubview(toFront: hud)
+        window.bringSubviewToFront(hud)
         hud.show(animated: true)
         return hud
     }

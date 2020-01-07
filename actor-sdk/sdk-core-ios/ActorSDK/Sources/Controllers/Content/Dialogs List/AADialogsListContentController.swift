@@ -31,19 +31,20 @@ open class AADialogsListContentController: AAContentTableController, UISearchBar
         
         if enableSearch {
             search(AADialogSearchCell.self) { (s) -> () in
+            
                 s.searchModel = Actor.buildGlobalSearchModel()
+            
                 s.selectAction = { (itm) -> () in
                     self.delegate?.searchDidTap(self, entity: itm)
                 }
             }
         }
-       
         
-        section { (s) -> () in
+        _ = section { (s) -> () in
             
             s.autoSeparatorsInset = 75
             
-            s.binded { (r:AABindedRows<AADialogCell>) -> () in
+            _ = s.binded { (r:AABindedRows<AADialogCell>) -> () in
                 
                 r.differental = true
                 
@@ -53,6 +54,7 @@ open class AADialogsListContentController: AAContentTableController, UISearchBar
                 if r.displayList.getProcessor() == nil {
                    r.displayList.setListProcessor(AADialogListProcessor())
                 }
+
                 
                 r.selectAction = { (dialog: ACDialog) -> Bool in
                     if let d = self.delegate {
@@ -85,20 +87,20 @@ open class AADialogsListContentController: AAContentTableController, UISearchBar
                                 if isChannel {
                                     a.destructive(AALocalized("ActionLeaveChannel"), closure: {
                                         self.confirmAlertUserDanger("ActionLeaveChannelMessage", action: "ActionLeaveChannelAction", tapYes: {
-                                            self.executePromise(Actor.leaveAndDeleteGroup(withGid: dialog.peer.peerId))
+                                            _ = self.executePromise(Actor.leaveAndDeleteGroup(withGid: dialog.peer.peerId))
                                         })
                                     })
                                 } else {
                                     a.destructive(AALocalized("ActionDeleteAndExit"), closure: {
                                         self.confirmAlertUserDanger("ActionDeleteAndExitMessage", action: "ActionDeleteAndExitAction", tapYes: {
-                                            self.executePromise(Actor.leaveAndDeleteGroup(withGid: dialog.peer.peerId))
+                                            _ = self.executePromise(Actor.leaveAndDeleteGroup(withGid: dialog.peer.peerId))
                                         })
                                     })
                                 }
                             } else if g.isCanDelete.get().booleanValue()  && g.isMember.get().booleanValue(){
                                 a.destructive(AALocalized(isChannel ? "ActionDeleteChannel" : "ActionDeleteGroup"), closure: {
                                     self.confirmAlertUserDanger(isChannel ? "ActionDeleteChannelMessage" : "ActionDeleteGroupMessage", action: "ActionDelete", tapYes: {
-                                        self.executePromise(Actor.deleteGroup(withGid: g.groupId))
+                                        _ = self.executePromise(Actor.deleteGroup(withGid: g.groupId))
                                     })
                                 })
                             } else {
@@ -123,6 +125,7 @@ open class AADialogsListContentController: AAContentTableController, UISearchBar
                                 self.executeSafe(Actor.deleteChatCommand(with: dialog.peer))
                             })
                             a.title = AALocalized("ActionDeleteChatTitle")
+                            a.message = AALocalized("ActionClearHistoryMessage")
                             a.cancel = AALocalized("ActionCancel")
                         })
                     }
@@ -130,7 +133,7 @@ open class AADialogsListContentController: AAContentTableController, UISearchBar
             }
         }
         
-     
+        
         
         placeholder.setImage(
             UIImage.bundled("chat_list_placeholder"),
@@ -143,7 +146,7 @@ open class AADialogsListContentController: AAContentTableController, UISearchBar
         super.viewWillAppear(animated)
         
         // Binding empty dialogs placeholder
-        
+//        let user = Actor.getUserWithUid((item?.peer.peerId)!)
         binder.bind(Actor.getAppState().isDialogsEmpty, closure: { (value: Any?) -> () in
             if let empty = value as? JavaLangBoolean {
                 if Bool(empty.booleanValue()) == true {
@@ -154,6 +157,16 @@ open class AADialogsListContentController: AAContentTableController, UISearchBar
                     self.navigationItem.leftBarButtonItem = self.editButtonItem
                 }
             }
+//            let state = presence!.state.ordinal()
+//            print("online state = \(state)")
+//            let state2 = ACUserPresence_State.online().ordinal()
+//            print("online state2 = \(state2)")
+//            if (state == ACUserPresence_State.online().ordinal()) {
+////                self.onlineViewBg.isHidden = false
+////                self.onlineViewBg.image = self.chatIconDialogRead
+//            } else {
+////                self.onlineViewBg.isHidden = true
+//            }
         })
     }
 }

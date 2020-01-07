@@ -9,10 +9,10 @@ open class AAAvatarCell: AATableViewCell {
     open var titleLabel = UILabel()
     open var subtitleLabel = UILabel()
     open var avatarView = AAAvatarView()
-    open var progress = UIActivityIndicatorView(activityIndicatorStyle: .white)
+    open var progress = UIActivityIndicatorView(style: .white)
     open var didTap: ((_ view: UIView)->())?
     
-    public override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    public override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         avatarView = AAAvatarView()
@@ -22,12 +22,12 @@ open class AAAvatarCell: AATableViewCell {
         
         titleLabel.backgroundColor = UIColor.clear
         titleLabel.textColor = ActorSDK.sharedActor().style.cellTextColor
-        titleLabel.font = UIFont.systemFont(ofSize: 20.0)
+        titleLabel.font = UIFont.systemFont(ofSize: 14, weight: .medium)
         contentView.addSubview(titleLabel)
         
         subtitleLabel.backgroundColor = UIColor.clear
         subtitleLabel.textColor = ActorSDK.sharedActor().style.cellHintColor
-        subtitleLabel.font = UIFont.systemFont(ofSize: 14.0)
+        subtitleLabel.font = UIFont.systemFont(ofSize: 14, weight: .medium)
         contentView.addSubview(subtitleLabel)
         
         contentView.addSubview(progress)
@@ -48,7 +48,7 @@ open class AAAvatarCell: AATableViewCell {
         
         avatarView.frame = CGRect(x: 14, y: 14, width: 66, height: 66)
         progress.frame = avatarView.frame
-
+        
         if subtitleLabel.isHidden {
             titleLabel.frame = CGRect(x: 82 + 6, y: 14 + 64/2 - 14, width: self.contentView.bounds.width - 82 - 14 - 10, height: 24)
         } else {

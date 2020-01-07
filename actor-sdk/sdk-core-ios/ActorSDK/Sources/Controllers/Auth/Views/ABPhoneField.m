@@ -4,8 +4,8 @@
 
 #import <CoreTelephony/CTTelephonyNetworkInfo.h>
 #import <CoreTelephony/CTCarrier.h>
-#import <ActorSDK/RMPhoneFormat.h>
-#import <ActorSDK/ABPhoneField.h>
+#import <AloSDK/RMPhoneFormat.h>
+#import <AloSDK/ABPhoneField.h>
 
 @interface ABPhoneField () <UITextFieldDelegate>
 
@@ -92,7 +92,7 @@
 {
     static NSArray *lines = nil;
     if (lines == nil) {
-        lines = [[NSString stringWithContentsOfFile:[[NSBundle bundleWithIdentifier:@"im.actor.ActorSDK"] pathForResource:@"ABPhoneFieldCodes" ofType:@"txt"] encoding:NSUTF8StringEncoding error: nil] componentsSeparatedByString:@"\n"];
+        lines = [[NSString stringWithContentsOfFile:[[NSBundle bundleWithIdentifier:@"im.alo.AloSDK"] pathForResource:@"ABPhoneFieldCodes" ofType:@"txt"] encoding:NSUTF8StringEncoding error: nil] componentsSeparatedByString:@"\n"];
     }
     return lines;
 }

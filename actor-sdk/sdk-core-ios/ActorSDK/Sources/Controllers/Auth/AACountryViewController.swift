@@ -16,11 +16,11 @@ open class AACountryViewController: AATableViewController {
     open var delegate: AACountryViewControllerDelegate?
     
     public init() {
-        super.init(style: UITableViewStyle.plain)
+        super.init(style: UITableView.Style.plain)
         
         self.title = AALocalized("AuthCountryTitle")
         
-        let cancelButtonItem = UIBarButtonItem(title: AALocalized("NavigationCancel"), style: UIBarButtonItemStyle.plain, target: self, action: #selector(AAViewController.dismissController))
+        let cancelButtonItem = UIBarButtonItem(title: AALocalized("NavigationCancel"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(AAViewController.dismissController))
         self.navigationItem.setLeftBarButton(cancelButtonItem, animated: false)
         
         self.content = ACAllEvents_Auth.auth_PICK_COUNTRY()
@@ -45,7 +45,7 @@ open class AACountryViewController: AATableViewController {
                 let phoneCode = ABPhoneField.callingCodeByCountryCode()[iso as! String] as! String
                 //            if (self.searchBar.text.length == 0 || [countryName rangeOfString:self.searchBar.text options:NSCaseInsensitiveSearch].location != NSNotFound)
                 
-                let countryLetter = countryName.substring(to: countryName.characters.index(countryName.startIndex, offsetBy: 1))
+                let countryLetter = countryName.substring(to: countryName.index(countryName.startIndex, offsetBy: 1))
                 if (countries[countryLetter] == nil) {
                     countries[countryLetter] = NSMutableArray()
                 }

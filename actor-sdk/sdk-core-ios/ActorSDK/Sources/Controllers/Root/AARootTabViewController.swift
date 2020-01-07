@@ -45,10 +45,22 @@ open class AARootTabViewController : UITabBarController, MFMessageComposeViewCon
         fatalError("Not implemented")
     }
     
+//    open var image = UIImage(named: "nav_bg")!
+    
     open override func viewDidLoad() {
         super.viewDidLoad()
         
-        tabBar.barTintColor = ActorSDK.sharedActor().style.tabBgColor
+//        tabBar.barTintColor = ActorSDK.sharedActor().style.tabBgColor
+//        tabBar.backgroundImage = UIImage(named: "tabBar_bg")
+//        tabBar.tintColor = UIColor.white
+        
+        tabBar.shadowImage = UIImage()
+        tabBar.backgroundImage = UIImage()
+        tabBar.backgroundColor = UIColor.white
+        
+        UITabBar.appearance().shadowImage = UIImage()
+        UITabBar.appearance().backgroundImage = UIImage()
+        UITabBar.appearance().backgroundColor = UIColor.white
         
         appEmptyContainer.isHidden = true
         appIsEmptyPlaceholder.isHidden = true

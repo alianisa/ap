@@ -11,7 +11,7 @@ if not os.path.exists('External'):
 allFiles = set()
 
 for root, directories, filenames in os.walk('Sources/'):
-    
+
     count = len(root.split("/")) - 1
     prefix = ""
     if count > 1:
@@ -33,24 +33,24 @@ for root, directories, filenames in os.walk('Sources/'):
         # Converted File path like Sources2/actor/core/Messenger.h
         destFile = os.path.join('Public', path)
         externalFile = os.path.join('External', path)
-        
+
         allFiles.add(path)
-        
+
         # Auto Create directory
         if not os.path.exists(os.path.dirname(destFile)):
             os.makedirs(os.path.dirname(destFile))
-                
+
         if not os.path.exists(os.path.dirname(externalFile)):
             os.makedirs(os.path.dirname(externalFile))
-        
+
         with codecs.open(srcFile, 'r', encoding='utf-8') as f:
-            
+
             allLines = f.read()
             destLines = ""
-            
+
             with codecs.open(externalFile, 'w', encoding='utf-8') as d:
                 d.write(allLines)
-            
+
             for line in allLines.splitlines():
                 if (line.startswith("#include") or line.startswith("#import")) and '\"' in line:
                     start = line.index('\"')
@@ -62,7 +62,7 @@ for root, directories, filenames in os.walk('Sources/'):
                             line = line[0:start] + "\"" + prefix + includedFile + "\"" + line[end+1:]
                         else:
                             line = "@import j2objc;"
-        
+
                 destLines = destLines + line + "\n"
 
             isUpdated = True
@@ -85,12 +85,11 @@ umbrellaContent = ""
 for line in allFiles:
     umbrellaContent += "#import \"" + line + "\"\n"
 
-if os.path.exists('Public/ActorCoreUmbrella.h'):
-    with codecs.open('Public/ActorCoreUmbrella.h', 'r', encoding='utf-8') as d:
+if os.path.exists('Public/AloCoreUmbrella.h'):
+    with codecs.open('Public/AloCoreUmbrella.h', 'r', encoding='utf-8') as d:
         if d.read() == umbrellaContent:
             isUmbrellaChanged = False
 
 if isUmbrellaChanged:
-    with codecs.open('Public/ActorCoreUmbrella.h', 'w', encoding='utf-8') as d:
+    with codecs.open('Public/AloCoreUmbrella.h', 'w', encoding='utf-8') as d:
         d.write(umbrellaContent)
-

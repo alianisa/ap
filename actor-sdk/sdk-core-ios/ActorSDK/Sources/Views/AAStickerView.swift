@@ -62,7 +62,7 @@ open class AAStickerView: UIView, YYAsyncLayerDelegate, ACFileEventCallback {
                     if isCancelled() {
                         return
                     }
-                    image?.draw(in: CGRect(x: 0, y: 0, width: size.width, height: size.height), with: UIViewContentMode.scaleAspectFit, clipsToBounds: true)
+                    image?.draw(in: CGRect(x: 0, y: 0, width: size.width, height: size.height), with: UIView.ContentMode.scaleAspectFit, clipsToBounds: true)
                 } else {
                     // Request if not available
                     Actor.startDownloading(with: _file!)

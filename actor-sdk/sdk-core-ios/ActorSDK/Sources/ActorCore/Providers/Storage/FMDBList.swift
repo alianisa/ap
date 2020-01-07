@@ -11,7 +11,7 @@ import Foundation
     
     let databasePath: String;
     let tableName: String;
-
+    
     let queryCreate: String;
     let queryCreateIndex: String;
     let queryCreateFilter: String;
@@ -20,7 +20,7 @@ import Foundation
     let queryEmpty: String
     let queryAdd: String;
     let queryItem: String;
-
+    
     let queryDelete: String;
     let queryDeleteAll: String;
     
@@ -47,7 +47,7 @@ import Foundation
             "\"SORT_KEY\" INTEGER NOT NULL," + // 1: sortKey
             "\"QUERY\" TEXT," + // 2: query
             "\"BYTES\" BLOB NOT NULL," + // 3: bytes
-            "PRIMARY KEY(\"ID\"));";
+        "PRIMARY KEY(\"ID\"));";
         self.queryCreateIndex = "CREATE INDEX IF NOT EXISTS IDX_ID_SORT ON " + tableName + " (\"SORT_KEY\");"
         self.queryCreateFilter = "CREATE INDEX IF NOT EXISTS IDX_ID_QUERY_SORT ON " + tableName + " (\"QUERY\", \"SORT_KEY\");"
         
@@ -55,7 +55,7 @@ import Foundation
         self.queryEmpty = "EXISTS (SELECT * FROM " + tableName + ");"
         self.queryAdd = "REPLACE INTO " + tableName + " (\"ID\",\"QUERY\",\"SORT_KEY\",\"BYTES\") VALUES (?,?,?,?)";
         self.queryItem = "SELECT \"ID\",\"QUERY\",\"SORT_KEY\",\"BYTES\" FROM " + tableName + " WHERE \"ID\" = ?;";
-
+        
         self.queryDeleteAll = "DELETE FROM " + tableName + ";";
         self.queryDelete = "DELETE FROM " + tableName + " WHERE \"ID\"= ?;";
         
@@ -70,7 +70,7 @@ import Foundation
         
         self.queryForwardFilterFirst = "SELECT \"ID\", \"QUERY\",\"SORT_KEY\", \"BYTES\" FROM " + tableName + " WHERE \"QUERY\" LIKE ? OR \"QUERY\" LIKE ? ORDER BY SORT_KEY DESC LIMIT ?";
         self.queryForwardFilterMore = "SELECT \"ID\", \"QUERY\",\"SORT_KEY\", \"BYTES\" FROM " + tableName + " WHERE (\"QUERY\" LIKE ? OR \"QUERY\" LIKE ?) AND \"SORT_KEY\" < ? ORDER BY SORT_KEY DESC LIMIT ?";
-
+        
         self.queryBackwardFilterFirst = "SELECT \"ID\", \"QUERY\",\"SORT_KEY\", \"BYTES\" FROM " + tableName + " WHERE \"QUERY\" LIKE ? OR \"QUERY\" LIKE ? ORDER BY SORT_KEY ASC LIMIT ?";
         self.queryBackwardFilterMore = "SELECT \"ID\", \"QUERY\",\"SORT_KEY\", \"BYTES\" FROM " + tableName + " WHERE (\"QUERY\" LIKE ? OR \"QUERY\" LIKE ?) AND \"SORT_KEY\" > ? ORDER BY SORT_KEY ASC LIMIT ?";
     }
@@ -84,9 +84,9 @@ import Foundation
         self.db = FMDatabase(path: databasePath)
         self.db!.open()
         if (!db!.tableExists(tableName)) {
-            db!.executeUpdate(queryCreate)
-            db!.executeUpdate(queryCreateIndex)
-            db!.executeUpdate(queryCreateFilter)
+            _ = db!.executeUpdate(queryCreate)
+            _ = db!.executeUpdate(queryCreateIndex)
+            _ = db!.executeUpdate(queryCreateFilter)
         }
     }
     
@@ -97,7 +97,7 @@ import Foundation
         
         // db!.beginTransaction()
         db!.executeUpdate(queryAdd, withArgumentsIn: [valueContainer.getKey().toNSNumber(), valueContainer.dbQuery(), valueContainer.getOrder().toNSNumber(),
-            valueContainer.getData().toNSData()])
+                                                      valueContainer.getData().toNSData()])
         // db!.commit()
         
         log("updateOrAddWithValue \(tableName): \(valueContainer.getData().length()) in \(Int((Date().timeIntervalSince(start)*1000)))")
@@ -109,8 +109,8 @@ import Foundation
         db!.beginTransaction()
         for i in 0..<items.size() {
             let record = items.getWith(i) as! ARListEngineRecord;
-            db!.executeUpdate(queryAdd, record.getKey().toNSNumber(), record.dbQuery(), record.getOrder().toNSNumber(),
-                record.getData().toNSData() as AnyObject)
+            _ = db!.executeUpdate(queryAdd, record.getKey().toNSNumber(), record.dbQuery(), record.getOrder().toNSNumber(),
+                              record.getData().toNSData() as AnyObject)
         }
         db!.commit()
     }
@@ -119,17 +119,17 @@ import Foundation
         checkTable();
         
         db!.beginTransaction()
-        db!.executeUpdate(queryDelete, key.toNSNumber());
+        _ = db!.executeUpdate(queryDelete, key.toNSNumber());
         db!.commit()
     }
-
+    
     func delete(withKeys keys: IOSLongArray!) {
         checkTable();
         
         db!.beginTransaction()
         for i in 0..<keys.length() {
             let k = keys.long(at: UInt(i));
-            db!.executeUpdate(queryDelete, k.toNSNumber());
+            _ = db!.executeUpdate(queryDelete, k.toNSNumber());
         }
         db!.commit()
     }
@@ -173,9 +173,9 @@ import Foundation
     func clear() {
         checkTable();
         
-        db!.beginTransaction()
-        db!.executeUpdate(queryDeleteAll);
-        db!.commit()
+        _ = db!.beginTransaction()
+        _ = db!.executeUpdate(queryDeleteAll);
+        _ = db!.commit()
     }
     
     func loadItem(withKey key: jlong) -> ARListEngineRecord! {
@@ -186,11 +186,11 @@ import Foundation
             return nil
         }
         if (result!.next()) {
-            var query: AnyObject! = result!.object(forColumnName: "QUERY") as AnyObject!;
+            var query: AnyObject! = result!.object(forColumnName: "QUERY") as AnyObject?;
             if (query is NSNull){
                 query = nil
             }
-            let res = ARListEngineRecord(key: jlong(result!.longLongInt(forColumn: "ID")), withOrder: jlong(result!.longLongInt(forColumn: "SORT_KEY")), withQuery: query as! String?, withData: result!.data(forColumn: "BYTES").toJavaBytes())
+            let res = ARListEngineRecord(key: jlong(result!.longLongInt(forColumn: "ID")), withOrder: jlong(result!.longLongInt(forColumn: "SORT_KEY")), withQuery: query as! String?, withData: (result!.data(forColumn: "BYTES")?.toJavaBytes())!)
             result?.close()
             return res;
         } else {
@@ -231,15 +231,15 @@ import Foundation
         while(result!.next()) {
             let key = jlong(result!.longLongInt(forColumnIndex: idIndex))
             let order = jlong(result!.longLongInt(forColumnIndex: sortKeyIndex))
-            var query: AnyObject! = result!.object(forColumnIndex: queryIndex) as AnyObject!
+            var query: AnyObject! = result!.object(forColumnIndex: queryIndex) as AnyObject?
             if (query is NSNull) {
                 query = nil
             }
-            let data = result!.data(forColumnIndex: bytesIndex).toJavaBytes()
-            dataSize += Int(data.length())
+            let data = result!.data(forColumnIndex: bytesIndex)?.toJavaBytes()
+            dataSize += Int(data!.length())
             rowCount += 1
             
-            let record = ARListEngineRecord(key: key, withOrder: order, withQuery: query as! String?, withData: data)
+            let record = ARListEngineRecord(key: key, withOrder: order, withQuery: query as! String?, withData: data!)
             res.add(withId: record)
         }
         result!.close()
@@ -264,17 +264,17 @@ import Foundation
         let res: JavaUtilArrayList = JavaUtilArrayList();
         
         while(result!.next()) {
-            var query: AnyObject! = result!.object(forColumnName: "QUERY") as AnyObject!;
+            var query: AnyObject! = result!.object(forColumnName: "QUERY") as AnyObject?;
             if (query is NSNull) {
                 query = nil
             }
-            let record = ARListEngineRecord(key: jlong(result!.longLongInt(forColumn: "ID")), withOrder: jlong(result!.longLongInt(forColumn: "SORT_KEY")), withQuery: query as! String?, withData: result!.data(forColumn: "BYTES").toJavaBytes())
+            let record = ARListEngineRecord(key: jlong(result!.longLongInt(forColumn: "ID")), withOrder: jlong(result!.longLongInt(forColumn: "SORT_KEY")), withQuery: query as! String?, withData: (result!.data(forColumn: "BYTES")?.toJavaBytes())!)
             res.add(withId: record)
         }
         result!.close()
         
         return res;
-
+        
     }
     
     func loadBackward(withSortKey sortingKey: JavaLangLong!, withLimit limit: jint) -> JavaUtilList! {
@@ -293,11 +293,11 @@ import Foundation
         let res: JavaUtilArrayList = JavaUtilArrayList();
         
         while(result!.next()) {
-            var query: AnyObject! = result!.object(forColumnName: "QUERY") as AnyObject!;
+            var query: AnyObject! = result!.object(forColumnName: "QUERY") as AnyObject?;
             if (query is NSNull) {
                 query = nil
             }
-            let record = ARListEngineRecord(key: jlong(result!.longLongInt(forColumn: "ID")), withOrder: jlong(result!.longLongInt(forColumn: "SORT_KEY")), withQuery: query as! String?, withData: result!.data(forColumn: "BYTES").toJavaBytes())
+            let record = ARListEngineRecord(key: jlong(result!.longLongInt(forColumn: "ID")), withOrder: jlong(result!.longLongInt(forColumn: "SORT_KEY")), withQuery: query as! String?, withData: (result!.data(forColumn: "BYTES")?.toJavaBytes())!)
             res.add(withId: record)
         }
         result!.close()
@@ -321,11 +321,11 @@ import Foundation
         let res: JavaUtilArrayList = JavaUtilArrayList();
         
         while(result!.next()) {
-            var query: AnyObject! = result!.object(forColumnName: "QUERY") as AnyObject!;
+            var query: AnyObject! = result!.object(forColumnName: "QUERY") as AnyObject?;
             if (query is NSNull) {
                 query = nil
             }
-            let record = ARListEngineRecord(key: jlong(result!.longLongInt(forColumn: "ID")), withOrder: jlong(result!.longLongInt(forColumn: "SORT_KEY")), withQuery: query as! String?, withData: result!.data(forColumn: "BYTES").toJavaBytes())
+            let record = ARListEngineRecord(key: jlong(result!.longLongInt(forColumn: "ID")), withOrder: jlong(result!.longLongInt(forColumn: "SORT_KEY")), withQuery: query as! String?, withData: (result!.data(forColumn: "BYTES")?.toJavaBytes())!)
             res.add(withId: record)
         }
         result!.close()
@@ -351,14 +351,15 @@ import Foundation
         let res: JavaUtilArrayList = JavaUtilArrayList();
         
         while(result!.next()) {
-            var query: AnyObject! = result!.object(forColumnName: "QUERY") as AnyObject!;
+            var query: AnyObject! = result!.object(forColumnName: "QUERY") as AnyObject?;
             if (query is NSNull) {
                 query = nil
             }
-            let record = ARListEngineRecord(key: jlong(result!.longLongInt(forColumn: "ID")), withOrder: jlong(result!.longLongInt(forColumn: "SORT_KEY")), withQuery: query as! String?, withData: result!.data(forColumn: "BYTES").toJavaBytes())
+            let record = ARListEngineRecord(key: jlong(result!.longLongInt(forColumn: "ID")), withOrder: jlong(result!.longLongInt(forColumn: "SORT_KEY")), withQuery: query as! String?, withData: (result!.data(forColumn: "BYTES")?.toJavaBytes())!)
             res.add(withId: record)
         }
         result!.close()
         return res;
     }
 }
+

@@ -176,6 +176,24 @@
 "PrivacyTerminateHint" = "Log out all devices except for this one.";
 
 /*
+ * Quality
+ */
+
+"QualityImageHeader" = "Quality sent images";
+
+"QualityImage" = "Quality";
+
+"QualityImageHint" = "";
+
+"QualityImageNoneCompress" = "None compress";
+
+"QualityImageLarge" = "High";
+
+"QualityImageMedium" = "Medium";
+
+"QualityImageSmall" = "Small";
+
+/*
  * Wallpapers
  */
 
@@ -200,6 +218,8 @@
 "CallsSpeaker" = "speaker";
 
 "CallsVideo" = "video";
+
+"CallStateRinging" = "Dialing...";
 
 "CallStateRinging" = "Ringing...";
 
@@ -244,11 +264,11 @@
 
 "ProfileRenameAction" = "Rename";
 
-"ProfileAbout" = "about";
+"ProfileAbout" = "About";
 
-"ProfilePhone" = "phone";
+"ProfilePhone" = "Phone";
 
-"ProfileUsername" = "username";
+"ProfileUsername" = "Username";
 
 "ProfileTitle" = "Info";
 
@@ -709,7 +729,7 @@
 
 "ActionDeleteChannelTitle" = "Remove Channel";
 
-"ActionDeleteChatlTitle" = "Remove Chat";
+"ActionDeleteChatTitle" = "Remove Chat";
 
 "ActionDeleteChannel" = "Delete Channel";
 
@@ -733,8 +753,6 @@
 "ActionDeleteAndExitMessage" = "Are you sure want to exit group and delete all messages?";
 
 "ActionDeleteAndExitAction" = "Exit";
-
-"ActionDeleteAndExitNotAllowed" = "You are not allowed to leave this group";
 
 
 
@@ -766,25 +784,8 @@
 
 "ErrorUnableToCall" = "Unable to call this number";
 
-/*
- *
- */
-
 "EditingMessage" = "Editing";
 
 "MessageToOld" = "The message is to old";
 
 "IsNotLastMessage" = "Its not the last message";
-
-/*
- *
- */
-"GroupsPre" = "Predefined groups";
-"ChannelsPre" = "Predefined channels";
-
-/*
- *
- */
-"INCLUDING_YOU" = "including you";
-"MEMBERS" = "members";
-

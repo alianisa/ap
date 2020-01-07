@@ -97,10 +97,10 @@ open class AAGroupEditInfoController: AAViewController, UITextViewDelegate {
     }
     
     open func avatarDidTap() {
-        let hasCamera = UIImagePickerController.isSourceTypeAvailable(UIImagePickerControllerSourceType.camera)
+        let hasCamera = UIImagePickerController.isSourceTypeAvailable(UIImagePickerController.SourceType.camera)
         self.showActionSheet( hasCamera ? ["PhotoCamera", "PhotoLibrary"] : ["PhotoLibrary"],
                               cancelButton: "AlertCancel",
-                              destructButton: self.group.getAvatarModel().get() != nil ? "PhotoRemove" : nil,
+                              destructButton: self.group.avatar.get() != nil ? "PhotoRemove" : nil,
                               sourceView: self.view,
                               sourceRect: self.view.bounds,
                               tapClosure: { (index) -> () in

@@ -11,8 +11,8 @@ class AAAutoCompleteCell: AATableViewCell {
     var nickView = TTTAttributedLabel(frame: CGRect.zero)
     var nameView = TTTAttributedLabel(frame: CGRect.zero)
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
-        super.init(style: UITableViewCellStyle.default, reuseIdentifier: reuseIdentifier)
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: UITableViewCell.CellStyle.default, reuseIdentifier: reuseIdentifier)
         
         // avatarView.enableAnimation = false
         nickView.font = UIFont.systemFont(ofSize: 14)
@@ -47,23 +47,26 @@ class AAAutoCompleteCell: AATableViewCell {
         let nickAttrs = NSMutableAttributedString(string: nickText)
         let nameAttrs = NSMutableAttributedString(string: nameText)
         
-        nickAttrs.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 14), range: NSMakeRange(0, nickText.length))
-        nickAttrs.addAttribute(NSAttributedStringKey.foregroundColor, value: ActorSDK.sharedActor().style.cellTextColor, range: NSMakeRange(0, nickText.length))
+        nickAttrs.addAttribute(NSAttributedString.Key.font, value: UIFont.systemFont(ofSize: 14), range: NSMakeRange(0, nickText.length))
+        nickAttrs.addAttribute(NSAttributedString.Key.foregroundColor, value: ActorSDK.sharedActor().style.cellTextColor, range: NSMakeRange(0, nickText.length))
         
-        nameAttrs.addAttribute(NSAttributedStringKey.font, value: UIFont.systemFont(ofSize: 14), range: NSMakeRange(0, nameText.length))
-        nameAttrs.addAttribute(NSAttributedStringKey.foregroundColor, value: ActorSDK.sharedActor().style.cellHintColor, range: NSMakeRange(0, nameText.length))
+        nameAttrs.addAttribute(NSAttributedString.Key.font, value: UIFont.systemFont(ofSize: 14), range: NSMakeRange(0, nameText.length))
+        nameAttrs.addAttribute(NSAttributedString.Key.foregroundColor, value: ActorSDK.sharedActor().style.cellHintColor, range: NSMakeRange(0, nameText.length))
         
-        for i in 0..<user.mentionMatches.size() {
-            let match = user.mentionMatches.getWith(i) as! ACStringMatch
-            let nsRange = NSMakeRange(Int(match.getStart()), Int(match.getLength()))
-            nickAttrs.addAttribute(NSAttributedStringKey.foregroundColor, value: appStyle.chatAutocompleteHighlight, range: nsRange)
+        if user.mentionMatches != nil {
+            for i in 0..<user.mentionMatches.size() {
+                let match = user.mentionMatches.getWith(i) as! ACStringMatch
+                let nsRange = NSMakeRange(Int(match.getStart()), Int(match.getLength()))
+                nickAttrs.addAttribute(NSAttributedString.Key.foregroundColor, value: appStyle.chatAutocompleteHighlight, range: nsRange)
+            }
         }
         
-        if user.originalString != nil {
+        //        if user.originalString != nil {
+        if user.originalMatches != nil {
             for i in 0..<user.originalMatches.size() {
                 let match = user.originalMatches.getWith(i) as! ACStringMatch
                 let nsRange = NSMakeRange(Int(match.getStart()) + 3, Int(match.getLength()))
-                nameAttrs.addAttribute(NSAttributedStringKey.foregroundColor, value: appStyle.chatAutocompleteHighlight, range: nsRange)
+                nameAttrs.addAttribute(NSAttributedString.Key.foregroundColor, value: appStyle.chatAutocompleteHighlight, range: nsRange)
             }
         }
         

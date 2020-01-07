@@ -80,30 +80,30 @@ class PhoneBookProvider: NSObject, ACPhoneBookProvider {
                         index += 1
                         if let phones: ABMultiValue =
                             self.extractProperty(person as ABRecord, propertyName: kABPersonPhoneProperty) as ABMultiValue? {
-                                for i in 0...ABMultiValueGetCount(phones) {
-                                    var phoneStr = self.extractString(phones, index: i)
-                                    if (phoneStr == nil || phoneStr!.trim().isEmpty) {
-                                        continue
-                                    }
-                                    phoneStr = phoneStr!.strip(numbersSet)
-                                    let phoneVal = Int64(phoneStr!)// numberFormatter.numberFromString(phoneStr!)?.longLongValue
-                                    if (phoneVal != nil) {
-                                        contactPhones?.add(withId: ACPhoneBookPhone(long: jlong(index), withLong: jlong(phoneVal!)))
-                                        index += 1
-                                    }
+                            for i in 0...ABMultiValueGetCount(phones) {
+                                var phoneStr = self.extractString(phones, index: i)
+                                if (phoneStr == nil || phoneStr!.trim().isEmpty) {
+                                    continue
                                 }
+                                phoneStr = phoneStr!.strip(numbersSet)
+                                let phoneVal = Int64(phoneStr!)// numberFormatter.numberFromString(phoneStr!)?.longLongValue
+                                if (phoneVal != nil) {
+                                    contactPhones?.add(withId: ACPhoneBookPhone(long: jlong(index), withLong: jlong(phoneVal!)))
+                                    index += 1
+                                }
+                            }
                         }
                         
                         if let emails: ABMultiValue =
                             self.extractProperty(person as ABRecord, propertyName: kABPersonEmailProperty) as ABMultiValue? {
-                                for i in 0...ABMultiValueGetCount(emails) {
-                                    let emailStr = self.extractString(emails, index: i)
-                                    if (emailStr == nil || emailStr!.trim().isEmpty) {
-                                        continue
-                                    }
-                                    contactEmails?.add(withId: ACPhoneBookEmail(long: jlong(index), with: emailStr!))
-                                    index += 1
+                            for i in 0...ABMultiValueGetCount(emails) {
+                                let emailStr = self.extractString(emails, index: i)
+                                if (emailStr == nil || emailStr!.trim().isEmpty) {
+                                    continue
                                 }
+                                contactEmails?.add(withId: ACPhoneBookEmail(long: jlong(index), with: emailStr!))
+                                index += 1
+                            }
                         }
                         
                         if (contactPhones?.size() != 0 || contactEmails?.size() != 0) {

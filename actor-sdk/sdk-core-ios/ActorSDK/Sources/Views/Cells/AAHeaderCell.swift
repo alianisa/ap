@@ -9,17 +9,17 @@ open class AAHeaderCell: AATableViewCell {
     open var titleView = UILabel()
     open var iconView = UIImageView()
     
-    public override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    public override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         contentView.backgroundColor = appStyle.vcBackyardColor
-        selectionStyle = UITableViewCellSelectionStyle.none
+        selectionStyle = UITableViewCell.SelectionStyle.none
         
         titleView.textColor = appStyle.cellHeaderColor
         titleView.font = UIFont.systemFont(ofSize: 14)
         contentView.addSubview(titleView)
         
-        iconView.contentMode = UIViewContentMode.scaleAspectFill
+        iconView.contentMode = UIView.ContentMode.scaleAspectFill
         contentView.addSubview(iconView)
     }
     

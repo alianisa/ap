@@ -1,14 +1,14 @@
 set -e
 
-pod install
-pod update
+#pod install
+#pod update
 
-rm -fr build
+# rm -fr build
 mkdir -p build/Output
 
 xcodebuild \
-  -workspace "ActorSDK.xcworkspace" \
-  -scheme "ActorSDK" \
+  -workspace "AloSDK.xcworkspace" \
+  -scheme "AloSDK" \
   -derivedDataPath build \
   -arch armv7 -arch armv7s -arch arm64 \
   -sdk iphoneos \
@@ -21,8 +21,8 @@ xcodebuild \
   CODE_SIGNING_REQUIRED=NO
 
 xcodebuild \
-  -workspace "ActorSDK.xcworkspace" \
-  -scheme "ActorSDK" \
+  -workspace "AloSDK.xcworkspace" \
+  -scheme "AloSDK" \
   -derivedDataPath build \
   -sdk iphonesimulator \
   -destination 'platform=iOS Simulator,name=iPhone 6' \
@@ -34,42 +34,40 @@ xcodebuild \
   CODE_SIGN_IDENTITY="" \
   CODE_SIGNING_REQUIRED=NO
 
-rm -f build/Output/libactor.so
-lipo -create "build/Build/Intermediates.noindex/ActorSDK.build/Release-iphoneos/j2objc/Objects/libactor.so" "build/Build/Intermediates.noindex/ActorSDK.build/Release-iphonesimulator/j2objc/Objects/libactor.so" -output build/Output/libactor.so
-
+rm -f build/Output/libalo.so
+lipo -create "build/Build/Intermediates.noindex/AloSDK.build/Release-iphoneos/j2objc/Objects/libalo.so" "build/Build/Intermediates.noindex/AloSDK.build/Release-iphonesimulator/j2objc/Objects/libalo.so" -output build/Output/libalo.so
 # Building Framework
 # Copy base framework
-rm -fr build/Output/ActorSDK.framework
-cp -a build/Build/Products/Release-iphoneos/ActorSDK.framework build/Output/
+rm -fr build/Output/AloSDK.framework
+cp -a build/Build/Products/Release-iphoneos/AloSDK.framework build/Output/
 
 # Merging binaries
-lipo -create "build/Build/Products/Release-iphoneos/ActorSDK.framework/ActorSDK" "build/Build/Products/Release-iphonesimulator/ActorSDK.framework/ActorSDK" -output build/Output/ActorSDK_Lipo
-rm -fr build/Output/ActorSDK.framework/ActorSDK
-mv build/Output/ActorSDK_Lipo build/Output/ActorSDK.framework/ActorSDK
-rm -fr build/Output/ActorSDK.framework/Frameworks
+lipo -create "build/Build/Products/Release-iphoneos/AloSDK.framework/AloSDK" "build/Build/Products/Release-iphonesimulator/AloSDK.framework/AloSDK" -output build/Output/AloSDK_Lipo
+rm -fr build/Output/AloSDK.framework/AloSDK
+mv build/Output/AloSDK_Lipo build/Output/AloSDK.framework/AloSDK
+rm -fr build/Output/AloSDK.framework/Frameworks
 
 # Merging swift docs
-cp -a build/Build/Products/Release-iphonesimulator/ActorSDK.framework/Modules/ActorSDK.swiftmodule/* build/Output/ActorSDK.framework/Modules/ActorSDK.swiftmodule/
+cp -a build/Build/Products/Release-iphonesimulator/AloSDK.framework/Modules/AloSDK.swiftmodule/* build/Output/AloSDK.framework/Modules/AloSDK.swiftmodule/
 
 # Copying dSYM
-cp -a build/Build/Products/Release-iphoneos/ActorSDK.framework.dSYM/* build/Output/ActorSDK.framework.dSYM/
+cp -a build/Build/Products/Release-iphoneos/AloSDK.framework.dSYM/* build/Output/AloSDK.framework.dSYM/
 
 # Making Bundle
 mkdir -p build/Podspec/
 
 # Compressing Framework
 rm -fr build/Podspec
-mkdir -p build/Podspec/ActorSDK.framework
-mkdir -p build/Podspec/ActorSDK.framework.dSYM
+mkdir -p build/Podspec/AloSDK.framework
+mkdir -p build/Podspec/AloSDK.framework.dSYM
+cp -r build/Output/AloSDK.framework build/Podspec/
 
 rm -fr build/Output/ActorSDK.framework/libswiftRemoteMirror.dylib
 
-cp -r build/Output/ActorSDK.framework build/Podspec/
-cp -r build/Output/ActorSDK.framework.dSYM build/Podspec/
+cp -r build/Output/AloSDK.framework.dSYM build/Podspec/
 cp -r Template/ build/Podspec/
 
 cd build/Podspec/
-rm -f ActorSDK.zip
-zip -r ActorSDK.zip *
-mv ActorSDK.zip ../
-
+rm -f AloSDK.zip
+zip -r AloSDK.zip *
+mv AloSDK.zip ../

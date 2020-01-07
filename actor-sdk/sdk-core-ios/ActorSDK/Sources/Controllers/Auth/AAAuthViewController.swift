@@ -6,18 +6,20 @@ import Foundation
 
 open class AAAuthViewController: AAViewController {
     
-    open let nextBarButton = UIButton()
+    public let nextBarButton = UIButton()
     fileprivate var keyboardHeight: CGFloat = 0
+    
+    
     
     override open func viewDidLoad() {
         super.viewDidLoad()
         
-        nextBarButton.setTitle(AALocalized("NavigationNext"), for: UIControlState())
-        nextBarButton.setTitleColor(UIColor.white, for: UIControlState())
-        nextBarButton.setBackgroundImage(Imaging.roundedImage(ActorSDK.sharedActor().style.nextBarColor, radius: 20), for: UIControlState())
-        nextBarButton.setBackgroundImage(Imaging.roundedImage(ActorSDK.sharedActor().style.nextBarColor.alpha(0.7), radius: 20), for: .highlighted)
+//        nextBarButton.setTitle(AALocalized("NavigationNext"), for: UIControlState())
+//        nextBarButton.setTitleColor(UIColor.white, for: UIControlState())
+//        nextBarButton.setBackgroundImage(Imaging.roundedImage(UIColor(red: 30, green: 14, blue: 176), radius: 3), for: UIControlState())
+//        nextBarButton.setBackgroundImage(Imaging.roundedImage(UIColor(red: 30, green: 14, blue: 176).alpha(0.9), radius: 3), for: .highlighted)
         nextBarButton.addTarget(self, action: #selector(AAAuthViewController.nextDidTap), for: .touchUpInside)
-
+        
         view.addSubview(nextBarButton)
     }
     
@@ -32,17 +34,17 @@ open class AAAuthViewController: AAViewController {
         // Forcing initial layout before keyboard show to avoid weird animations
         layoutNextBar()
         
-        NotificationCenter.default.addObserver(self, selector: #selector(AAAuthViewController.keyboardWillAppearInt(_:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(AAAuthViewController.keyboardWillDisappearInt(_:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(AAAuthViewController.keyboardWillAppearInt(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(AAAuthViewController.keyboardWillDisappearInt(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
     fileprivate func layoutNextBar() {
-        nextBarButton.frame = CGRect(x: view.width - 115, y: view.height - 50 - keyboardHeight + 6, width: 105, height: 38)
+        nextBarButton.frame = CGRect(x: view.width - 310, y: view.height - 67 - keyboardHeight + 6, width: 300, height: 45)
     }
     
     @objc func keyboardWillAppearInt(_ notification: Notification) {
         let dict = (notification as NSNotification).userInfo!
-        let rect = (dict[UIKeyboardFrameBeginUserInfoKey]! as AnyObject).cgRectValue
+        let rect = (dict[UIResponder.keyboardFrameBeginUserInfoKey]! as AnyObject).cgRectValue
         
         let orientation = UIApplication.shared.statusBarOrientation
         let frameInWindow = self.view.superview!.convert(view.bounds, to: nil)

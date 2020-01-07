@@ -26,7 +26,7 @@ open class AACommonCell: AATableViewCell {
     open var switchBlock: ((Bool) -> ())?
     open var contentInset: CGFloat = 15
     
-    public override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    public override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         titleLabel.font = UIFont.systemFont(ofSize: 17.0)
@@ -79,56 +79,56 @@ open class AACommonCell: AATableViewCell {
             titleLabel.textColor = appStyle.cellTextColor
             titleLabel.textAlignment = NSTextAlignment.left
             switcher?.isHidden = true
-            accessoryType = UITableViewCellAccessoryType.none
+            accessoryType = UITableViewCell.AccessoryType.none
             break
         case .hint:
             titleLabel.textColor = appStyle.cellHintColor
             titleLabel.textAlignment = NSTextAlignment.left
             switcher?.isHidden = true
-            accessoryType = UITableViewCellAccessoryType.none
+            accessoryType = UITableViewCell.AccessoryType.none
             break
         case .destructiveCentered:
             titleLabel.textColor = appStyle.cellDestructiveColor
             titleLabel.textAlignment = NSTextAlignment.center
             switcher?.isHidden = true
-            accessoryType = UITableViewCellAccessoryType.none
+            accessoryType = UITableViewCell.AccessoryType.none
             break
         case .destructive:
             titleLabel.textColor = appStyle.cellDestructiveColor
             titleLabel.textAlignment = NSTextAlignment.left
             switcher?.isHidden = true
-            accessoryType = UITableViewCellAccessoryType.none
+            accessoryType = UITableViewCell.AccessoryType.none
             break
         case .switch:
             titleLabel.textColor = appStyle.cellTextColor
             titleLabel.textAlignment = NSTextAlignment.left
             setupSwitchIfNeeded()
             switcher?.isHidden = false
-            accessoryType = UITableViewCellAccessoryType.none
+            accessoryType = UITableViewCell.AccessoryType.none
             break
         case .action:
             titleLabel.textColor = appStyle.cellTintColor
             titleLabel.textAlignment = NSTextAlignment.left
             switcher?.isHidden = true
-            accessoryType = UITableViewCellAccessoryType.none
+            accessoryType = UITableViewCell.AccessoryType.none
             break
         case .actionCentered:
             titleLabel.textColor = appStyle.cellTintColor
             titleLabel.textAlignment = NSTextAlignment.center
             switcher?.isHidden = true
-            accessoryType = UITableViewCellAccessoryType.none
+            accessoryType = UITableViewCell.AccessoryType.none
             break
         case .navigation:
             titleLabel.textColor = appStyle.cellTextColor
             titleLabel.textAlignment = NSTextAlignment.left
             switcher?.isHidden = true
-            accessoryType = UITableViewCellAccessoryType.disclosureIndicator
+            accessoryType = UITableViewCell.AccessoryType.disclosureIndicator
             
         case .checkmark:
             titleLabel.textColor = appStyle.cellTextColor
             titleLabel.textAlignment = NSTextAlignment.left
             switcher?.isHidden = true
-            accessoryType = UITableViewCellAccessoryType.checkmark
+            accessoryType = UITableViewCell.AccessoryType.checkmark
             break
         }
     }
@@ -136,7 +136,7 @@ open class AACommonCell: AATableViewCell {
     fileprivate func setupSwitchIfNeeded() {
         if switcher == nil {
             switcher = UISwitch()
-            switcher!.addTarget(self, action: #selector(AACommonCell.switcherSwitched), for: UIControlEvents.valueChanged)
+            switcher!.addTarget(self, action: #selector(AACommonCell.switcherSwitched), for: UIControl.Event.valueChanged)
             switcher!.onTintColor = appStyle.vcSwitchOn
             switcher!.tintColor = appStyle.vcSwitchOff
             contentView.addSubview(switcher!)
@@ -156,7 +156,7 @@ open class AACommonCell: AATableViewCell {
             hintLabel.frame = CGRect(x: 0, y: 0, width: 100, height: 44)
             hintLabel.sizeToFit()
             
-            if accessoryType == UITableViewCellAccessoryType.none {
+            if accessoryType == UITableViewCell.AccessoryType.none {
                 hintLabel.frame = CGRect(x: contentView.bounds.width - hintLabel.width - 15, y: 0, width: hintLabel.width, height: 44)
                 titleLabel.frame = CGRect(x: contentInset, y: 0, width: contentView.bounds.width - hintLabel.width - contentInset - 20, height: 44)
             } else {

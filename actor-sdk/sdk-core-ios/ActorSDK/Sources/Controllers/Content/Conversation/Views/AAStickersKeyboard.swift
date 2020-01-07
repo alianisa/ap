@@ -3,7 +3,6 @@
 //
 
 import UIKit
-import YYImage
 
 public protocol AAStickersKeyboardDelegate {
     func stickerDidSelected(_ keyboard: AAStickersKeyboard, sticker: ACSticker)
@@ -39,11 +38,13 @@ open class AAStickersKeyboard: UIView, UICollectionViewDelegate, UICollectionVie
         
         self.collectionView.delegate = self
         self.collectionView.dataSource = self
-        self.collectionView.backgroundColor = UIColor(red: 0.7728, green: 0.8874, blue: 0.9365, alpha: 1.0)
+//        self.collectionView.backgroundColor = UIColor(red: 0.7728, green: 0.8874, blue: 0.9365, alpha: 1.0)
+        self.collectionView.backgroundColor = UIColor.white
+
         
         self.collectionView.register(AAStickersViewCell.self, forCellWithReuseIdentifier: "AAStickersViewCell")
         
-        self.collectionView.contentInset = UIEdgeInsetsMake(10, 5, 10, 5)
+        self.collectionView.contentInset = UIEdgeInsets(top: 10, left: 5, bottom: 10, right: 5)
         
         self.collectionView.preservesSuperviewLayoutMargins = false
         self.collectionView.layoutMargins = UIEdgeInsets.zero

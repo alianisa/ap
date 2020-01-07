@@ -31,18 +31,18 @@ open class AABubbleMediaCell : AABubbleBaseFileCell, NYTPhotosViewControllerDele
     
     // Constructors
     
-    @objc public init(frame: CGRect) {
+    public init(frame: CGRect) {
         super.init(frame: frame, isFullSize: false)
         
         preview.autoPlayAnimatedImage = true
-        preview.runloopMode = RunLoopMode.defaultRunLoopMode.rawValue
+        preview.runloopMode = RunLoop.Mode.default.rawValue
         
         timeBg.image = Imaging.roundedImage(ActorSDK.sharedActor().style.chatMediaDateBgColor, radius: 10)
         
         timeLabel.font = UIFont.italicSystemFont(ofSize: 11)
         timeLabel.textColor = appStyle.chatMediaDateColor
         
-        statusView.contentMode = UIViewContentMode.center
+        statusView.contentMode = UIView.ContentMode.center
         
         contentView.addSubview(preview)
         contentView.addSubview(progress)
@@ -57,8 +57,14 @@ open class AABubbleMediaCell : AABubbleBaseFileCell, NYTPhotosViewControllerDele
         contentInsets = UIEdgeInsets(top: 2, left: 2, bottom: 2, right: 2)
         
         playView.isUserInteractionEnabled = false
+        
+//        self.contentView.isUserInteractionEnabled = true
     }
 
+    convenience override init(frame: CGRect, isFullSize: Bool) {
+        self.init(frame: frame, isFullSize: false)
+    }
+    
     public required init(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -185,7 +191,7 @@ open class AABubbleMediaCell : AABubbleBaseFileCell, NYTPhotosViewControllerDele
         
         // Loading Image and State
         
-        runOnUiThread(selfGeneration) { () -> () in
+        _ = runOnUiThread(selfGeneration) { () -> () in
             
             // Loading Image
             
@@ -292,7 +298,8 @@ open class AABubbleMediaCell : AABubbleBaseFileCell, NYTPhotosViewControllerDele
                     if content is ACPhotoContent {
                         if let img = UIImage(contentsOfFile: CocoaFiles.pathFromDescriptor(reference)) {
                             let previewImage = PreviewImage(image: img)
-                            let previewController = AAPhotoPreviewController(photo: previewImage, fromView: self.preview)
+                            let previewController = AAPhotoPreviewController(photos: [previewImage], fromView: self.preview)
+
                             previewController.autoShowBadge = true
                             self.controller.present(previewController, animated: true, completion: nil)
                         }
@@ -395,11 +402,11 @@ open class AABubbleMediaCell : AABubbleBaseFileCell, NYTPhotosViewControllerDele
 */
 open class MediaCellLayout: AACellLayout {
     
-    open let fastThumb: Data?
-    open let contentSize: CGSize
-    open let screenSize: CGSize
-    open let autoDownload: Bool
-    open let duration: Int?
+    public let fastThumb: Data?
+    public let contentSize: CGSize
+    public let screenSize: CGSize
+    public let autoDownload: Bool
+    public let duration: Int?
     
     /**
         Creting layout for media bubble

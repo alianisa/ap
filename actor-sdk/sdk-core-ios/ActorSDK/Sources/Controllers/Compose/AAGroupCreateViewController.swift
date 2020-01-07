@@ -19,15 +19,20 @@ open class AAGroupCreateViewController: AAViewController, UITextFieldDelegate {
     public init(isChannel: Bool) {
         self.isChannel = isChannel
         super.init(nibName: nil, bundle: nil)
+        if #available(iOS 11.0, *) {
+            navigationItem.largeTitleDisplayMode = .never
+        } else {
+            // Fallback on earlier versions
+        }
         if isChannel {
             self.navigationItem.title = AALocalized("CreateChannelTitle")
         } else {
             self.navigationItem.title = AALocalized("CreateGroupTitle")
         }
         if AADevice.isiPad {
-            self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: AALocalized("NavigationCancel"), style: UIBarButtonItemStyle.plain, target: self, action: #selector(self.dismissController))
+            self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: AALocalized("NavigationCancel"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(self.dismissController))
         }
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: AALocalized("NavigationNext"), style: UIBarButtonItemStyle.done, target: self, action: #selector(AAGroupCreateViewController.doNext))
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: AALocalized("NavigationNext"), style: UIBarButtonItem.Style.done, target: self, action: #selector(AAGroupCreateViewController.doNext))
     }
 
     public required init(coder aDecoder: NSCoder) {
@@ -55,8 +60,8 @@ open class AAGroupCreateViewController: AAViewController, UITextFieldDelegate {
         UIGraphicsEndImageContext();
         
         addPhotoButton.isExclusiveTouch = true
-        addPhotoButton.setBackgroundImage(buttonImage, for: UIControlState())
-        addPhotoButton.addTarget(self, action: #selector(AAGroupCreateViewController.photoTap), for: UIControlEvents.touchUpInside)
+        addPhotoButton.setBackgroundImage(buttonImage, for: UIControl.State())
+        addPhotoButton.addTarget(self, action: #selector(AAGroupCreateViewController.photoTap), for: UIControl.Event.touchUpInside)
         
         let addPhotoLabelFirst = UILabel()
         addPhotoLabelFirst.text = AALocalized("ActionAddPhoto1")
@@ -84,12 +89,12 @@ open class AAGroupCreateViewController: AAViewController, UITextFieldDelegate {
         groupName.keyboardType = UIKeyboardType.default
         groupName.returnKeyType = UIReturnKeyType.next
         if isChannel {
-            groupName.attributedPlaceholder = NSAttributedString(string: AALocalized("CreateChannelNamePlaceholder"), attributes: [NSAttributedStringKey.foregroundColor: ActorSDK.sharedActor().style.vcHintColor])
+            groupName.attributedPlaceholder = NSAttributedString(string: AALocalized("CreateChannelNamePlaceholder"), attributes: [NSAttributedString.Key.foregroundColor: ActorSDK.sharedActor().style.vcHintColor])
         } else {
-            groupName.attributedPlaceholder = NSAttributedString(string: AALocalized("CreateGroupNamePlaceholder"), attributes: [NSAttributedStringKey.foregroundColor: ActorSDK.sharedActor().style.vcHintColor])
+            groupName.attributedPlaceholder = NSAttributedString(string: AALocalized("CreateGroupNamePlaceholder"), attributes: [NSAttributedString.Key.foregroundColor: ActorSDK.sharedActor().style.vcHintColor])
         }
         groupName.delegate = self
-        groupName.contentVerticalAlignment = UIControlContentVerticalAlignment.center
+        groupName.contentVerticalAlignment = UIControl.ContentVerticalAlignment.center
         groupName.autocapitalizationType = UITextAutocapitalizationType.words
         groupName.keyboardAppearance = appStyle.isDarkApp ? .dark : .light
         
@@ -110,7 +115,7 @@ open class AAGroupCreateViewController: AAViewController, UITextFieldDelegate {
     open override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
-        avatarImageView.frame = CGRect(x: 20, y: 20 + 66, width: 80, height: 80)
+        avatarImageView.frame = CGRect(x: 20, y: 25 + 66, width: 80, height: 80)
         addPhotoButton.frame = avatarImageView.frame
         hint.frame = CGRect(x: 120, y: 20 + 66, width: view.width - 140, height: 80)
         
@@ -119,7 +124,7 @@ open class AAGroupCreateViewController: AAViewController, UITextFieldDelegate {
     }
     
     @objc open func photoTap() {
-        let hasCamera = UIImagePickerController.isSourceTypeAvailable(UIImagePickerControllerSourceType.camera)
+        let hasCamera = UIImagePickerController.isSourceTypeAvailable(UIImagePickerController.SourceType.camera)
         self.showActionSheet(hasCamera ? ["PhotoCamera", "PhotoLibrary"] : ["PhotoLibrary"],
             cancelButton: "AlertCancel",
             destructButton: self.avatarImageView.image != nil ? "PhotoRemove" : nil,
@@ -159,7 +164,7 @@ open class AAGroupCreateViewController: AAViewController, UITextFieldDelegate {
         groupName.resignFirstResponder()
         
         if isChannel {
-            executePromise(Actor.createChannel(withTitle: title, withAvatar: nil)).then({ (gid: JavaLangInteger!) in
+            _ = executePromise(Actor.createChannel(withTitle: title, withAvatar: nil)).then({ (gid: JavaLangInteger!) in
                 self.navigateNext(AAGroupTypeViewController(gid: Int(gid.intValue()), isCreation: true), removeCurrent: true)
             })
         } else {

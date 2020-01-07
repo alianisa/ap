@@ -26,7 +26,7 @@ class SHA256Digest: NSObject, ARDigest {
     }
     
     deinit {
-        context.deallocate(capacity: 1)
+        context.deinitialize(count: 1)
     }
     
     func reset() {
@@ -80,8 +80,8 @@ class AES128: NSObject, ARBlockCipher {
     }
     
     deinit {
-        encryptor.deallocate(capacity: 1)
-        decryptor.deallocate(capacity: 1)
+        encryptor.deinitialize(count: 1)
+        decryptor.deinitialize(count: 1)
     }
     
     func encryptBlock(_ data: IOSByteArray!, withOffset offset: jint, toDest dest: IOSByteArray!, withOffset destOffset: jint) {

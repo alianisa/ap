@@ -37,7 +37,7 @@ public extension UIImage {
             return image!.resizableImage(withCapInsets: capInsets, resizingMode: resizingMode)
         }
         
-        return image!.withRenderingMode(UIImageRenderingMode.alwaysOriginal)
+        return image!.withRenderingMode(UIImage.RenderingMode.alwaysOriginal)
     }
     
     public func tintBgImage(_ color: UIColor) -> UIImage {
@@ -154,7 +154,7 @@ open class Imaging {
         let image: UIImage = UIGraphicsGetImageFromCurrentImageContext()!
         UIGraphicsEndImageContext()
         
-        return image.resizableImage(withCapInsets: UIEdgeInsetsMake(radius, radius, radius, radius))
+        return image.resizableImage(withCapInsets: UIEdgeInsets(top: radius, left: radius, bottom: radius, right: radius))
     }
     
     open class func circleImage(_ color: UIColor, radius: CGFloat) -> UIImage {
@@ -169,13 +169,23 @@ open class Imaging {
         let image: UIImage = UIGraphicsGetImageFromCurrentImageContext()!
         UIGraphicsEndImageContext()
         
-        return image.resizableImage(withCapInsets: UIEdgeInsetsMake(radius, radius, radius, radius))
+        return image.resizableImage(withCapInsets: UIEdgeInsets(top: radius, left: radius, bottom: radius, right: radius))
     }
     
     open class func imageWithColor(_ color: UIColor, size: CGSize) -> UIImage {
         let rect = CGRect(x: 0, y: 0, width: size.width, height: size.height)
         UIGraphicsBeginImageContextWithOptions(size, false, 0)
         color.setFill()
+        UIRectFill(rect)
+        let image: UIImage = UIGraphicsGetImageFromCurrentImageContext()!
+        UIGraphicsEndImageContext()
+        return image
+    }
+    
+    open class func image(_ size: CGSize) -> UIImage {
+        let rect = CGRect(x: 0, y: 0, width: size.width, height: size.height)
+        UIGraphicsBeginImageContextWithOptions(size, false, 0)
+//        color.setFill()
         UIRectFill(rect)
         let image: UIImage = UIGraphicsGetImageFromCurrentImageContext()!
         UIGraphicsEndImageContext()

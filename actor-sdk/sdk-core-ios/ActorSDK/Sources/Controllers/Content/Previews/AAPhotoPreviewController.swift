@@ -72,7 +72,7 @@ open class AAPhotoPreviewController: NYTPhotosViewController, NYTPhotosViewContr
         
         self.delegate = self
     }
-
+    
     public required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -91,14 +91,14 @@ open class AAPhotoPreviewController: NYTPhotosViewController, NYTPhotosViewContr
             if cp.image == nil {
                 let callback = AAFileCallback(notDownloaded: { () -> () in
                     
-                    }, onDownloading: { (progress) -> () in
-                        
-                    }, onDownloaded: { (reference) -> () in
-                        let image = UIImage(contentsOfFile: CocoaFiles.pathFromDescriptor(reference))
-                        dispatchOnUi({ () -> Void in
-                            cp.image = image
-                            self.updateImage(for: cp)
-                        })
+                }, onDownloading: { (progress) -> () in
+                    
+                }, onDownloaded: { (reference) -> () in
+                    let image = UIImage(contentsOfFile: CocoaFiles.pathFromDescriptor(reference))
+                    dispatchOnUi({ () -> Void in
+                        cp.image = image
+                        self.updateImage(for: cp)
+                    })
                 })
                 
                 Actor.bindRawFile(with: p.file!, autoStart: true, with: callback)
@@ -190,38 +190,38 @@ class AAPhoto: NSObject, NYTPhoto {
     
     
     /*
-    @available(iOS 2.0, *)
-    public var image: UIImage? { get }
-    
-    /**
-    * The image data to display. This will be preferred over the `image` property.
-    * In case this is empty `image` will be used. The main advantage of using this is animated gif support.
-    */
-    public var imageData: NSData? { get }
-    
-    /**
-    *  A placeholder image for display while the image is loading.
-    */
-    @available(iOS 2.0, *)
-    public var placeholderImage: UIImage? { get }
-    
-    /**
-    *  An attributed string for display as the title of the caption.
-    */
-    @available(iOS 3.2, *)
-    public var attributedCaptionTitle: NSAttributedString? { get }
-    
-    /**
-    *  An attributed string for display as the summary of the caption.
-    */
-    @available(iOS 3.2, *)
-    public var attributedCaptionSummary: NSAttributedString? { get }
-    
-    /**
-    *  An attributed string for display as the credit of the caption.
-    */
-    @available(iOS 3.2, *)
-    public var attributedCaptionCredit: NSAttributedString? { get }
-    */
+     @available(iOS 2.0, *)
+     public var image: UIImage? { get }
+     
+     /**
+     * The image data to display. This will be preferred over the `image` property.
+     * In case this is empty `image` will be used. The main advantage of using this is animated gif support.
+     */
+     public var imageData: NSData? { get }
+     
+     /**
+     *  A placeholder image for display while the image is loading.
+     */
+     @available(iOS 2.0, *)
+     public var placeholderImage: UIImage? { get }
+     
+     /**
+     *  An attributed string for display as the title of the caption.
+     */
+     @available(iOS 3.2, *)
+     public var attributedCaptionTitle: NSAttributedString? { get }
+     
+     /**
+     *  An attributed string for display as the summary of the caption.
+     */
+     @available(iOS 3.2, *)
+     public var attributedCaptionSummary: NSAttributedString? { get }
+     
+     /**
+     *  An attributed string for display as the credit of the caption.
+     */
+     @available(iOS 3.2, *)
+     public var attributedCaptionCredit: NSAttributedString? { get }
+     */
     
 }

@@ -35,7 +35,13 @@ class AABigPlaceholderView: UIView {
         imageView.isHidden = true
         
         bgView = UIView()
-        bgView.backgroundColor = ActorSDK.sharedActor().style.placeholderBgColor
+        
+        
+        
+//        bgView.backgroundColor = ActorSDK.sharedActor().style.placeholderBgColor
+        bgView.backgroundColor = UIColor.white
+
+        
         contentView.addSubview(bgView)
         contentView.addSubview(imageView)
         
@@ -105,7 +111,7 @@ class AABigPlaceholderView: UIView {
             paragraphStyle.alignment = NSTextAlignment.center
             
             let attrString = NSMutableAttributedString(string: subtitle!)
-            attrString.addAttribute(NSAttributedStringKey.paragraphStyle, value:paragraphStyle, range:NSMakeRange(0, attrString.length))
+            attrString.addAttribute(NSAttributedString.Key.paragraphStyle, value:paragraphStyle, range:NSMakeRange(0, attrString.length))
 
             subtitleLabel.attributedText = attrString
             
@@ -115,9 +121,9 @@ class AABigPlaceholderView: UIView {
         }
 
         if actionTitle != nil && actionTarget != nil && actionSelector != nil {
-            actionButton.removeTarget(nil, action: nil, for: UIControlEvents.allEvents)
-            actionButton.addTarget(actionTarget!, action: actionSelector!, for: UIControlEvents.touchUpInside)
-            actionButton.setTitle(actionTitle, for: UIControlState())
+            actionButton.removeTarget(nil, action: nil, for: UIControl.Event.allEvents)
+            actionButton.addTarget(actionTarget!, action: actionSelector!, for: UIControl.Event.touchUpInside)
+            actionButton.setTitle(actionTitle, for: UIControl.State())
             actionButton.isHidden = false
         } else {
             actionButton.isHidden = true
@@ -129,7 +135,7 @@ class AABigPlaceholderView: UIView {
             paragraphStyle.alignment = NSTextAlignment.center
             
             let attrString = NSMutableAttributedString(string: subtitle2!)
-            attrString.addAttribute(NSAttributedStringKey.paragraphStyle, value:paragraphStyle, range:NSMakeRange(0, attrString.length))
+            attrString.addAttribute(NSAttributedString.Key.paragraphStyle, value:paragraphStyle, range:NSMakeRange(0, attrString.length))
             
             subtitle2Label.attributedText = attrString
             
@@ -139,9 +145,9 @@ class AABigPlaceholderView: UIView {
         }
         
         if action2title != nil && actionTarget != nil && actionSelector != nil {
-            action2Button.removeTarget(nil, action: nil, for: UIControlEvents.allEvents)
-            action2Button.addTarget(actionTarget!, action: action2Selector!, for: UIControlEvents.touchUpInside)
-            action2Button.setTitle(action2title, for: UIControlState())
+            action2Button.removeTarget(nil, action: nil, for: UIControl.Event.allEvents)
+            action2Button.addTarget(actionTarget!, action: action2Selector!, for: UIControl.Event.touchUpInside)
+            action2Button.setTitle(action2title, for: UIControl.State())
             action2Button.isHidden = false
         } else {
             action2Button.isHidden = true
@@ -166,7 +172,25 @@ class AABigPlaceholderView: UIView {
             contentHeight += imageView.image!.size.height + topOffset
         }
         
-        bgView.frame = CGRect(x: 0, y: 0, width: bounds.size.width, height: imageView.frame.height * 0.75 + topOffset)
+        bgView.frame = CGRect(x: 0, y: 0, width: bounds.size.width, height: imageView.frame.height * 0.95 + topOffset)
+        
+        let gradient = CAGradientLayer()
+
+        let frame = CGRect(x: 0, y: UIScreen.main.applicationFrame.height - 2, width: UIScreen.main.applicationFrame.width, height: 2)
+
+        
+        let color1 = UIColor(red:0.03, green:0.65, blue:1.00, alpha:1.0).cgColor as CGColor
+        let color2 = UIColor(red:0.00, green:0.35, blue:1.00, alpha:1.0).cgColor as CGColor
+
+        gradient.colors = [color1, color2]
+        gradient.startPoint = CGPoint(x: 0.0, y: 0.5)
+        gradient.endPoint = CGPoint(x: 1, y: 0.5)
+        
+        gradient.frame = frame
+        gradient.frame = bgView.bounds
+        gradient.colors = [color1, color2]
+        
+        bgView.layer.addSublayer(gradient)
         
         if titleLabel.isHidden == false {
             if contentHeight > 0 {

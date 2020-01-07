@@ -10,10 +10,10 @@ open class AABackgroundCellRenderer<P, T> where T: AnyObject, P: AnyObject, P: E
     fileprivate var generation = 0
     fileprivate var wasPresented: Bool = false
     fileprivate var requestedConfig: P? = nil
-    fileprivate let renderer: (_ config: P)-> T!
-    fileprivate let receiver: (T!) -> ()
+    fileprivate let renderer: (_ config: P)-> T?
+    fileprivate let receiver: (T?) -> ()
     
-    public init(renderer: @escaping (_ config: P) -> T!, receiver: @escaping (T!) -> ()) {
+    public init(renderer: @escaping (_ config: P) -> T?, receiver: @escaping (T?) -> ()) {
         self.renderer = renderer
         self.receiver = receiver
     }

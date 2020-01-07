@@ -5,6 +5,7 @@
 import Foundation
 
 public enum AAContentTableStyle {
+    
     case settingsPlain
     case settingsGrouped
     case plain
@@ -14,7 +15,7 @@ open class AAContentTableController: AAManagedTableController, AAManagedTableCon
     
     fileprivate var isInLoad: Bool = false
     
-    open var autoSections = true
+    open var autoSections = false
     
     // Controller constructor
     
@@ -38,7 +39,10 @@ open class AAContentTableController: AAManagedTableController, AAManagedTableCon
         }
         
         let isFirst = managedTable.sections.count == 0
-        let s = managedTable.addSection(true)
+        let s = managedTable.addSection(false)
+        s.table.tableView.separatorInset = UIEdgeInsets.zero
+        s.table.tableView.layoutMargins = UIEdgeInsets.zero
+        
         if autoSections {
             s.headerHeight = 15
             s.footerHeight = 15

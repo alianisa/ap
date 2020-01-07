@@ -7,10 +7,28 @@ import Foundation
 @objc class CocoaLifecycleRuntime: NSObject, ARLifecycleRuntime {
     
     func killApp() {
+        
+//        Actor.resetAuth()
+         ActorSDK.sharedActor().onAfterReset()
+//        print("killApp")
+//        AASettingsViewController().exitApp()
+//        Actor.signOut()
+//        exit(0)
+//        makeWakeLock()
+//        ACAuthState.logged_IN()
+        
+//        ActorSDK.sharedActor().onAfterReset()
         [][100]
     }
     
+    func restartApp() {
+//        ARCocoaStorageProxyProvider.
+//        ActorSDK.sharedActor().createActor()
+        ActorSDK.sharedActor().onAfterReset()
+    }
+    
     func makeWakeLock() -> ARWakeLock! {
+        
         return CocoaWakeLock()
     }
 }

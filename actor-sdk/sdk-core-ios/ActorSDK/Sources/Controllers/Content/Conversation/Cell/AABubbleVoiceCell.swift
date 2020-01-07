@@ -4,7 +4,6 @@
 
 import UIKit
 import VBFPopFlatButton
-import YYImage
 
 open class AABubbleVoiceCell: AABubbleBaseFileCell,AAModernConversationAudioPlayerDelegate,AAModernViewInlineMediaContextDelegate {
 
@@ -29,7 +28,7 @@ open class AABubbleVoiceCell: AABubbleBaseFileCell,AAModernConversationAudioPlay
     
     // Constructors
     
-    @objc public init(frame: CGRect) {
+    public init(frame: CGRect) {
         
         super.init(frame: frame, isFullSize: false)
         
@@ -40,7 +39,7 @@ open class AABubbleVoiceCell: AABubbleBaseFileCell,AAModernConversationAudioPlay
         
         ////////////////////////////////////////////////////
         
-        statusView.contentMode = UIViewContentMode.center
+        statusView.contentMode = UIView.ContentMode.center
         
         ////////////////////////////////////////////////////
         
@@ -54,14 +53,14 @@ open class AABubbleVoiceCell: AABubbleBaseFileCell,AAModernConversationAudioPlay
         
         let trackLeftImage = UIImage.tinted("aa_voiceplaybackground", color: UIColor(red: 0.0, green: 0.761, blue: 0.9964, alpha: 1.0 ))
         let trackLeftResizable = trackLeftImage.resizableImage(withCapInsets: insets)
-        soundProgressSlider.setMinimumTrackImage(trackLeftResizable, for: UIControlState())
+        soundProgressSlider.setMinimumTrackImage(trackLeftResizable, for: UIControl.State())
         
         let trackRightImage = UIImage.tinted("aa_voiceplaybackground", color: UIColor(red: 0.0, green: 0.5856, blue: 0.9985, alpha: 1.0 ))
         let trackRightResizable = trackRightImage.resizableImage(withCapInsets: insets)
-        soundProgressSlider.setMaximumTrackImage(trackRightResizable, for: UIControlState())
+        soundProgressSlider.setMaximumTrackImage(trackRightResizable, for: UIControl.State())
         
         let thumbImageNormal = UIImage.bundled("aa_thumbvoiceslider")
-        soundProgressSlider.setThumbImage(thumbImageNormal, for: UIControlState())
+        soundProgressSlider.setThumbImage(thumbImageNormal, for: UIControl.State())
         
         ////////////////////////////////////////////////////
         
@@ -97,11 +96,16 @@ open class AABubbleVoiceCell: AABubbleBaseFileCell,AAModernConversationAudioPlay
         
         ////////////////////////////////////////////////////
         
-        playPauseButton.setImage(UIImage.bundled("aa_playrecordbutton"), for: UIControlState())
-        playPauseButton.addTarget(self, action: #selector(AABubbleVoiceCell.mediaDidTap), for: UIControlEvents.touchUpInside)
+        playPauseButton.setImage(UIImage.bundled("aa_playrecordbutton"), for: UIControl.State())
+        playPauseButton.addTarget(self, action: #selector(AABubbleVoiceCell.mediaDidTap), for: UIControl.Event.touchUpInside)
         
         contentInsets = UIEdgeInsets(top: 1, left: 1, bottom: 1, right: 1)
         
+//        self.contentView.isUserInteractionEnabled = true
+    }
+    
+    convenience override init(frame: CGRect, isFullSize: Bool) {
+        self.init(frame: frame, isFullSize: false)
     }
     
     public required init(coder aDecoder: NSCoder) {
@@ -162,16 +166,16 @@ open class AABubbleVoiceCell: AABubbleBaseFileCell,AAModernConversationAudioPlay
                 
                 if self.controller.currentAudioFileId != fileID {
                     self.soundProgressSlider.value = 0.0
-                    self.playPauseButton.setImage(UIImage.bundled("aa_playrecordbutton"), for: UIControlState())
+                    self.playPauseButton.setImage(UIImage.bundled("aa_playrecordbutton"), for: UIControl.State())
                     self.controller.voiceContext?.removeDelegate(self)
                 } else {
                     self.controller.voiceContext?.delegate = self
                     self.controller.voicePlayer?.delegate = self
                     
                     if self.controller.voicePlayer?.isPaused() == false {
-                        self.playPauseButton.setImage(UIImage.bundled("aa_pauserecordbutton"), for: UIControlState())
+                        self.playPauseButton.setImage(UIImage.bundled("aa_pauserecordbutton"), for: UIControl.State())
                     } else {
-                        self.playPauseButton.setImage(UIImage.bundled("aa_playrecordbutton"), for: UIControlState())
+                        self.playPauseButton.setImage(UIImage.bundled("aa_playrecordbutton"), for: UIControl.State())
                     }
                     
                 }
@@ -281,7 +285,7 @@ open class AABubbleVoiceCell: AABubbleBaseFileCell,AAModernConversationAudioPlay
                         
                         self.controller.playVoiceFromPath(path,fileId: fileID,position:self.soundProgressSlider.value)
                         
-                        self.playPauseButton.setImage(UIImage.bundled("aa_pauserecordbutton"), for: UIControlState())
+                        self.playPauseButton.setImage(UIImage.bundled("aa_pauserecordbutton"), for: UIControl.State())
                         
                         self.controller.voicePlayer.delegate = self
                         self.controller.voiceContext.delegate = self
@@ -309,7 +313,7 @@ open class AABubbleVoiceCell: AABubbleBaseFileCell,AAModernConversationAudioPlay
                             
                             self.controller.playVoiceFromPath(path,fileId: fileID,position:self.soundProgressSlider.value)
                             
-                            self.playPauseButton.setImage(UIImage.bundled("aa_pauserecordbutton"), for: UIControlState())
+                            self.playPauseButton.setImage(UIImage.bundled("aa_pauserecordbutton"), for: UIControl.State())
                             
                             self.controller.voicePlayer.delegate = self
                             self.controller.voiceContext.delegate = self
@@ -332,7 +336,7 @@ open class AABubbleVoiceCell: AABubbleBaseFileCell,AAModernConversationAudioPlay
         
         dispatchOnUi { () -> Void in
             
-            self.playPauseButton.setImage(UIImage.bundled("aa_playrecordbutton"), for: UIControlState())
+            self.playPauseButton.setImage(UIImage.bundled("aa_playrecordbutton"), for: UIControl.State())
             self.soundProgressSlider.value = 0.0
             self.controller.voicesCache[self.controller.currentAudioFileId] = 0.0
             
@@ -347,7 +351,7 @@ open class AABubbleVoiceCell: AABubbleBaseFileCell,AAModernConversationAudioPlay
             self.soundProgressSlider.value = playbackPosition
             
             if (isPaused == true) {
-                self.playPauseButton.setImage(UIImage.bundled("aa_playrecordbutton"), for: UIControlState())
+                self.playPauseButton.setImage(UIImage.bundled("aa_playrecordbutton"), for: UIControl.State())
             }
             
             self.controller.voicesCache[self.controller.currentAudioFileId] = playbackPosition
@@ -400,13 +404,13 @@ open class AABubbleVoiceCell: AABubbleBaseFileCell,AAModernConversationAudioPlay
  */
 open class VoiceMessageCellLayout: AACellLayout {
     
-    open let contentSize: CGSize
-    open let screenSize: CGSize
-    open let autoDownload: Bool
+    public let contentSize: CGSize
+    public let screenSize: CGSize
+    public let autoDownload: Bool
     
-    open let fileName: String
-    open let fileExt: String
-    open let fileSize: String
+    public let fileName: String
+    public let fileExt: String
+    public let fileSize: String
     open var voiceDuration: String!
     
     /**

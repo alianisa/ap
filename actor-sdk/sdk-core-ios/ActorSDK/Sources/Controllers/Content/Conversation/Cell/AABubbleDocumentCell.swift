@@ -24,10 +24,10 @@ open class AABubbleDocumentCell: AABubbleBaseFileCell, UIDocumentInteractionCont
         dateLabel.font = UIFont.italicSystemFont(ofSize: 11)
         dateLabel.lineBreakMode = .byClipping
         dateLabel.numberOfLines = 1
-        dateLabel.contentMode = UIViewContentMode.topLeft
+        dateLabel.contentMode = UIView.ContentMode.topLeft
         dateLabel.textAlignment = NSTextAlignment.right
         
-        statusView.contentMode = UIViewContentMode.center
+        statusView.contentMode = UIView.ContentMode.center
         
         titleLabel.font = UIFont.systemFont(ofSize: 16.0)
         titleLabel.textColor = appStyle.chatTextOutColor
@@ -49,10 +49,16 @@ open class AABubbleDocumentCell: AABubbleBaseFileCell, UIDocumentInteractionCont
         contentView.addSubview(fileIcon)
         contentView.addSubview(progress)
         
-        self.contentInsets = UIEdgeInsetsMake(0, 0, 0, 0)
+        self.contentInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         
         self.bubble.isUserInteractionEnabled = true
         self.bubble.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(AABubbleDocumentCell.documentDidTap)))
+        
+//        self.contentView.isUserInteractionEnabled = true
+    }
+    
+    convenience override init(frame: CGRect, isFullSize: Bool) {
+        self.init(frame: frame, isFullSize: false)
     }
 
     public required init(coder aDecoder: NSCoder) {
@@ -136,6 +142,7 @@ open class AABubbleDocumentCell: AABubbleBaseFileCell, UIDocumentInteractionCont
                 break
             }
         }
+
     }
     
     @objc open func documentDidTap() {
@@ -149,7 +156,8 @@ open class AABubbleDocumentCell: AABubbleBaseFileCell, UIDocumentInteractionCont
                 }, onDownloading: { (progress) -> () in
                     Actor.cancelDownloading(withFileId: fileSource.getFileReference().getFileId())
                 }, onDownloaded: { (reference) -> () in
-                    let docController = UIDocumentInteractionController(url: URL(fileURLWithPath: CocoaFiles.pathFromDescriptor(reference)))
+                    let docPath:String = CocoaFiles.pathFromDescriptor(reference)
+                    let docController = UIDocumentInteractionController(url: URL(fileURLWithPath: docPath))
                     docController.delegate = self
                     
                     if (docController.presentPreview(animated: true)) {
@@ -176,7 +184,7 @@ open class AABubbleDocumentCell: AABubbleBaseFileCell, UIDocumentInteractionCont
     }
     
     open override func fileStateChanged(_ reference: String?, progress: Int?, isPaused: Bool, isUploading: Bool, selfGeneration: Int) {
-        self.runOnUiThread(selfGeneration) { () -> () in
+        _ = self.runOnUiThread(selfGeneration) { () -> () in
             if isUploading {
                 if isPaused {
                     self.fileIcon.hideView()
@@ -250,7 +258,8 @@ open class AABubbleDocumentCell: AABubbleBaseFileCell, UIDocumentInteractionCont
         }
     }
 
-    open func documentInteractionControllerViewControllerForPreview(_ controller: UIDocumentInteractionController) -> UIViewController {
+    public func documentInteractionControllerViewControllerForPreview(_ controller: UIDocumentInteractionController) -> UIViewController
+    {
         return self.controller
     }
 }
@@ -274,14 +283,14 @@ open class AABubbleDocumentCellLayout: AABubbleLayouter {
 
 open class DocumentCellLayout: AACellLayout {
     
-    open let fileName: String
-    open let fileExt: String
-    open let fileSize: String
+    public let fileName: String
+    public let fileExt: String
+    public let fileSize: String
     
-    open let icon: UIImage
-    open let fastThumb: Data?
+    public let icon: UIImage
+    public let fastThumb: Data?
     
-    open let autoDownload: Bool
+    public let autoDownload: Bool
     
     public init(fileName: String, fileExt: String, fileSize: Int, fastThumb: ACFastThumb?, date: Int64, autoDownload: Bool, layouter: AABubbleLayouter) {
         

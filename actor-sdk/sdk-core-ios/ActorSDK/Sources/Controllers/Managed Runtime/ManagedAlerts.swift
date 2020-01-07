@@ -12,10 +12,13 @@ public extension UIViewController {
         
         closure(s)
         
+        if s.title == nil{s.title = "ActionDelete"}
+        if s.message == nil {s.message = "ActionDeleteMessage"}
+        
         let controller = UIAlertController(title: AALocalized(s.title), message: AALocalized(s.message), preferredStyle: .actionSheet)
         
         for i in s.actions {
-            controller.addAction(UIAlertAction(title: AALocalized(i.title), style: i.isDestructive ? UIAlertActionStyle.destructive : UIAlertActionStyle.default, handler: { (c) -> Void in
+            controller.addAction(UIAlertAction(title: AALocalized(i.title), style: i.isDestructive ? UIAlertAction.Style.destructive : UIAlertAction.Style.default, handler: { (c) -> Void in
                 i.closure()
             }))
         }

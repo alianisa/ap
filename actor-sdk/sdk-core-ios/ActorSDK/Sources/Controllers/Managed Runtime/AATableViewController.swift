@@ -6,15 +6,19 @@ import UIKit
 
 open class AATableViewController: AAViewController, UITableViewDataSource, UITableViewDelegate {
     
-    open let tableView: UITableView
-    open let tableViewStyle: UITableViewStyle
+    public let tableView: UITableView
+    public let tableViewStyle: UITableView.Style
     
-    public init(style: UITableViewStyle) {
+    public init(style: UITableView.Style) {
         tableViewStyle = style
         tableView = UITableView(frame: CGRect.zero, style: tableViewStyle)
         super.init()
     }
 
+    convenience public override init() {
+        self.init()
+    }
+    
     public required init(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -26,7 +30,7 @@ open class AATableViewController: AAViewController, UITableViewDataSource, UITab
         tableView.dataSource = self
         view.addSubview(tableView)
         
-        navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: UIBarButtonItemStyle.plain, target: nil, action: nil)
+        navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: UIBarButtonItem.Style.plain, target: nil, action: nil)
     }
     
     open override func viewWillAppear(_ animated: Bool) {

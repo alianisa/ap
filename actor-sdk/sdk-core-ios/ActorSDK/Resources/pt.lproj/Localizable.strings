@@ -192,9 +192,17 @@
 
 "CallsVideo" = "video";
 
+"CallStateRinging" = "Dialing...";
+
 "CallStateRinging" = "Ringing...";
 
 "CallStateConnecting" = "Connecting...";
+
+"CallStateBusy" = "Busy...";
+
+"CallStateNoAnswer" = "No Answer...";
+
+"CallStateNotAvailable" = "Not Available...";
 
 "CallStateIncoming" = "Incoming call...";
 
@@ -726,15 +734,3 @@
 "ErrorUnableToCall" = "Unable to call this number";
 
 "EditingMessage" = "Editando Mensagem";
-
-/*
- *
- */
-"GroupsPre" = "Grupos predefinidos";
-"ChannelsPre" = "Canais predefinidos";
-
-/*
- *
- */
-"INCLUDING_YOU" = "incluindo você";
-"MEMBERS" = "membros";

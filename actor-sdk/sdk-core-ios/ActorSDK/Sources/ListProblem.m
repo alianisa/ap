@@ -6,7 +6,7 @@
 //  Copyright © 2017 Steve Kite. All rights reserved.
 //
 
-#import "ActorSDK.h"
+#import "AloSDK.h"
 
 void workaround() {
     @protocol(JavaUtilCollection);

@@ -29,12 +29,12 @@ open class AAWallpapperPreviewController: AAViewController {
         imageView.clipsToBounds = true
         cancelButton.backgroundColor = appStyle.vcPanelBgColor
         cancelButton.addTarget(self, action: #selector(AAWallpapperPreviewController.cancelDidTap), for: .touchUpInside)
-        cancelButton.setTitle(AALocalized("AlertCancel"), for: UIControlState())
-        cancelButton.setTitleColor(appStyle.tabUnselectedTextColor, for: UIControlState())
+        cancelButton.setTitle(AALocalized("AlertCancel"), for: UIControl.State())
+        cancelButton.setTitleColor(appStyle.tabUnselectedTextColor, for: UIControl.State())
         setButton.backgroundColor = appStyle.vcPanelBgColor
         setButton.addTarget(self, action: #selector(AAWallpapperPreviewController.setDidTap), for: .touchUpInside)
-        setButton.setTitle(AALocalized("AlertSet"), for: UIControlState())
-        setButton.setTitleColor(appStyle.tabUnselectedTextColor, for: UIControlState())
+        setButton.setTitle(AALocalized("AlertSet"), for: UIControl.State())
+        setButton.setTitleColor(appStyle.tabUnselectedTextColor, for: UIControl.State())
     }
     
     public init(selectedImage: UIImage) {
@@ -47,14 +47,14 @@ open class AAWallpapperPreviewController: AAViewController {
         imageView.clipsToBounds = true
         cancelButton.backgroundColor = appStyle.vcPanelBgColor
         cancelButton.addTarget(self, action: #selector(AAWallpapperPreviewController.cancelDidTap), for: .touchUpInside)
-        cancelButton.setTitle(AALocalized("AlertCancel"), for: UIControlState())
-        cancelButton.setTitleColor(appStyle.tabUnselectedTextColor, for: UIControlState())
+        cancelButton.setTitle(AALocalized("AlertCancel"), for: UIControl.State())
+        cancelButton.setTitleColor(appStyle.tabUnselectedTextColor, for: UIControl.State())
         setButton.backgroundColor = appStyle.vcPanelBgColor
         setButton.addTarget(self, action: #selector(AAWallpapperPreviewController.setDidTap), for: .touchUpInside)
-        setButton.setTitle(AALocalized("AlertSet"), for: UIControlState())
-        setButton.setTitleColor(appStyle.tabUnselectedTextColor, for: UIControlState())
+        setButton.setTitle(AALocalized("AlertSet"), for: UIControl.State())
+        setButton.setTitleColor(appStyle.tabUnselectedTextColor, for: UIControl.State())
     }
-
+    
     public required init(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -95,12 +95,15 @@ open class AAWallpapperPreviewController: AAViewController {
                 let descriptor = "/tmp/customWallpaperImage"
                 let path = CocoaFiles.pathFromDescriptor(descriptor)
                 
-                try? UIImageJPEGRepresentation(self.selectedImage, 1.00)!.write(to: URL(fileURLWithPath: path), options: [.atomic])
+                let image = UIImage()
+                try? image.jpegData(compressionQuality: 0.50)!.write(to: URL(fileURLWithPath: path), options: [.atomic])
+//
+//                try? UIImageJPEGRepresentation(self.selectedImage, 1.00)!.write(to: URL(fileURLWithPath: path), options: [.atomic])
                 
                 Actor.changeSelectedWallpaper("file:\(descriptor)")
             })
             
         }
-
+        
     }
 }

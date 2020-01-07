@@ -8,8 +8,16 @@ import RSKImageCropper
 import DZNWebViewController
 import SafariServices
 
+public enum ScalingMode {
+    case resize
+    case resizeAspect
+    case resizeAspectFill
+}
+
 open class AAViewController: UIViewController, UINavigationControllerDelegate, UIImagePickerControllerDelegate, RSKImageCropViewControllerDelegate, UIViewControllerTransitioningDelegate  {
- 
+
+    
+    
     // MARK: -
     // MARK: Public vars
     
@@ -69,18 +77,22 @@ open class AAViewController: UIViewController, UINavigationControllerDelegate, U
     public init() {
         super.init(nibName: nil, bundle: nil)
         
-        navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: UIBarButtonItemStyle.plain, target: nil, action: nil)
+        navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: UIBarButtonItem.Style.plain, target: nil, action: nil)
     }
     
     public override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
         
-        navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: UIBarButtonItemStyle.plain, target: nil, action: nil)
+        navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: UIBarButtonItem.Style.plain, target: nil, action: nil)
     }
-
-    public required init(coder aDecoder: NSCoder) {
+    
+    required public init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+//    public required init(coder aDecoder: NSCoder) {
+//        fatalError("init(coder:) has not been implemented")
+//    }
     
     open override var preferredStatusBarStyle : UIStatusBarStyle {
         return ActorSDK.sharedActor().style.vcStatusBarStyle
@@ -93,7 +105,7 @@ open class AAViewController: UIViewController, UINavigationControllerDelegate, U
     
     open func showPlaceholder() {
         if placeholder.superview == nil {
-            //placeholder.frame = view.frame
+//            placeholder.frame = view.bounds
             view.addSubview(placeholder)
             view.addConstraintsWithFormat("H:|[v0]|", views: placeholder)
             view.addConstraintsWithFormat("V:|[v0]|", views: placeholder)
@@ -134,7 +146,7 @@ open class AAViewController: UIViewController, UINavigationControllerDelegate, U
         self.pendingPickClosure = closure
         
         let pickerController = AAImagePickerController()
-        pickerController.sourceType = (takePhoto ? UIImagePickerControllerSourceType.camera : UIImagePickerControllerSourceType.photoLibrary)
+        pickerController.sourceType = (takePhoto ? UIImagePickerController.SourceType.camera : UIImagePickerController.SourceType.photoLibrary)
         pickerController.mediaTypes = [kUTTypeImage as String]
         pickerController.delegate = self
         self.navigationController!.present(pickerController, animated: true, completion: nil)
@@ -196,14 +208,23 @@ open class AAViewController: UIViewController, UINavigationControllerDelegate, U
         navigationController!.present(UINavigationController(rootViewController: cropController), animated: true, completion: nil)
     }
     
-    open func imageCropViewController(_ controller: RSKImageCropViewController, didCropImage croppedImage: UIImage, usingCropRect cropRect: CGRect, rotationAngle: CGFloat) {
+//    open func imageCropViewController(_ controller: RSKImageCropViewController, didCropImage croppedImage: UIImage, usingCropRect cropRect: CGRect) {
+//        if (pendingPickClosure != nil){
+//            pendingPickClosure!(croppedImage)
+//        }
+//        pendingPickClosure = nil
+//        navigationController!.dismiss(animated: true, completion: nil)
+//    }
+    
+    public func imageCropViewController(_ controller: RSKImageCropViewController, didCropImage croppedImage: UIImage, usingCropRect cropRect: CGRect, rotationAngle: CGFloat) {
+        
         if (pendingPickClosure != nil){
             pendingPickClosure!(croppedImage)
         }
         pendingPickClosure = nil
         navigationController!.dismiss(animated: true, completion: nil)
+        
     }
-    
     
     open func imageCropViewControllerDidCancelCrop(_ controller: RSKImageCropViewController) {
         pendingPickClosure = nil
@@ -217,17 +238,26 @@ open class AAViewController: UIViewController, UINavigationControllerDelegate, U
         })
     }
     
-    open func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
-        let image = info[UIImagePickerControllerOriginalImage] as! UIImage
+    open func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
+        let image = info[.originalImage] as! UIImage
         navigationController!.dismiss(animated: true, completion: { () -> Void in
             self.cropImage(image)
         })
     }
+
+//    open func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+//        let image = info[UIImagePickerControllerOriginalImage] as! UIImage
+//        navigationController!.dismiss(animated: true, completion: { () -> Void in
+//            self.cropImage(image)
+//        })
+//    }
     
     open func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         pendingPickClosure = nil
         self.dismiss(animated: true, completion: nil)
     }
+    
+
     
     open func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
         return ElegantPresentations.controller(presentedViewController: presented, presentingViewController: presenting!, options: [])
@@ -238,10 +268,11 @@ open class AAViewController: UIViewController, UINavigationControllerDelegate, U
             controller.modalPresentationStyle = .formSheet
             present(controller, animated: true, completion: nil) 
         } else {
-            // controller.modalPresentationStyle = .custom
-            // controller.modalPresentationStyle = .custom
-            // controller.transitioningDelegate = self
+//             controller.modalPresentationStyle = .custom
+             controller.modalPresentationStyle = .formSheet
+//             controller.transitioningDelegate = self
             present(controller, animated: true, completion: nil)
         }
     }
+    
 }

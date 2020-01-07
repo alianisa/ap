@@ -39,7 +39,7 @@ open class AAMapFastView: UIImageView {
             return
         }
         
-        let options = MKMapSnapshotOptions()
+        let options = MKMapSnapshotter.Options()
         options.region = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: latitude, longitude: longitude), span: MKCoordinateSpan(latitudeDelta: 0.005, longitudeDelta: 0.005))
         options.size = CGSize(width: mapWidth, height: mapHeight)
         options.scale = UIScreen.main.scale

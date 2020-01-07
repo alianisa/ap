@@ -9,7 +9,7 @@ open class AATextCell: AATableViewCell {
     open var titleLabel: UILabel = UILabel()
     open var contentLabel: UILabel = UILabel()
     
-    public override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    public override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         titleLabel.font = UIFont.systemFont(ofSize: 14.0)

@@ -82,6 +82,8 @@ import Foundation
     func clear() {
         let appDomain = Bundle.main.bundleIdentifier!
         prefs.removePersistentDomain(forName: appDomain)
+        prefs.synchronize()
+        print(Array(UserDefaults.standard.dictionaryRepresentation().keys).count)
     }
     
     
@@ -104,7 +106,15 @@ import Foundation
         if let obj = cachedPrefs[key] {
            return obj
         }
-        let res = prefs.object(forKey: key)
+        let res:AnyObject?
+        if (prefs.object(forKey: key) != nil) {
+            res = prefs.object(forKey: key) as AnyObject
+            log("一等奖6===========")
+        }
+        else {
+            res = nil
+            log("一等奖7===========")
+        }
         cachedPrefs[key] = res as AnyObject??
         return res as AnyObject?
     }

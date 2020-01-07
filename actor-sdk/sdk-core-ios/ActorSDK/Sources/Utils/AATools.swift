@@ -54,7 +54,7 @@ private class ZipCommand: BackgroundCommand {
                 if !isDir.boolValue {
                     
                     // If file write file
-                    entries.append(ZZArchiveEntry(fileName: destPath, compress: false, dataBlock: { (error) -> Data! in
+                    entries.append(ZZArchiveEntry(fileName: destPath, compress: false, dataBlock: { (error) -> Data? in
                         
                         // TODO: Error handling?
                         return (try! Data(contentsOf: URL(fileURLWithPath: fullPath)))

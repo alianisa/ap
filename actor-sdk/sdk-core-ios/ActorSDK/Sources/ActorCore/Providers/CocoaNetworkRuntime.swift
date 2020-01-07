@@ -6,7 +6,7 @@ import Foundation
 
 class CocoaNetworkRuntime : ARManagedNetworkProvider {
     
-    override init() {
+    public override init() {
         super.init(factory: CocoaTcpConnectionFactory())
     }
 }
@@ -23,7 +23,7 @@ class CocoaTcpConnectionFactory: NSObject, ARAsyncConnectionFactory {
 
 class CocoaTcpConnection: ARAsyncConnection, GCDAsyncSocketDelegate {
     
-    static let queue = DispatchQueue(label: "im.actor.network", attributes: [])
+    static let queue = DispatchQueue(label: "im.alo.network", attributes: [])
     
     let READ_HEADER = 1
     let READ_BODY = 2
@@ -85,7 +85,7 @@ class CocoaTcpConnection: ARAsyncConnection, GCDAsyncSocketDelegate {
             let size = data.readUInt32(5)
             gcdSocket?.readData(toLength: UInt(size + 4), withTimeout: -1, tag: READ_BODY)
         } else if (tag == READ_BODY) {
-           // NSLog("\(TAG) Body received")
+            //            NSLog("\(TAG) Body received")
             var package = Data()
             package.append(self.header!)
             package.append(data)
@@ -100,9 +100,8 @@ class CocoaTcpConnection: ARAsyncConnection, GCDAsyncSocketDelegate {
     }
     
     override func doClose() {
-        //NSLog("\(TAG) Will try to close connection...")
         if (gcdSocket != nil) {
-            //NSLog("\(TAG) Closing connection...")
+            //            NSLog("\(TAG) Closing...")
             gcdSocket?.disconnect()
             gcdSocket = nil
         }

@@ -12,7 +12,7 @@ open class AASettingsNotificationsViewController: AATableViewController {
     fileprivate let CellIdentifier = "CellIdentifier"
     
     public init() {
-        super.init(style: UITableViewStyle.grouped)
+        super.init(style: UITableView.Style.grouped)
         
         title = AALocalized("NotificationsTitle")
         
@@ -30,7 +30,7 @@ open class AASettingsNotificationsViewController: AATableViewController {
         
         tableView.register(AACommonCell.self, forCellReuseIdentifier: CellIdentifier)
         tableView.backgroundColor = appStyle.vcBackyardColor
-        tableView.separatorStyle = UITableViewCellSeparatorStyle.none
+        tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
         
         view.backgroundColor = tableView.backgroundColor
     }
@@ -87,7 +87,7 @@ open class AASettingsNotificationsViewController: AATableViewController {
         
         cell.setContent(AALocalized("NotificationsSoundEffects"))
         cell.style = .switch
-        cell.selectionStyle = UITableViewCellSelectionStyle.none
+        cell.selectionStyle = UITableViewCell.SelectionStyle.none
         cell.bottomSeparatorVisible = true
         cell.topSeparatorVisible = true
         cell.bottomSeparatorLeftInset = 0
@@ -106,7 +106,7 @@ open class AASettingsNotificationsViewController: AATableViewController {
         
         cell.setContent(AALocalized("NotificationsEnable"))
         cell.style = .switch
-        cell.selectionStyle = UITableViewCellSelectionStyle.none
+        cell.selectionStyle = UITableViewCell.SelectionStyle.none
         cell.bottomSeparatorVisible = true
         cell.topSeparatorVisible = true
         cell.bottomSeparatorLeftInset = 0
@@ -118,9 +118,9 @@ open class AASettingsNotificationsViewController: AATableViewController {
             Actor.changeNotificationsEnabled(withValue: nValue)
             let rows = [IndexPath(row: 1, section: (indexPath as NSIndexPath).section)]
             if (nValue) {
-                self.tableView.insertRows(at: rows, with: UITableViewRowAnimation.middle)
+                self.tableView.insertRows(at: rows, with: UITableView.RowAnimation.middle)
             } else {
-                self.tableView.deleteRows(at: rows, with: UITableViewRowAnimation.middle)
+                self.tableView.deleteRows(at: rows, with: UITableView.RowAnimation.middle)
             }
             self.tableView.endUpdates()
         }
@@ -133,7 +133,7 @@ open class AASettingsNotificationsViewController: AATableViewController {
         
         cell.setContent(AALocalized("NotificationsSound"))
         cell.style = .switch
-        cell.selectionStyle = UITableViewCellSelectionStyle.none
+        cell.selectionStyle = UITableViewCell.SelectionStyle.none
         cell.bottomSeparatorVisible = true
         //cell.topSeparatorVisible = true
         cell.bottomSeparatorLeftInset = 0
@@ -154,7 +154,7 @@ open class AASettingsNotificationsViewController: AATableViewController {
         
         cell.setContent(AALocalized("NotificationsEnable"))
         cell.style = .switch
-        cell.selectionStyle = UITableViewCellSelectionStyle.none
+        cell.selectionStyle = UITableViewCell.SelectionStyle.none
         cell.topSeparatorVisible = true
         cell.bottomSeparatorVisible = true
         cell.bottomSeparatorLeftInset = 0
@@ -166,9 +166,9 @@ open class AASettingsNotificationsViewController: AATableViewController {
             Actor.changeGroupNotificationsEnabled(nValue)
             let rows = [IndexPath(row: 1, section: (indexPath as NSIndexPath).section)]
             if (nValue) {
-                self.tableView.insertRows(at: rows, with: UITableViewRowAnimation.middle)
+                self.tableView.insertRows(at: rows, with: UITableView.RowAnimation.middle)
             } else {
-                self.tableView.deleteRows(at: rows, with: UITableViewRowAnimation.middle)
+                self.tableView.deleteRows(at: rows, with: UITableView.RowAnimation.middle)
             }
             self.tableView.endUpdates()
         }
@@ -181,7 +181,7 @@ open class AASettingsNotificationsViewController: AATableViewController {
         
         cell.setContent(AALocalized("NotificationsOnlyMentions"))
         cell.style = .switch
-        cell.selectionStyle = UITableViewCellSelectionStyle.none
+        cell.selectionStyle = UITableViewCell.SelectionStyle.none
         cell.bottomSeparatorVisible = true
         //cell.topSeparatorVisible = true
         cell.bottomSeparatorLeftInset = 0
@@ -201,7 +201,7 @@ open class AASettingsNotificationsViewController: AATableViewController {
         
         cell.setContent(AALocalized("NotificationsEnable"))
         cell.style = .switch
-        cell.selectionStyle = UITableViewCellSelectionStyle.none
+        cell.selectionStyle = UITableViewCell.SelectionStyle.none
         cell.bottomSeparatorVisible = true
         cell.topSeparatorVisible = true
         cell.bottomSeparatorLeftInset = 0
@@ -213,9 +213,9 @@ open class AASettingsNotificationsViewController: AATableViewController {
             Actor.changeInAppNotificationsEnabled(withValue: nValue)
             let rows = [IndexPath(row: 1, section: 3), IndexPath(row: 2, section: 3)]
             if (nValue) {
-                self.tableView.insertRows(at: rows, with: UITableViewRowAnimation.middle)
+                self.tableView.insertRows(at: rows, with: UITableView.RowAnimation.middle)
             } else {
-                self.tableView.deleteRows(at: rows, with: UITableViewRowAnimation.middle)
+                self.tableView.deleteRows(at: rows, with: UITableView.RowAnimation.middle)
             }
             self.tableView.endUpdates()
         }
@@ -228,7 +228,7 @@ open class AASettingsNotificationsViewController: AATableViewController {
         
         cell.setContent(AALocalized("NotificationsSound"))
         cell.style = .switch
-        cell.selectionStyle = UITableViewCellSelectionStyle.none
+        cell.selectionStyle = UITableViewCell.SelectionStyle.none
         cell.bottomSeparatorVisible = true
         // cell.topSeparatorVisible = true
         cell.bottomSeparatorLeftInset = 0
@@ -250,7 +250,7 @@ open class AASettingsNotificationsViewController: AATableViewController {
         
         cell.setContent(AALocalized("NotificationsVibration"))
         cell.style = .switch
-        cell.selectionStyle = UITableViewCellSelectionStyle.none
+        cell.selectionStyle = UITableViewCell.SelectionStyle.none
         cell.bottomSeparatorVisible = true
         //cell.topSeparatorVisible = true
         cell.bottomSeparatorLeftInset = 0
@@ -271,7 +271,7 @@ open class AASettingsNotificationsViewController: AATableViewController {
         
         cell.setContent(AALocalized("NotificationsPreview"))
         cell.style = .switch
-        cell.selectionStyle = UITableViewCellSelectionStyle.none
+        cell.selectionStyle = UITableViewCell.SelectionStyle.none
         cell.bottomSeparatorVisible = true
         cell.topSeparatorVisible = true
         cell.bottomSeparatorLeftInset = 0

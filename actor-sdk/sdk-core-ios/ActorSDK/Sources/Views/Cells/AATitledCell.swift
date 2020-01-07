@@ -7,13 +7,16 @@ import UIKit
 open class AATitledCell: AATableViewCell {
     
     fileprivate var isAction: Bool = false
-    open let titleLabel: UILabel = UILabel()
-    open let contentLabel: UILabel = UILabel()
+    public let titleLabel: UILabel = UILabel()
+    public let contentLabel: UILabel = UILabel()
     
-    public override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    public override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         titleLabel.textColor = appStyle.cellTintColor
+        
+        contentLabel.textAlignment = .right
+        
         contentView.addSubview(titleLabel)
         contentView.addSubview(contentLabel)
     }
@@ -35,7 +38,7 @@ open class AATitledCell: AATableViewCell {
     open override func layoutSubviews() {
         super.layoutSubviews()
         
-        titleLabel.frame = CGRect(x: separatorInset.left, y: 7, width: contentView.bounds.width - separatorInset.left - 10, height: 19)
-        contentLabel.frame = CGRect(x: separatorInset.left, y: 27, width: contentView.bounds.width - separatorInset.left - 10, height: 22)
+        titleLabel.frame = CGRect(x: separatorInset.left, y: 11, width: contentView.bounds.width - separatorInset.left - 10, height: 22)
+        contentLabel.frame = CGRect(x: separatorInset.left, y: 11, width: contentView.bounds.width - separatorInset.left - 10, height: 22)
     }
 }

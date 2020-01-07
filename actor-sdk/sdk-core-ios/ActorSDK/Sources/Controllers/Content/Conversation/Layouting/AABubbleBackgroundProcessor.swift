@@ -82,7 +82,6 @@ class AAListProcessor: NSObject, ARListProcessor {
             }
             
             if ENABLE_LOGS { log("UPDATE_MSG processing(items): \(CFAbsoluteTimeGetCurrent() - section)") }
-            section = CFAbsoluteTimeGetCurrent()
             
             // Calculating cell settings
             // TODO: Cache and avoid recalculation of whole list
@@ -109,9 +108,8 @@ class AAListProcessor: NSObject, ARListProcessor {
                     
                     let obj = objs[i]
                     let oldIndex: Int! = prevList.indexMap[obj.rid]
-                    
                     if oldIndex != nil {
-
+                        
                         // Check if layout keys are same
                         // If text was replaced by media it might force-updated
                         // If size of bubble changed you might to change layout key
@@ -132,6 +130,7 @@ class AAListProcessor: NSObject, ARListProcessor {
                         }
                         
                         if prevList.layouts[oldIndex].key != layouts[i].key || valueChanged {
+                            
                             // Mark as forced update
                             isForced = true
                             // Hack for rewriting layout information
@@ -139,6 +138,7 @@ class AAListProcessor: NSObject, ARListProcessor {
                             layoutCache.revoke(objs[i].rid)
                             // Building new layout
                             layouts[i] = buildLayout(objs[i], layoutCache: layoutCache)
+                            
                         } else {
                             
                             // Otherwise check bubble settings to check
@@ -152,6 +152,7 @@ class AAListProcessor: NSObject, ARListProcessor {
                                     // Date separator change size so make cell for resize
                                     isForced = true
                                 } else {
+                                    
                                     // Other changes doesn't change size, so just update content
                                     // without resizing
                                     isUpdated = true
@@ -308,6 +309,8 @@ class AAListProcessor: NSObject, ARListProcessor {
     func buildLayout(_ message: ACMessage, layoutCache: AALayoutCache) -> AACellLayout {
         
         var layout: AACellLayout! = layoutCache.pick(message.rid)
+        
+//        NSLog("Message state \(message.messageState.description)")
         
         if (layout == nil) {
             // Usually never happens

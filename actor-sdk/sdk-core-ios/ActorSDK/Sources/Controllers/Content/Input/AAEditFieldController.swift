@@ -30,7 +30,7 @@ open class AAEditFieldController: AAContentTableController {
     
     open var fieldCell: AAEditRow!
     
-    open let config: AAEditFieldControllerConfig
+    public let config: AAEditFieldControllerConfig
     
     public init(config: AAEditFieldControllerConfig) {
         

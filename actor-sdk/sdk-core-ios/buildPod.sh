@@ -3,21 +3,21 @@
 set -e
 
 rm -fr build
-mkdir -p build/Output/ActorSDK
+mkdir -p build/Output/AloSDK
 mkdir -p build/Output/ActorCore
 mkdir -p build/Output/Resources
 
-rsync -avm --include='*.swift' -f 'hide,! */' ActorSDK/Sources/ build/Output/ActorSDK
-rsync -avm --include='*.m' -f 'hide,! */' ActorSDK/Sources/ build/Output/ActorSDK
-rsync -avm --include='*.h' -f 'hide,! */' ActorSDK/Sources/ build/Output/ActorSDK
+rsync -avm --include='*.swift' -f 'hide,! */' AloSDK/Sources/ build/Output/AloSDK
+rsync -avm --include='*.m' -f 'hide,! */' AloSDK/Sources/ build/Output/AloSDK
+rsync -avm --include='*.h' -f 'hide,! */' AloSDK/Sources/ build/Output/AloSDK
 
-rsync -avm --include='*.*' -f 'hide,! */' ActorSDK/Resources/ build/Output/Resources
+rsync -avm --include='*.*' -f 'hide,! */' AloSDK/Resources/ build/Output/Resources
 
 export PROJECT_DIR=`pwd`
 export CONFIGURATION_TEMP_DIR=`pwd`/build/Output/
 export PODS_ROOT=`pwd`/Pods
 
-cd ActorSDK/Sources/ActorCore
+cd AloSDK/Sources/ActorCore
 make translate
 cd ../../..
 

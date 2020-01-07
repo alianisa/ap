@@ -7,24 +7,25 @@ import MessageUI
 import Social
 import AddressBookUI
 import ContactsUI
+
 fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
-  switch (lhs, rhs) {
-  case let (l?, r?):
-    return l < r
-  case (nil, _?):
-    return true
-  default:
-    return false
-  }
+    switch (lhs, rhs) {
+    case let (l?, r?):
+        return l < r
+    case (nil, _?):
+        return true
+    default:
+        return false
+    }
 }
 
 fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
-  switch (lhs, rhs) {
-  case let (l?, r?):
-    return l > r
-  default:
-    return rhs < lhs
-  }
+    switch (lhs, rhs) {
+    case let (l?, r?):
+        return l > r
+    default:
+        return rhs < lhs
+    }
 }
 
 
@@ -36,24 +37,28 @@ open class AAContactsViewController: AAContactsListContentController, AAContacts
         }
     }
     
+    var shareContent = NSString()
+    
     public override init() {
         super.init()
         
         content = ACAllEvents_Main.contacts()
         
-        tabBarItem = UITabBarItem(title: "TabPeople", img: "TabIconContacts", selImage: "TabIconContactsHighlighted")
+        tabBarItem = UITabBarItem(title: "", img: "TabIconContacts", selImage: "TabIconContactsHighlighted")
         
         navigationItem.title = AALocalized("TabPeople")
-        navigationItem.backBarButtonItem = UIBarButtonItem(title: AALocalized("ContactsBack"), style: UIBarButtonItemStyle.plain, target: nil, action: nil)
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.add, target: self, action: #selector(AAContactsViewController.findContact))
+//        navigationItem.backBarButtonItem = UIBarButtonItem(title: AALocalized("ContactsBack"), style: UIBarButtonItemStyle.plain, target: nil, action: nil)
+        navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: UIBarButtonItem.Style.plain, target: nil, action: nil)
+
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.add, target: self, action: #selector(AAContactsViewController.findContact))
         
         delegate = self
     }
-
+    
     public required init(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
     open func contactDidTap(_ controller: AAContactsListContentController, contact: ACContact) -> Bool {
         
         if let customController = ActorSDK.sharedActor().delegate.actorControllerForConversation(ACPeer_userWithInt_(contact.uid)) {
@@ -66,121 +71,95 @@ open class AAContactsViewController: AAContactsListContentController, AAContacts
     }
     
     open func willAddContacts(_ controller: AAContactsListContentController, section: AAManagedSection) {
+    
+//        section.custom { (r: AACustomRow<AAContactActionCell>) -> () in
+//
+//            r.height = 56
+//
+//            r.closure = { (cell: AAContactActionCell)->() in
+//                cell.bind("ic_add_user", actionTitle: AALocalized("ContactsActionAdd"))
+//            }
+//
+//            r.selectAction = { () -> Bool in
+//                self.findContact()
+//                return AADevice.isiPad
+//            }
+//        }
         
         section.custom { (r: AACustomRow<AAContactActionCell>) -> () in
-            
+
             r.height = 56
-            
-            r.closure = { (cell: AAContactActionCell)->() in
-                cell.bind("ic_add_user", actionTitle: AALocalized("ContactsActionAdd"))
-            }
-            
-            r.selectAction = { () -> Bool in
-                self.findContact()
-                return AADevice.isiPad
-            }
-        }
-        
-        section.custom { (r: AACustomRow<AAContactActionCell>) -> () in
-            
-            r.height = 56
-            
+
             r.closure = { (cell: AAContactActionCell)->() in
                 cell.bind("ic_invite_user", actionTitle: "\(AALocalized("ContactsActionInvite")) \(ActorSDK.sharedActor().appName)")
             }
+
+
             
             r.selectAction = { () -> Bool in
+
+//                let builder = AAMenuBuilder()
+//
+//                if MFMessageComposeViewController.canSendText() {
+//                    builder.add("SMS") { () -> () in
+//                        self.showSmsInvitation(nil)
+//                    }
+//                }
                 
-                let builder = AAMenuBuilder()
                 
-                if MFMessageComposeViewController.canSendText() {
-                    builder.add("SMS") { () -> () in
-                        self.showSmsInvitation(nil)
-                    }
-                }
-                
-                if MFMailComposeViewController.canSendMail() {
-                    builder.add("Email") { () -> () in
-                        self.showEmailInvitation(nil)
-                    }    
-                }
-                
-                if SLComposeViewController.isAvailable(forServiceType: SLServiceTypeTencentWeibo) {
-                    builder.add("Tencent Weibo") { () -> () in
-                        let vc = SLComposeViewController(forServiceType: SLServiceTypeTencentWeibo)!
-                        vc.setInitialText(self.inviteText)
-                        self.present(vc, animated: true, completion: nil)
-                    }
-                }
-                
-                if SLComposeViewController.isAvailable(forServiceType: SLServiceTypeSinaWeibo) {
-                    builder.add("Sina Weibo") { () -> () in
-                        let vc = SLComposeViewController(forServiceType: SLServiceTypeSinaWeibo)!
-                        vc.setInitialText(self.inviteText)
-                        self.present(vc, animated: true, completion: nil)
-                    }
-                }
-                
-                if SLComposeViewController.isAvailable(forServiceType: SLServiceTypeTwitter) {
-                    builder.add("Twitter") { () -> () in
-                        let vc = SLComposeViewController(forServiceType: SLServiceTypeTwitter)!
-                        vc.setInitialText(self.inviteText)
-                        self.present(vc, animated: true, completion: nil)
-                    }
-                }
-                
-                if SLComposeViewController.isAvailable(forServiceType: SLServiceTypeFacebook) {
-                    builder.add("Facebook") { () -> () in
-                        let vc = SLComposeViewController(forServiceType: SLServiceTypeFacebook)!
-                        vc.add(URL(string: ActorSDK.sharedActor().inviteUrl))
-                        self.present(vc, animated: true, completion: nil)
-                    }
-                }
-                
-                let view = self.tableView.cellForRow(at: IndexPath(row: 1, section: 0))!.contentView
-                
-                self.showActionSheet(builder.items, cancelButton: "AlertCancel", destructButton: nil, sourceView: view, sourceRect: view.bounds, tapClosure: builder.tapClosure)
+//
+//                if MFMailComposeViewController.canSendMail() {
+//                    builder.add("Email") { () -> () in
+//                        self.showEmailInvitation(nil)
+//                    }
+//                }
+//
+//                if SLComposeViewController.isAvailable(forServiceType: SLServiceTypeTencentWeibo) {
+//                    builder.add("Tencent Weibo") { () -> () in
+//                        let vc = SLComposeViewController(forServiceType: SLServiceTypeTencentWeibo)!
+//                        vc.setInitialText(self.inviteText)
+//                        self.present(vc, animated: true, completion: nil)
+//                    }
+//                }
+//
+//                if SLComposeViewController.isAvailable(forServiceType: SLServiceTypeSinaWeibo) {
+//                    builder.add("Sina Weibo") { () -> () in
+//                        let vc = SLComposeViewController(forServiceType: SLServiceTypeSinaWeibo)!
+//                        vc.setInitialText(self.inviteText)
+//                        self.present(vc, animated: true, completion: nil)
+//                    }
+//                }
+//
+//                if SLComposeViewController.isAvailable(forServiceType: SLServiceTypeTwitter) {
+//                    builder.add("Twitter") { () -> () in
+//                        let vc = SLComposeViewController(forServiceType: SLServiceTypeTwitter)!
+//                        vc.setInitialText(self.inviteText)
+//                        self.present(vc, animated: true, completion: nil)
+//                    }
+//                }
+//
+//                if SLComposeViewController.isAvailable(forServiceType: SLServiceTypeFacebook) {
+//                    builder.add("Facebook") { () -> () in
+//                        let vc = SLComposeViewController(forServiceType: SLServiceTypeFacebook)!
+//                        vc.add(URL(string: ActorSDK.sharedActor().inviteUrl))
+//                        self.present(vc, animated: true, completion: nil)
+//                    }
+//                }
+//
+//                let view = self.tableView.cellForRow(at: IndexPath(row: 1, section: 0))!.contentView
+//
+//                self.showActionSheet(builder.items, cancelButton: "AlertCancel", destructButton: nil, sourceView: view, sourceRect: view.bounds, tapClosure: builder.tapClosure)
+//
+
+                let activityViewController = UIActivityViewController(activityItems: [self.inviteText], applicationActivities: nil)
+                self.present(activityViewController, animated: true, completion: {})
                 
                 return true
             }
         }
-        
-        if(ActorSDK.sharedActor().enablePredefinedGroups){
-            section.custom { (r:AACustomRow<AAContactActionCell>) -> () in
-                
-                r.height = 56
-                
-                r.closure = { (cell) -> () in
-                    cell.bind("ic_pre_groups", actionTitle: AALocalized("GroupsPre"))
-                }
-                
-                r.selectAction = { () -> Bool in
-                    let gruposPredefinidosController = AAGrouppreListController(groupType:JavaLangInteger(value: ACGroupType.group()))
-                    gruposPredefinidosController.title = AALocalized("GroupsPre")
-                    self.navigateNext(gruposPredefinidosController, removeCurrent: false)
-                    return false
-                }
-            }
-            
-            section.custom { (r:AACustomRow<AAContactActionCell>) -> () in
-                
-                r.height = 56
-                
-                r.closure = { (cell) -> () in
-                    cell.bind("ic_pre_channels", actionTitle: AALocalized("ChannelsPre"))
-                }
-                
-                r.selectAction = { () -> Bool in
-                    let gruposPredefinidosController = AAGrouppreListController(groupType:JavaLangInteger(value: ACGroupType.channel()))
-                    gruposPredefinidosController.title = AALocalized("ChannelsPre")
-                    self.navigateNext(gruposPredefinidosController, removeCurrent: false)
-                    return false
-                }
-            }
-        }
     }
- 
-    // Searching for contact
+
+//     Searching for contact
     
     @objc open func findContact() {
         
@@ -253,25 +232,25 @@ open class AAContactsViewController: AAContactsListContentController, AAContacts
                     }
                     if user != nil {
                         self.execute(Actor.addContactCommand(withUid: user!.getId())!, successBlock: { (val) -> () in
-                                if let customController = ActorSDK.sharedActor().delegate.actorControllerForConversation(ACPeer_userWithInt_(user!.getId())) {
-                                    self.navigateDetail(customController)
-                                } else {
-                                    self.navigateDetail(ConversationViewController(peer: ACPeer_userWithInt_(user!.getId())))
-                                }
-                            }, failureBlock: { (val) -> () in
-                                self.showSmsInvitation([textField.text!])
+                            if let customController = ActorSDK.sharedActor().delegate.actorControllerForConversation(ACPeer_userWithInt_(user!.getId())) {
+                                self.navigateDetail(customController)
+                            } else {
+                                self.navigateDetail(ConversationViewController(peer: ACPeer_userWithInt_(user!.getId())))
+                            }
+                        }, failureBlock: { (val) -> () in
+                            self.showSmsInvitation([textField.text!])
                         })
                     } else {
                         self.showSmsInvitation([textField.text!])
                     }
-                    }, failureBlock: { (val) -> () in
-                        self.showSmsInvitation([textField.text!])
+                }, failureBlock: { (val) -> () in
+                    self.showSmsInvitation([textField.text!])
                 })
             }
         }
     }
     
-    // Email Invitation
+//     Email Invitation
     
     open func showEmailInvitation(_ recipients: [String]?) {
         if MFMailComposeViewController.canSendMail() {

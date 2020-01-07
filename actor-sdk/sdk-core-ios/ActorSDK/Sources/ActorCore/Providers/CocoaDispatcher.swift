@@ -4,7 +4,7 @@
 
 import Foundation
 
-class CocoaDispatcher: NSObject, ARCocoaDispatcherProxy {
+@objc class CocoaDispatcher: NSObject, ARCocoaDispatcherProxy {
     
     func dispatch(onBackground runnable: JavaLangRunnable!, withDelay delay: jlong) -> ARDispatchCancel! {
         dispatchBackgroundDelayed(Double(delay) / 1000) { () -> Void in

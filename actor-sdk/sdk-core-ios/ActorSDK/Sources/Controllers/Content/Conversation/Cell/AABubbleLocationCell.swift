@@ -28,7 +28,7 @@ open class AABubbleLocationCell: AABubbleCell {
         timeLabel.font = UIFont.italicSystemFont(ofSize: 11)
         timeLabel.textColor = appStyle.chatMediaDateColor
         
-        statusView.contentMode = UIViewContentMode.center
+        statusView.contentMode = UIView.ContentMode.center
 
         pin.image = UIImage.bundled("LocationPin")
         
@@ -43,8 +43,14 @@ open class AABubbleLocationCell: AABubbleCell {
 
         map.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(AABubbleLocationCell.mapDidTap)))
         map.isUserInteractionEnabled = true
+        
+//        self.contentView.isUserInteractionEnabled = true
     }
 
+    convenience override init(frame: CGRect, isFullSize: Bool) {
+        self.init(frame: frame, isFullSize: false)
+    }
+    
     public required init(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

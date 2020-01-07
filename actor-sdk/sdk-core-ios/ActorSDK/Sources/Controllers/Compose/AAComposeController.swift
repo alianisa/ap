@@ -1,6 +1,3 @@
-//
-//  Copyright (c) 2014-2016 Actor LLC. <https://actor.im>
-//
 
 import UIKit
 
@@ -15,7 +12,7 @@ open class AAComposeController: AAContactsListContentController, AAContactsListC
         self.navigationItem.title = AALocalized("ComposeTitle")
         
         if AADevice.isiPad {
-            self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: AALocalized("NavigationCancel"), style: UIBarButtonItemStyle.plain, target: self, action: #selector(self.dismissController))
+            self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: AALocalized("NavigationCancel"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(self.dismissController))
         }
     }
 
@@ -24,12 +21,12 @@ open class AAComposeController: AAContactsListContentController, AAContactsListC
     }
     
     open func willAddContacts(_ controller: AAContactsListContentController, section: AAManagedSection) {
-        section.custom { (r:AACustomRow<AAContactActionCell>) -> () in
+        _ = section.custom { (r:AACustomRow<AAContactActionCell>) -> () in
             
             r.height = 56
             
             r.closure = { (cell) -> () in
-                cell.bind("ic_add_user", actionTitle: AALocalized("CreateGroup"))
+                cell.bind("ic_create_group", actionTitle: AALocalized("CreateGroup"))
             }
             
             r.selectAction = { () -> Bool in
@@ -38,7 +35,7 @@ open class AAComposeController: AAContactsListContentController, AAContactsListC
             }
         }
         
-        section.custom { (r:AACustomRow<AAContactActionCell>) -> () in
+        _ = section.custom { (r:AACustomRow<AAContactActionCell>) -> () in
             
             r.height = 56
             
@@ -51,42 +48,6 @@ open class AAComposeController: AAContactsListContentController, AAContactsListC
                 return false
             }
         }
-        
-        
-        if(ActorSDK.sharedActor().enablePredefinedGroups){
-            section.custom { (r:AACustomRow<AAContactActionCell>) -> () in
-                
-                r.height = 56
-                
-                r.closure = { (cell) -> () in
-                    cell.bind("ic_pre_groups", actionTitle: AALocalized("GroupsPre"))
-                }
-                
-                r.selectAction = { () -> Bool in
-                    let gruposPredefinidosController = AAGrouppreListController(groupType:JavaLangInteger(value: ACGroupType.group()))
-                    gruposPredefinidosController.title = AALocalized("GroupsPre")
-                    self.navigateNext(gruposPredefinidosController, removeCurrent: false)
-                    return false
-                }
-            }
-            
-            section.custom { (r:AACustomRow<AAContactActionCell>) -> () in
-                
-                r.height = 56
-                
-                r.closure = { (cell) -> () in
-                    cell.bind("ic_pre_channels", actionTitle: AALocalized("ChannelsPre"))
-                }
-                
-                r.selectAction = { () -> Bool in
-                    let gruposPredefinidosController = AAGrouppreListController(groupType:JavaLangInteger(value: ACGroupType.channel()))
-                    gruposPredefinidosController.title = AALocalized("ChannelsPre")
-                    self.navigateNext(gruposPredefinidosController, removeCurrent: false)
-                    return false
-                }
-            }
-        }
-        
     }
     
     open func contactDidTap(_ controller: AAContactsListContentController, contact: ACContact) -> Bool {

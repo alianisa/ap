@@ -12,7 +12,6 @@ open class AAEditRow: AAManagedRow, UITextFieldDelegate {
     open var text: String?
     open var placeholder: String?
     open var returnKeyType = UIReturnKeyType.default
-    open var keyboardType = UIKeyboardType.default
     open var autocorrectionType = UITextAutocorrectionType.default
     open var autocapitalizationType = UITextAutocapitalizationType.sentences
     open var returnAction: (()->())?
@@ -27,7 +26,7 @@ open class AAEditRow: AAManagedRow, UITextFieldDelegate {
         
         if placeholder != nil {
             let placeholderText = NSMutableAttributedString(string: placeholder!)
-            placeholderText.addAttribute(NSAttributedStringKey.foregroundColor, value: ActorSDK.sharedActor().style.cellHintColor, range:  NSMakeRange(0, placeholder!.length))
+            placeholderText.addAttribute(NSAttributedString.Key.foregroundColor, value: ActorSDK.sharedActor().style.cellHintColor, range:  NSMakeRange(0, placeholder!.length))
             res.textField.attributedPlaceholder = placeholderText
         } else {
             res.textField.placeholder = nil
@@ -38,7 +37,6 @@ open class AAEditRow: AAManagedRow, UITextFieldDelegate {
         res.textField.delegate = self
         res.textField.removeTarget(nil, action: nil, for: .allEvents)
         res.textField.addTarget(self, action: #selector(AAEditRow.textFieldDidChange(_:)), for: .editingChanged)
-        res.textField.keyboardType = keyboardType
         
         if prefix != nil {
             res.textPrefix.text = prefix
@@ -81,16 +79,17 @@ open class AATitledRow: AAManagedRow {
     
     open var title: String?
     open var subtitle: String?
+    open var titleColor: UIColor?
     
     open var isAction: Bool = false
-    open var accessoryType = UITableViewCellAccessoryType.none
+    open var accessoryType = UITableViewCell.AccessoryType.none
     
     open var bindAction: ((_ r: AATitledRow)->())?
     
     // Cell
     
     open override func rangeCellHeightForItem(_ table: AAManagedTable, indexPath: AARangeIndexPath) -> CGFloat {
-        return 55
+        return 44
     }
     
     open override func rangeCellForItem(_ table: AAManagedTable, indexPath: AARangeIndexPath) -> UITableViewCell {
@@ -107,7 +106,13 @@ open class AATitledRow: AAManagedRow {
         if isAction {
             res.contentLabel.textColor = ActorSDK.sharedActor().style.vcHintColor
         } else {
-            res.contentLabel.textColor = ActorSDK.sharedActor().style.cellTextColor
+            res.contentLabel.textColor = ActorSDK.sharedActor().style.vcHintColor
+        }
+        
+        if titleColor != nil {
+            res.titleLabel.textColor = titleColor!
+        } else {
+            res.titleLabel.textColor = ActorSDK.sharedActor().style.cellTextColor
         }
 
     }
@@ -190,9 +195,9 @@ open class AATextRow: AAManagedRow {
         let res = table.dequeueTextCell(indexPath.indexPath)
         res.setContent(title, content: content, isAction: isAction)
         if navigate {
-            res.accessoryType = UITableViewCellAccessoryType.disclosureIndicator
+            res.accessoryType = UITableViewCell.AccessoryType.disclosureIndicator
         } else {
-            res.accessoryType = UITableViewCellAccessoryType.none
+            res.accessoryType = UITableViewCell.AccessoryType.none
         }
         return res
     }

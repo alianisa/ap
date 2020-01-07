@@ -1,6 +1,5 @@
 //
 //  AARingtonesViewController.swift
-//  ActorSDK
 //
 //  Created by Alexey Galaev on 5/27/16.
 //  Copyright © 2016 Steve Kite. All rights reserved.
@@ -16,17 +15,17 @@ open class AARingtonesViewController: AATableViewController {
     open var selectedRingtone: String = ""
     open var completion: ((String) -> ())!
     
-    let rootSoundDirectories: [String] = ["/Library/Ringtones"/*,"/System/Library/Audio/UISounds"*/]
+    let rootSoundDirectories: [String] = ["/System/Library/Audio/UISounds"/*,"/System/Library/Audio/UISounds"*/]
     var directories: [String] = []
     var soundFiles: [(directory: String, files: [String])] = []
    
     public init() {
-        super.init(style: UITableViewStyle.plain)
+        super.init(style: UITableView.Style.plain)
         
         self.title = AALocalized("Ringtones")
         
-        let cancelButtonItem = UIBarButtonItem(title: AALocalized("NavigationCancel"), style: UIBarButtonItemStyle.plain, target: self, action: Selector("dismiss"))
-        let doneButtonItem = UIBarButtonItem(title: AALocalized("NavigationDone"), style: UIBarButtonItemStyle.plain, target: self, action: Selector("dismiss"))
+        let cancelButtonItem = UIBarButtonItem(title: AALocalized("NavigationCancel"), style: UIBarButtonItem.Style.plain, target: self, action: Selector("dismiss"))
+        let doneButtonItem = UIBarButtonItem(title: AALocalized("NavigationDone"), style: UIBarButtonItem.Style.plain, target: self, action: Selector("dismiss"))
         self.navigationItem.setLeftBarButton(cancelButtonItem, animated: false)
         self.navigationItem.setRightBarButton(doneButtonItem, animated: false)
     }
@@ -131,7 +130,7 @@ open class AARingtonesViewController: AATableViewController {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAtIndexPath indexPath: IndexPath) -> CGFloat {
-        return UITableViewAutomaticDimension
+        return UITableView.automaticDimension
     }
     
 //    override open func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {

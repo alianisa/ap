@@ -13,6 +13,10 @@ open class AASettingsViewController: AAContentTableController {
     fileprivate var headerCell: AAAvatarRow!
     fileprivate var nicknameCell: AATitledRow!
     fileprivate var aboutCell: AATitledRow!
+    fileprivate var coinsCell: AATitledRow!
+    fileprivate var exitCell: AATitledRow!
+    
+    var presenceText:String!
     
     public init() {
         super.init(style: AAContentTableStyle.settingsPlain)
@@ -21,7 +25,7 @@ open class AASettingsViewController: AAContentTableController {
         
         content = ACAllEvents_Main.settings()
         
-        tabBarItem = UITabBarItem(title: "TabSettings", img: "TabIconSettings", selImage: "TabIconSettingsHighlighted")
+        tabBarItem = UITabBarItem(title: "", img: "TabIconSettings", selImage: "TabIconSettingsHighlighted")
         
         navigationItem.title = AALocalized("TabSettings")
     }
@@ -33,7 +37,7 @@ open class AASettingsViewController: AAContentTableController {
     open override func tableDidLoad() {
         
         // Profile
-        section { [unowned self] (s) -> () in
+        _ = section { [unowned self] (s) -> () in
 
             // Profile: Photo and name
             self.headerCell = s.avatar() { [unowned self] (r) -> () in
@@ -43,7 +47,8 @@ open class AASettingsViewController: AAContentTableController {
                     let upload = Actor.getOwnAvatarVM()!.uploadState.get() as? ACAvatarUploadState
                     let avatar = self.user.getAvatarModel().get()
                     let presence = self.user.getPresenceModel().get()
-                    let presenceText = Actor.getFormatter().formatPresence(presence, withSex: self.user.getSex())
+//                    let pT = Actor.getFormatter().
+//                    pt = Actor.getFormatter().formatPresence(presence, withSex: self.user.getSex())
                     let name = self.user.getNameModel().get()
                     
                     r.id = self.uid
@@ -59,16 +64,12 @@ open class AASettingsViewController: AAContentTableController {
                         r.avatarLoading = false
                     }
                     
-                    if presenceText != nil {
-                        r.subtitle = presenceText
-                        if presence!.state.ordinal() == ACUserPresence_State.online().ordinal() {
-                            r.subtitleColor = ActorSDK.sharedActor().style.userOnlineColor
-                        } else {
-                            r.subtitleColor = ActorSDK.sharedActor().style.userOfflineColor
-                        }
-                    } else {
-                        r.subtitle = ""
-                    }
+//                    if pt == nil {
+//                        r.subtitle = ""
+//                    } else {
+                        r.subtitle = self.presenceText
+                        r.subtitleColor = ActorSDK.sharedActor().style.userOfflineColor
+//                    }
                 }
                 
                 r.avatarDidTap = { [unowned self] (view: UIView) -> () in
@@ -85,9 +86,9 @@ open class AASettingsViewController: AAContentTableController {
             }
             
             // Profile: Set Photo
-            s.action("SettingsSetPhoto") { [unowned self] (r) -> () in
+            _ = s.action("SettingsSetPhoto") { [unowned self] (r) -> () in
                 r.selectAction = { [unowned self] () -> Bool in
-                    let hasCamera = UIImagePickerController.isSourceTypeAvailable(UIImagePickerControllerSourceType.camera)
+                    let hasCamera = UIImagePickerController.isSourceTypeAvailable(UIImagePickerController.SourceType.camera)
                     let view = self.tableView.cellForRow(at: IndexPath(row: 1, section: 0))!.contentView
                     self.showActionSheet(hasCamera ? ["PhotoCamera", "PhotoLibrary"] : ["PhotoLibrary"],
                         cancelButton: "AlertCancel",
@@ -113,7 +114,7 @@ open class AASettingsViewController: AAContentTableController {
             }
             
             // Profile: Set Name
-            s.action("SettingsChangeName") { [unowned self] (r) -> () in
+            _ = s.action("SettingsChangeName") { [unowned self] (r) -> () in
                 r.selectAction = { [unowned self] () -> Bool in
                     
                     self.startEditField { (c) -> () in
@@ -147,22 +148,25 @@ open class AASettingsViewController: AAContentTableController {
 
         
         // Settings
-        section { (s) -> () in
+        _ = section { (s) -> () in
             
             ActorSDK.sharedActor().delegate.actorSettingsConfigurationWillCreated(self, section: s)
             
             // Settings: Notifications
-            s.navigate("SettingsNotifications", controller: AASettingsNotificationsViewController.self)
+            _ = s.navigate("SettingsNotifications", controller: AASettingsNotificationsViewController.self)
             
             // Settings: Media Settings
-            s.navigate("SettingsMedia", controller: AASettingsMediaViewController.self)
+            _ = s.navigate("SettingsMedia", controller: AASettingsMediaViewController.self)
             
             // Settings: Security
-            s.navigate("SettingsSecurity", controller: AASettingsPrivacyViewController.self)
+            _ = s.navigate("SettingsSecurity", controller: AASettingsPrivacyViewController.self)
+            
+            // Settings: All sessions
+            _ = s.navigate("PrivacyAllSessions", controller: AASettingsSessionsController.self)
             
             // Settings: Wallpapper
-            s.custom({ [unowned self] (r: AACustomRow<AAWallpapperSettingsCell>) -> () in
-                r.height = 230
+            _ = s.custom({ [unowned self] (r: AACustomRow<AAWallpapperSettingsCell>) -> () in
+                r.height = 210
                 r.closure = { [unowned self] (cell) -> () in
                     cell.wallpapperDidTap = { [unowned self] (name) -> () in
                         self.present(AAWallpapperPreviewController(imageName: name), animated: true, completion: nil)
@@ -180,8 +184,59 @@ open class AASettingsViewController: AAContentTableController {
             ActorSDK.sharedActor().delegate.actorSettingsConfigurationDidCreated(self, section: s)
         }
         
+//        //Coins
+//        section { (s) -> () in
+//            
+//            // Coins: View coins
+//            self.coinsCell = s.titled("Coins") { [unowned self] (r) -> () in
+//                
+//                r.accessoryType = .disclosureIndicator
+//                
+//                r.bindAction = { [unowned self] (r) -> () in
+////                    if let nick = self.user.getNickModel().get() {
+////                        r.subtitle = "@\(nick)"
+////                        r.isAction = false
+////                    } else {
+////                        r.subtitle = AALocalized("SettingsUsernameNotSet")
+////                        r.isAction = true
+////                    }
+//                }
+//                
+//                r.selectAction = { [unowned self] () -> Bool in
+//                    
+//                    self.startEditField { (c) -> () in
+//                        
+//                        c.title = "SettingsUsernameTitle"
+//                        c.actionTitle = "AlertSave"
+//                        
+////                        if let nick = self.user.getNickModel().get() {
+////                            c.initialText = nick
+////                        }
+//                        
+////                        c.fieldHint = "SettingsUsernameHintField"
+////                        c.fieldAutocorrectionType = .no
+////                        c.fieldAutocapitalizationType = .none
+////                        c.hint = "SettingsUsernameHint"
+//                        
+////                        c.didDoneTap = { (t, c) -> () in
+////                            var nNick: String? = t.trim()
+////                            if nNick?.length == 0 {
+////                                nNick = nil
+////                            }
+////                            c.executeSafeOnlySuccess(Actor.editMyNickCommand(withNick: nNick)!, successBlock: { (val) -> Void in
+////                                c.dismissController()
+////                            })
+////                        }
+//                    }
+//                    
+//                    return AADevice.isiPad
+//                }
+//            }
+//        }
+            
+        
         // Contacts
-        section { [unowned self] (s) -> () in
+        _ = section { [unowned self] (s) -> () in
 
             // Contacts: Nicknames
             self.nicknameCell = s.titled("ProfileUsername") { [unowned self] (r) -> () in
@@ -229,6 +284,50 @@ open class AASettingsViewController: AAContentTableController {
                 }
             }
             
+//            self.aboutCell = s.titled("Exit") { [unowned self] (r) -> () in
+//
+//                r.accessoryType = .disclosureIndicator
+//
+//                r.bindAction = { [unowned self] (r) -> () in
+                    //                    if let about = self.user.getAboutModel().get() {
+                    //                        r.subtitle = about
+                    //                        r.isAction = false
+                    //                    } else {
+                    //                        r.subtitle = AALocalized("SettingsAboutNotSet")
+                    //                        r.isAction = true
+                    //                    }
+//                    if let id = ARApiAuthSession() {
+//                        r.subtitle = id.getDeviceTitle()
+//                        r.isAction = false
+//                    }
+//                }
+//
+//
+//                r.selectAction = { [unowned self] () -> Bool in
+                    
+                    
+                    //                        Actor.resetAuth()
+                    //                        Actor.signOut()
+                    //                        return true
+                    //                        if d.getAuthHolder().ordinal() != ARApiAuthHolder.thisdevice().ordinal() {
+                    //                            self.confirmDangerSheetUser("PrivacyTerminateAlertSingle", tapYes: { [unowned self] () -> () in
+                    // Terminating session and reload list
+//                    self.executeSafe(Actor.signOut())
+//                    ActorSDK.sharedActor().onAfterReset()
+//                    self.executeSafe(Actor.resetAuth())
+//                    Actor.resetAuth()
+//                    self.executeSafe(Actor.resetAuth())
+//                    Actor.signOut()
+            
+//                    self.executeSafe(Actor.signOut())
+                    //                        let id = ARApiAuthSession()
+                    //                        self.executeSafe(Actor.terminateSessionCommand(withId: (id?.getId())!))
+                    
+//                    return true
+//                }
+//
+//            }
+            
             // Contacts: About
             self.aboutCell = s.titled("ProfileAbout") { [unowned self] (r) -> () in
                 
@@ -270,6 +369,8 @@ open class AASettingsViewController: AAContentTableController {
                 }
                 
             }
+            
+            
  
             // Profile: Phones
             self.phonesCells = s.arrays() { (r: AAManagedArrayRows<ACUserPhone, AATitledCell>) -> () in
@@ -281,7 +382,13 @@ open class AASettingsViewController: AAContentTableController {
                 r.bindData = { (c: AATitledCell, d: ACUserPhone) -> () in
                     c.setContent(AALocalized("SettingsMobilePhone"), content: "+\(d.phone)", isAction: false)
                     c.accessoryType = .none
+//                    let array = [d.phone]
+                    print("Arrays \(d.phone)")
+//                    let phoneNumber = String(array)
+                    self.presenceText = "+\(d.phone)"
                 }
+                
+                
                 
                 r.bindCopy = { (d: ACUserPhone) -> String? in
                     return "+\(d.phone)"
@@ -321,13 +428,13 @@ open class AASettingsViewController: AAContentTableController {
         }
         
         // Support
-        section { (s) -> () in
+        _ = section { (s) -> () in
             
             ActorSDK.sharedActor().delegate.actorSettingsSupportWillCreated(self, section: s)
             
             // Support: Ask Question
             if let account = ActorSDK.sharedActor().supportAccount {
-                s.navigate("SettingsAskQuestion", closure: { (r) -> () in
+                _ = s.navigate("SettingsAskQuestion", closure: { (r) -> () in
                     r.selectAction = { () -> Bool in
                         self.executeSafe(Actor.findUsersCommand(withQuery: account)) { (val) -> Void in
                             var user:ACUserVM!
@@ -349,23 +456,141 @@ open class AASettingsViewController: AAContentTableController {
                 })
             }
 
-            // Support: Twitter
-            if let twitter = ActorSDK.sharedActor().supportTwitter {
-                s.url("SettingsTwitter", url: "https://twitter.com/\(twitter)")
-            }
-
-            // Support: Home page
-            if let homePage = ActorSDK.sharedActor().supportHomepage {
-                s.url("SettingsAbout", url: homePage)
-            }
-
-            // Support: App version
-            let version = Bundle.main.infoDictionary!["CFBundleShortVersionString"] as! String
-            s.hint(AALocalized("SettingsVersion").replace("{version}", dest: version))
+//            // Support: Twitter
+//            if let twitter = ActorSDK.sharedActor().supportTwitter {
+//                s.url("SettingsTwitter", url: "https://twitter.com/\(twitter)")
+//            }
+//
+//            // Support: Home page
+//            if let homePage = ActorSDK.sharedActor().supportHomepage {
+//                s.url("SettingsAbout", url: homePage)
+//            }
+//
+//            // Support: App version
+//            let version = Bundle.main.infoDictionary!["CFBundleShortVersionString"] as! String
+//            s.hint(AALocalized("SettingsVersion").replace("{version}", dest: version))
             
             ActorSDK.sharedActor().delegate.actorSettingsSupportDidCreated(self, section: s)
         }
+        
+        _ = section { [unowned self] (s) -> () in
+            
+            // Exit
+            self.exitCell = s.titled("Exit") { [unowned self] (r) -> () in
+                
+            
+                r.accessoryType = .disclosureIndicator
+                
+                r.bindAction = { [unowned self] (r) -> () in
+                
+                    r.isAction = true
+                    r.titleColor = ActorSDK.sharedActor().style.vcDestructiveColor
+                }
+                
+                r.selectAction = { [unowned self] () -> Bool in
+                    let alertController = UIAlertController(title: "Exit", message: "Confirm exit?",preferredStyle: .alert)
+                    let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+                    let deleteAction = UIAlertAction(title: "Confirm", style: .destructive, handler: {
+                        (action: UIAlertAction) -> Void in
+                        self.confirmAlertUser("Alo will automatically exit, then please open it yourself", action: "Ok", tapYes: {
+                            self.exitApp()
+                        })
+                    })
+                    alertController.addAction(cancelAction)
+                    alertController.addAction(deleteAction)
+                    self.present(alertController, animated: true, completion: nil)
+                    return true
+                }
+            }
+            
+            ActorSDK.sharedActor().delegate.actorSettingsConfigurationDidCreated(self, section: s)
+        }
+        bindCheckingConnections()
     }
+    
+    func bindCheckingConnections() {
+        dispatchOnUi { () -> Void in
+            self.binder.bind((Actor.getGlobalState().isSyncing)!, valueModel2: Actor.getGlobalState().isConnecting) {
+                (isSyncing: JavaLangBoolean?, isConnecting: JavaLangBoolean?) -> () in
+                
+                if isSyncing!.booleanValue() || isConnecting!.booleanValue() {
+                    if isConnecting!.booleanValue() {
+                        self.presenceText = AALocalized("StatusConnecting")
+                        self.headerCell.reload()
+                    } else {
+                        self.presenceText = AALocalized("StatusSyncing")
+
+                        self.headerCell.reload()
+                    }
+                } else {
+                    self.phonesCells.reload()
+                    self.headerCell.reload()
+                }
+            }
+        }
+    }
+
+open func exitApp() {
+//    Actor.signOut()
+//    self.executeSafe(Actor.terminateAllSessionsCommand())
+//    DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1), execute: {
+        let dbPath:String = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0].asNS.appendingPathComponent("actor.db")
+        let db = FMDatabase(path: dbPath)
+        db.open()
+        let rs:FMResultSet = (db.executeQuery("select 'drop table ' || name || ';' as yj from sqlite_master where type = 'table';"))!
+        var dropTable:String = ""
+        while rs.next() {
+            let drop:String = rs.string(forColumn: "yj")!
+            dropTable = dropTable + drop
+        }
+        print("drop"+dropTable+"======")
+        db.executeStatements(dropTable)
+        db.close()
+        
+        UDPreferencesStorage().clear()
+//        self.executeSafe(Actor.terminateAllSessionsCommand())
+        self.executeSafe(Actor.signOut())
+//    })
+    
+//    ActorSDK.onAfterReset()
+//    let window:UIWindow = ((UIApplication.shared.delegate?.window)!)!
+//    let window = UIWindow(frame: UIScreen.main.bounds);
+    //        let window:UIWindow = ((UIApplication.shared.delegate?.window)!)!
+    
+    //        window.backgroundColor = UIColor.white
+//    presentMessengerInWindow(window)
+//    window.makeKeyAndVisible()
+//    window.rootViewController = AAWelcomeController()
+//    UIView.animate(withDuration: 1.0, animations: {
+//        window.alpha = 0
+//        window.frame = CGRect(x: 0, y: window.bounds.size.width, width: 0, height: 0)
+//    }) { (finished) in
+//        exit(0)
+//
+//        window.rootViewController = AAWelcomeController()
+//    }
+//            let window:UIWindow = ((UIApplication.shared.delegate?.window)!)!
+    
+//    self.bindedToWindow.rootViewController = AAWelcomeController()
+}
+
+func clearCache(cachePath :String) {
+    
+    // 取出cache文件夹目录 缓存文件都在这个目录下
+    // 取出文件夹下所有文件数组
+    let fileArr = FileManager.default.subpaths(atPath: cachePath)
+    // 遍历删除
+    for file in fileArr! {
+        let path = cachePath + "/\(file)"
+        if FileManager.default.fileExists(atPath: path) {
+            do {
+                try FileManager.default.removeItem(atPath: path)
+            } catch {
+                
+            }
+        }
+    }
+}
 
     open override func tableWillBind(_ binder: AABinder) {
         

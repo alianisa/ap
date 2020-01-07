@@ -39,7 +39,7 @@ extension FMDatabase {
     ///
     /// :returns: This returns the T value if value is found. Returns nil if column is NULL or upon error.
     
-    fileprivate func valueForQuery<T>(_ sql: String, values: Array<Any>?, completionHandler:(FMResultSet)->(T!)) -> T! {
+    fileprivate func valueForQuery<T>(_ sql: String, values: Array<Any>?, completionHandler:(FMResultSet)->(T?)) -> T! {
         var result: T!
         
         if let rs = executeQuery(sql, withArgumentsIn: values!) {

@@ -20,6 +20,7 @@ open class AAContactsListContentController: AAContentTableController {
     }
     
     open override func tableDidLoad() {
+        super.tableDidLoad()
         
         if searchEnabled {
             search(AAContactCell.self) { (s) -> () in
@@ -30,16 +31,16 @@ open class AAContactsListContentController: AAContentTableController {
             
                 s.selectAction = { (contact) -> () in
                     if let d = self.delegate {
-                        d.contactDidTap(self, contact: contact)
+                        _ = d.contactDidTap(self, contact: contact)
                     }
                 }
             }
         }
         
-        section { (s) -> () in
+        _ = section { (s) -> () in
             
             s.autoSeparatorsInset = 80
-
+            
             if let d = self.delegate {
                 d.willAddContacts(self, section: s)
             }
@@ -80,7 +81,7 @@ open class AAContactsListContentController: AAContentTableController {
     
     open override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+
         binder.bind(Actor.getAppState().isContactsEmpty, closure: { (value: Any?) -> () in
             if let empty = value as? JavaLangBoolean {
                 if Bool(empty.booleanValue()) == true {

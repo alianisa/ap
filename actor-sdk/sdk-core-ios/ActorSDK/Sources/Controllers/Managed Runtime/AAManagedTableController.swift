@@ -6,11 +6,11 @@ import Foundation
 
 open class AAManagedTableController: AAViewController {
     
-    open let style: AAContentTableStyle
+    public let style: AAContentTableStyle
     
     open var managedTableDelegate: AAManagedTableControllerDelegate?
     
-    open let binder = AABinder()
+    public let binder = AABinder()
     
     open var tableView: UITableView!
     
@@ -25,6 +25,10 @@ open class AAManagedTableController: AAViewController {
         super.init()
     }
 
+    convenience public override init() {
+        self.init()
+    }
+    
     public required init(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -34,7 +38,7 @@ open class AAManagedTableController: AAViewController {
         
         // Creating tables
         
-        let tableViewStyle: UITableViewStyle
+        let tableViewStyle: UITableView.Style
         switch(style) {
         case .plain:
             tableViewStyle = .plain

@@ -9,10 +9,15 @@
 #import "FMDatabase.h"
 #import "FMDatabaseAdditions.h"
 #import "TargetConditionals.h"
-#import "FMDatabase+Private.h"
+
+#if FMDB_SQLITE_STANDALONE
+#import <sqlite3/sqlite3.h>
+#else
+#import <sqlite3.h>
+#endif
 
 @interface FMDatabase (PrivateStuff)
-- (FMResultSet *)executeQuery:(NSString *)sql withArgumentsInArray:(NSArray*)arrayArgs orDictionary:(NSDictionary *)dictionaryArgs orVAList:(va_list)args;
+- (FMResultSet *)executeQuery:(NSString *)sql withArgumentsInArray:(NSArray * _Nullable)arrayArgs orDictionary:(NSDictionary * _Nullable)dictionaryArgs orVAList:(va_list)args;
 @end
 
 @implementation FMDatabase (FMDatabaseAdditions)
@@ -29,7 +34,7 @@ type ret = [resultSet sel:0];                                        \
 return ret;
 
 
-- (NSString*)stringForQuery:(NSString*)query, ... {
+- (NSString *)stringForQuery:(NSString*)query, ... {
     RETURN_RESULT_FOR_QUERY_WITH_SELECTOR(NSString *, stringForColumnIndex);
 }
 
@@ -77,7 +82,7 @@ return ret;
  get table with list of tables: result colums: type[STRING], name[STRING],tbl_name[STRING],rootpage[INTEGER],sql[STRING]
  check if table exist in database  (patch from OZLB)
 */
-- (FMResultSet*)getSchema {
+- (FMResultSet * _Nullable)getSchema {
     
     //result colums: type[STRING], name[STRING],tbl_name[STRING],rootpage[INTEGER],sql[STRING]
     FMResultSet *rs = [self executeQuery:@"SELECT type, name, tbl_name, rootpage, sql FROM (SELECT * FROM sqlite_master UNION ALL SELECT * FROM sqlite_temp_master) WHERE type != 'meta' AND name NOT LIKE 'sqlite_%' ORDER BY tbl_name, type DESC, name"];
@@ -88,7 +93,7 @@ return ret;
 /* 
  get table schema: result colums: cid[INTEGER], name,type [STRING], notnull[INTEGER], dflt_value[],pk[INTEGER]
 */
-- (FMResultSet*)getTableSchema:(NSString*)tableName {
+- (FMResultSet * _Nullable)getTableSchema:(NSString*)tableName {
     
     //result colums: cid[INTEGER], name,type [STRING], notnull[INTEGER], dflt_value[],pk[INTEGER]
     FMResultSet *rs = [self executeQuery:[NSString stringWithFormat: @"pragma table_info('%@')", tableName]];
@@ -120,8 +125,8 @@ return ret;
 }
 
 
+
 - (uint32_t)applicationID {
-    
 #if SQLITE_VERSION_NUMBER >= 3007017
     uint32_t r = 0;
     
@@ -132,9 +137,13 @@ return ret;
     }
     
     [rs close];
-#endif
     
     return r;
+#else
+    NSString *errorMessage = NSLocalizedStringFromTable(@"Application ID functions require SQLite 3.7.17", @"FMDB", nil);
+    if (self.logsErrors) NSLog(@"%@", errorMessage);
+    return 0;
+#endif
 }
 
 - (void)setApplicationID:(uint32_t)appID {
@@ -143,12 +152,17 @@ return ret;
     FMResultSet *rs = [self executeQuery:query];
     [rs next];
     [rs close];
+#else
+    NSString *errorMessage = NSLocalizedStringFromTable(@"Application ID functions require SQLite 3.7.17", @"FMDB", nil);
+    if (self.logsErrors) NSLog(@"%@", errorMessage);
 #endif
 }
 
 
 #if TARGET_OS_MAC && !TARGET_OS_IPHONE
+
 - (NSString*)applicationIDString {
+#if SQLITE_VERSION_NUMBER >= 3007017
     NSString *s = NSFileTypeForHFSTypeCode([self applicationID]);
     
     assert([s length] == 6);
@@ -157,20 +171,27 @@ return ret;
     
     
     return s;
-    
+#else
+    NSString *errorMessage = NSLocalizedStringFromTable(@"Application ID functions require SQLite 3.7.17", @"FMDB", nil);
+    if (self.logsErrors) NSLog(@"%@", errorMessage);
+    return nil;
+#endif
 }
 
 - (void)setApplicationIDString:(NSString*)s {
-    
+#if SQLITE_VERSION_NUMBER >= 3007017
     if ([s length] != 4) {
         NSLog(@"setApplicationIDString: string passed is not exactly 4 chars long. (was %ld)", [s length]);
     }
     
     [self setApplicationID:NSHFSTypeCodeFromFileType([NSString stringWithFormat:@"'%@'", s])];
+#else
+    NSString *errorMessage = NSLocalizedStringFromTable(@"Application ID functions require SQLite 3.7.17", @"FMDB", nil);
+    if (self.logsErrors) NSLog(@"%@", errorMessage);
+#endif
 }
 
 #endif
-
 
 - (uint32_t)userVersion {
     uint32_t r = 0;
@@ -201,12 +222,11 @@ return ret;
 
 #pragma clang diagnostic pop
 
-
-- (BOOL)validateSQL:(NSString*)sql error:(NSError**)error {
+- (BOOL)validateSQL:(NSString*)sql error:(NSError * _Nullable __autoreleasing *)error {
     sqlite3_stmt *pStmt = NULL;
     BOOL validationSucceeded = YES;
     
-    int rc = sqlite3_prepare_v2(self.db, [sql UTF8String], -1, &pStmt, 0);
+    int rc = sqlite3_prepare_v2([self sqliteHandle], [sql UTF8String], -1, &pStmt, 0);
     if (rc != SQLITE_OK) {
         validationSucceeded = NO;
         if (error) {

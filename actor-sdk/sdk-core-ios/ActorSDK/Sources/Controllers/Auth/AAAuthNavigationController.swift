@@ -6,13 +6,17 @@ import Foundation
 
 open class AAAuthNavigationController: UINavigationController {
     
+    
+    
+    
     open override func viewDidLoad() {
         super.viewDidLoad()
         
         navigationBar.setTransparentBackground()
         navigationBar.tintColor = ActorSDK.sharedActor().style.authTintColor
-        navigationBar.hairlineHidden = true
-        
+//        navigationBar.hairlineHidden = true
+//
+//
         view.backgroundColor = UIColor.white
     }
 
@@ -25,7 +29,7 @@ open class AAAuthNavigationController: UINavigationController {
     open override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        UIApplication.shared.setStatusBarStyle(.lightContent, animated: true)
+        UIApplication.shared.setStatusBarStyle(.default, animated: true)
     }
     
     open override var preferredStatusBarStyle : UIStatusBarStyle {

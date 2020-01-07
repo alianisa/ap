@@ -6,7 +6,9 @@ import UIKit
 
 open class AASettingsSessionsController: AAContentTableController {
 
-    fileprivate var sessionsCell: AAManagedArrayRows<ARApiAuthSession, AACommonCell>?
+//    fileprivate var sessionsCell: AAManagedArrayRows<ARApiAuthSession, AACommonCell>?
+    fileprivate var sessionsCell: AAManagedArrayRows<ARApiAuthSession, AATitledMoreCell>?
+
     
     public init() {
         super.init(style: AAContentTableStyle.settingsGrouped)
@@ -40,28 +42,29 @@ open class AASettingsSessionsController: AAContentTableController {
         }
         
         section { (s) -> () in
-            self.sessionsCell = s.arrays() { (r: AAManagedArrayRows<ARApiAuthSession, AACommonCell>) -> () in
-                r.bindData = { (c: AACommonCell, d: ARApiAuthSession) -> () in
+//            self.sessionsCell = s.arrays() { (r: AAManagedArrayRows<ARApiAuthSession, AACommonCell>) -> () in
+            self.sessionsCell = s.arrays() { (r: AAManagedArrayRows<ARApiAuthSession, AATitledMoreCell>) -> () in
+                r.height = 65
+
+                r.bindData = { (c: AATitledMoreCell, d: ARApiAuthSession) -> () in
                     if d.getAuthHolder().ordinal() != ARApiAuthHolder.thisdevice().ordinal() {
-                        c.style = .normal
-                        c.setContent(d.getDeviceTitle())
+//                        c.style = .normal
+//                        c.setContent(d.getDeviceTitle())
                     } else {
-                        c.style = .hint
-                        c.setContent("(Current) \(d.getDeviceTitle())")
+                        c.setContent("\(d.getAppTitle())", hint: "\(d.getDeviceTitle()), \(d.getDeviceOSVersion())", hint2: "\(d.getDeviceIpAddress()) - \(d.getDeviceLocation())", content: "Online", isAction: false)
+
+//                        c.style = .navigation
+//                        c.setContent("(Current) \(d.getDeviceTitle() d.getDeviceIpAddress()
+//                            (d.getDeviceLocation() (d.getDeviceOSVersion()")
+                        
                     }
+
                 }
+            
+                            
+                            
                 
-                r.selectAction = { (d) -> Bool in
-                    if d.getAuthHolder().ordinal() != ARApiAuthHolder.thisdevice().ordinal() {
-                        self.confirmDangerSheetUser("PrivacyTerminateAlertSingle", tapYes: { [unowned self] () -> () in
-                            // Terminating session and reload list
-                            self.executeSafe(Actor.terminateSessionCommand(withId: d.getId()), successBlock: { [unowned self] (val) -> Void in
-                                self.loadSessions()
-                                })
-                            }, tapNo: nil)
-                    }
-                    return true
-                }
+                
             }
         }
         

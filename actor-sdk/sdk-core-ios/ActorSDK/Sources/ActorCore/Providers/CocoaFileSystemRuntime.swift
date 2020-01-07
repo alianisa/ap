@@ -16,8 +16,8 @@ open class CocoaFiles {
 // Implementation of FileSystem storage
 
 @objc class CocoaFileSystemRuntime : NSObject, ARFileSystemRuntime {
-   
-       
+    
+    
     let manager = FileManager.default
     
     override init() {
@@ -26,24 +26,25 @@ open class CocoaFiles {
     
     func createTempFile() -> ARFileSystemReference! {
         let fileName = "/tmp/\(UUID().uuidString)"
-        manager.createFile(atPath: documentsFolder + fileName, contents: nil, attributes: nil)
+        FileManager.default.createFile(atPath: documentsFolder + fileName, contents: nil, attributes: nil)
         return CocoaFile(path: fileName)
     }
     
     func commitTempFile(_ sourceFile: ARFileSystemReference!, withFileId fileId: jlong, withFileName fileName: String) -> ARFileSystemReference! {
-
+        
         // Finding file available name
         
         // let path = "\(documentsFolder)/Documents/\(fileId)_\(fileName)"
-        let descriptor = "/Documents/\(fileId)_\(fileName)"
-//        
-//        if manager.fileExistsAtPath("\(documentsFolder)/Documents/\(fileId)_\(fileName)") {
-//            do {
-//                try manager.removeItemAtPath(path)
-//            } catch _ {
-//                return nil
-//            }
-//        }
+//        let descriptor = "/Documents/\(fileId)_\(fileName)"
+        let descriptor = "/Documents/\(fileId)_"+fileName
+        //
+        //        if manager.fileExistsAtPath("\(documentsFolder)/Documents/\(fileId)_\(fileName)") {
+        //            do {
+        //                try manager.removeItemAtPath(path)
+        //            } catch _ {
+        //                return nil
+        //            }
+        //        }
         
         let srcUrl = URL(fileURLWithPath: documentsFolder + sourceFile.getDescriptor()!)
         let destUrl = URL(fileURLWithPath: documentsFolder + descriptor)
@@ -156,7 +157,7 @@ class CocoaOutputFile : NSObject, AROutputFile {
         
         fileHandle.seek(toFileOffset: UInt64(fileOffset))
         fileHandle.write(srcData)
-
+        
         return true;
     }
     

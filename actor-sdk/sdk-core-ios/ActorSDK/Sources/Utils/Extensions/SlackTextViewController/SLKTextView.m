@@ -23,6 +23,8 @@ NSString * const SLKTextViewPastedItemData =                        @"SLKTextVie
 
 static NSString *const SLKTextViewGenericFormattingSelectorPrefix = @"slk_format_";
 
+static BOOL isMenuInitialized = NO;
+
 @interface SLKTextView ()
 
 // The label used as placeholder
@@ -163,6 +165,16 @@ static NSString *const SLKTextViewGenericFormattingSelectorPrefix = @"slk_format
 - (UIFont *)placeholderFont
 {
     return self.placeholderLabel.font;
+}
+
+- (CGFloat)appropriateHeight
+{
+    NSUInteger numberOfLines = self.numberOfLines > self.maxNumberOfLines ? self.maxNumberOfLines : self.numberOfLines;
+    CGFloat height = [self intrinsicContentSize].height;
+    height -= self.font.lineHeight;
+    height += roundf(self.font.lineHeight*numberOfLines);
+    
+    return height;
 }
 
 - (NSUInteger)numberOfLines
@@ -382,8 +394,11 @@ SLKPastableMediaType SLKPastableMediaTypeFromNSString(NSString *string)
     CGFloat padding = self.textContainer.lineFragmentPadding;
     
     CGRect rect = CGRectZero;
-    rect.size.height = [self.placeholderLabel sizeThatFits:bounds.size].height;
+    CGSize size = bounds.size;
     rect.size.width = self.textContainer.size.width - padding*2.0;
+    size.width = self.textContainer.size.width - padding*2.0;
+    rect.size.height = [self.placeholderLabel sizeThatFits:size].height;
+    rect.size.width = size.width;
     rect.origin = UIEdgeInsetsInsetRect(bounds, self.textContainerInset).origin;
     rect.origin.x += padding;
     
@@ -738,17 +753,34 @@ SLKPastableMediaType SLKPastableMediaTypeFromNSString(NSString *string)
 
 - (void)slk_addCustomMenuControllerItems
 {
-    UIMenuItem *undo = [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"Undo", nil) action:@selector(slk_undo:)];
-    UIMenuItem *redo = [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"Redo", nil) action:@selector(slk_redo:)];
+//    UIMenuItem *undo = [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"Undo", nil) action:@selector(slk_undo:)];
+//    UIMenuItem *redo = [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"Redo", nil) action:@selector(slk_redo:)];
+//
+//    NSMutableArray *items = [NSMutableArray arrayWithObjects:undo, redo, nil];
+//
+//    if (self.registeredFormattingTitles.count > 0) {
+//        UIMenuItem *format = [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"Format", nil) action:@selector(slk_presentFormattingMenu:)];
+//        [items addObject:format];
+//    }
+//
+//    [[UIMenuController sharedMenuController] setMenuItems:items];
     
-    NSMutableArray *items = [NSMutableArray arrayWithObjects:undo, redo, nil];
-    
-    if (self.registeredFormattingTitles.count > 0) {
+    if(!isMenuInitialized){
+        UIMenuItem *undo = [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"Undo", nil) action:@selector(slk_undo:)];
+        UIMenuItem *redo = [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"Redo", nil) action:@selector(slk_redo:)];
         UIMenuItem *format = [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"Format", nil) action:@selector(slk_presentFormattingMenu:)];
-        [items addObject:format];
+        
+        if([UIMenuController sharedMenuController].menuItems == nil){
+            [[UIMenuController sharedMenuController] setMenuItems:@[undo, redo, format]];
+        }else{
+            NSMutableArray *oldItens = [NSMutableArray arrayWithArray:[UIMenuController sharedMenuController].menuItems];
+            [oldItens addObject:undo];
+            [oldItens addObject:redo];
+            [oldItens addObject:format];
+            [[UIMenuController sharedMenuController] setMenuItems:oldItens];
+        }
+        isMenuInitialized = YES;
     }
-    
-    [[UIMenuController sharedMenuController] setMenuItems:items];
 }
 
 - (void)slk_undo:(id)sender

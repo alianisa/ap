@@ -7,7 +7,7 @@ import UIKit
 class AAVoiceRecorderView: UIView {
     
     //////////////////////////////////
-
+    
     var timeLabel:UILabel!
     
     var sliderLabel: UILabel!
@@ -35,7 +35,7 @@ class AAVoiceRecorderView: UIView {
         self.createSubviews()
         
     }
-
+    
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -128,7 +128,7 @@ class AAVoiceRecorderView: UIView {
             }
             
         }
-    
+        
     }
     
     func startAnimation() {
@@ -138,17 +138,17 @@ class AAVoiceRecorderView: UIView {
         self.sliderArrow.frame = CGRect(x: 310,y: 12,width: 20,height: 20)
         self.recorderImageCircle.frame = CGRect(x: -110, y: 15, width: 14, height: 14)
         
-        UIView.animate(withDuration: 0.5, delay: 0.0, usingSpringWithDamping: 0.5, initialSpringVelocity: 1.0, options: UIViewAnimationOptions.curveLinear, animations: { () -> Void in
+        UIView.animate(withDuration: 0.5, delay: 0.0, usingSpringWithDamping: 0.5, initialSpringVelocity: 1.0, options: UIView.AnimationOptions.curveLinear, animations: { () -> Void in
             
             self.timeLabel.frame = CGRect(x: 29, y: 12, width: 50, height: 20)
             self.sliderLabel.frame = CGRect(x: 140,y: 12,width: 100,height: 20)
             self.sliderArrow.frame = CGRect(x: 110,y: 12,width: 20,height: 20)
             self.recorderImageCircle.frame = CGRect(x: 10, y: 15, width: 14, height: 14)
             
-            }, completion: { (complite) -> Void in
-                
-                // animation complite
-                
+        }, completion: { (complite) -> Void in
+            
+            // animation complite
+            
         })
         
     }
@@ -157,20 +157,20 @@ class AAVoiceRecorderView: UIView {
         
         UIView.animate(withDuration: 0.3, animations: { () -> Void in
             
-                self.recorderImageCircle.alpha = 0
+            self.recorderImageCircle.alpha = 0
             
-            }, completion: { (comp) -> Void in
-                
-                self.recorderImageCircle.image = UIImage.bundled("aa_recordercircle")
-                
-                UIView.animate(withDuration: 0.3, animations: { () -> Void in
-                    self.recorderImageCircle.alpha = 1
-                })
-                
-                self.addAnimationsOnRecorderCircle()
-                self.startUpdateTimer()
-                
-        }) 
+        }, completion: { (comp) -> Void in
+            
+            self.recorderImageCircle.image = UIImage.bundled("aa_recordercircle")
+            
+            UIView.animate(withDuration: 0.3, animations: { () -> Void in
+                self.recorderImageCircle.alpha = 1
+            })
+            
+            self.addAnimationsOnRecorderCircle()
+            self.startUpdateTimer()
+            
+        })
         
     }
     
@@ -189,10 +189,10 @@ class AAVoiceRecorderView: UIView {
     
     func startUpdateTimer() {
         self.meterTimer = Timer.scheduledTimer(timeInterval: 0.1,
-            target:self,
-            selector:#selector(AAVoiceRecorderView.updateAudioMeter(_:)),
-            userInfo:nil,
-            repeats:true)
+                                               target:self,
+                                               selector:#selector(AAVoiceRecorderView.updateAudioMeter(_:)),
+                                               userInfo:nil,
+                                               repeats:true)
     }
     
     @objc func updateAudioMeter(_ timer:Timer) {
@@ -230,5 +230,5 @@ class AAVoiceRecorderView: UIView {
         
     }
     
-
+    
 }

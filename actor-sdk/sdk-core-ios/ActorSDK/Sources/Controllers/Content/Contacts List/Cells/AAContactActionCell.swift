@@ -6,16 +6,16 @@ import Foundation
 
 open class AAContactActionCell: AATableViewCell {
     
-    open let titleView = YYLabel()
-    open let iconView = UIImageView()
+    public let titleView = YYLabel()
+    public let iconView = UIImageView()
     
-    public override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    public override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         titleView.font = UIFont.systemFont(ofSize: 18)
         titleView.textColor = ActorSDK.sharedActor().style.cellTintColor
         titleView.displaysAsynchronously = true
-        iconView.contentMode = UIViewContentMode.center
+        iconView.contentMode = UIView.ContentMode.center
         self.contentView.addSubview(titleView)
         self.contentView.addSubview(iconView)
     }
@@ -26,7 +26,9 @@ open class AAContactActionCell: AATableViewCell {
     
     open func bind(_ icon: String, actionTitle: String) {
         titleView.text = actionTitle
-        iconView.image = UIImage.bundled(icon)?.tintImage(ActorSDK.sharedActor().style.cellTintColor)
+        iconView.image = UIImage.bundled(icon)
+
+//        iconView.image = UIImage.bundled(icon)?.tintImage(ActorSDK.sharedActor().style.cellTintColor)
     }
     
     open override func layoutSubviews() {

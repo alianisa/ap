@@ -10,12 +10,12 @@ open class AAManagedTable {
     
     // Controller of table
     
-    open let controller: UIViewController
+    public let controller: UIViewController
     
     // Table view
     
-    open let style: AAContentTableStyle
-    open let tableView: UITableView
+    public let style: AAContentTableStyle
+    public let tableView: UITableView
     open var tableViewDelegate: UITableViewDelegate { get { return baseDelegate } }
     open var tableViewDataSource: UITableViewDataSource { get { return baseDelegate } }
     
@@ -62,7 +62,7 @@ open class AAManagedTable {
     // Search
     fileprivate var isSearchInited: Bool = false
     fileprivate var isSearchAutoHide: Bool = false
-    fileprivate var searchDisplayController: UISearchDisplayController!
+    //fileprivate var searchDisplayController: UISearchDisplayController!
     fileprivate var searchManagedController: AnyObject!
     
     //------------------------------------------------------------------------//
@@ -113,7 +113,7 @@ open class AAManagedTable {
         if isSearchInited {
             fatalError("Search already inited")
         }
-        
+
         isSearchInited = true
         
         // Configuring search source
@@ -125,7 +125,7 @@ open class AAManagedTable {
         // Creating search source
         
         let searchSource = AAManagedSearchController<C>(config: config, controller: controller, tableView: tableView)
-        self.searchDisplayController = searchSource.searchDisplay
+        //self.searchDisplayController = searchSource.searchDisplay
         self.searchManagedController = searchSource
         self.isSearchAutoHide = config.isSearchAutoHide
     }
@@ -189,50 +189,50 @@ open class AAManagedTable {
         
         // Auto close search on leaving controller
         if isSearchAutoHide {
-            //dispatchOnUi { () -> Void in
-                searchDisplayController?.setActive(false, animated: false)
-            //}
+            dispatchOnUi { () -> Void in
+                //self.searchDisplayController?.setActive(false, animated: false)
+            }
         }
     }
     
     open func controllerViewDidDisappear(_ animated: Bool) {
         
         // Auto close search on leaving controller
-//        searchDisplayController?.setActive(false, animated: animated)
+                //searchDisplayController?.setActive(false, animated: animated)
     }
-
+    
     
     open func controllerViewWillAppear(_ animated: Bool) {
         
         // Search bar dissapear fixing
-
-        // Hack No 1
-        if searchDisplayController != nil {
-            let searchBar = searchDisplayController!.searchBar
-            let superView = searchBar.superview
-            if !(superView is UITableView) {
-                searchBar.removeFromSuperview()
-                superView?.addSubview(searchBar)
-            }
-        }
         
+        // Hack No 1
+//        if searchDisplayController != nil {
+//            let searchBar = searchDisplayController!.searchBar
+//            let superView = searchBar.superview
+//            if !(superView is UITableView) {
+//                searchBar.removeFromSuperview()
+//                superView?.addSubview(searchBar)
+//            }
+//        }
+//
         // Hack No 2
         
         tableView.tableHeaderView?.setNeedsLayout()
         tableView.tableFooterView?.setNeedsLayout()
-
+        
         
         // Status bar styles
         
-        if (searchDisplayController != nil && searchDisplayController!.isActive) {
-            
-            // If search is active: apply search status bar style
-            UIApplication.shared.setStatusBarStyle(ActorSDK.sharedActor().style.searchStatusBarStyle, animated: true)
-        } else {
-            
-            // If search is not active: apply main status bar style
-            UIApplication.shared.setStatusBarStyle(ActorSDK.sharedActor().style.vcStatusBarStyle, animated: true)
-        }
+//        if (searchDisplayController != nil && searchDisplayController!.isActive) {
+//
+//            // If search is active: apply search status bar style
+////            UIApplication.shared.setStatusBarStyle(ActorSDK.sharedActor().style.searchStatusBarStyle, animated: true)
+//        } else {
+//
+//            // If search is not active: apply main status bar style
+//            UIApplication.shared.setStatusBarStyle(ActorSDK.sharedActor().style.vcStatusBarStyle, animated: true)
+//        }
     }
 }
 
@@ -345,7 +345,7 @@ private class AMBaseTableDelegate: NSObject, UITableViewDelegate, UITableViewDat
         return false
     }
     
-    @objc func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCellEditingStyle {
+    @objc func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
         
         if data.canDeleteAll != nil {
             if data.canDeleteAll! {
@@ -357,11 +357,11 @@ private class AMBaseTableDelegate: NSObject, UITableViewDelegate, UITableViewDat
         
         return data.sections[(indexPath as NSIndexPath).section].canDelete(data, indexPath: indexPath) ? .delete : .none
     }
-   
-    @objc func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+    
+    @objc func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         return data.sections[(indexPath as NSIndexPath).section].delete(data, indexPath: indexPath)
     }
-   
+    
     @objc func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let section = data.sections[(indexPath as NSIndexPath).section]
         if section.canSelect(data, indexPath: indexPath) {
@@ -417,7 +417,7 @@ private class AAManagedSearchController<BindCell>: NSObject, UISearchBarDelegate
     let config: AAManagedSearchConfig<BindCell>
     let searchList: ARBindedDisplayList?
     let searchModel: ARSearchValueModel?
-    let searchDisplay: UISearchDisplayController
+    //let searchDisplay: UISearchDisplayController
     
     init(config: AAManagedSearchConfig<BindCell>, controller: UIViewController, tableView: UITableView) {
         
@@ -430,25 +430,29 @@ private class AAManagedSearchController<BindCell>: NSObject, UISearchBarDelegate
         let searchBar = UISearchBar()
         
         // Styling Search bar
-        searchBar.searchBarStyle = UISearchBarStyle.default
+        searchBar.searchBarStyle = UISearchBar.Style.default
         searchBar.isTranslucent = false
         searchBar.placeholder = "" // SearchBar placeholder animation fix
         
         // SearchBar background color
         searchBar.barTintColor = style.searchBackgroundColor.forTransparentBar()
         searchBar.setBackgroundImage(Imaging.imageWithColor(style.searchBackgroundColor, size: CGSize(width: 1, height: 1)), for: .any, barMetrics: .default)
-        searchBar.backgroundColor = style.searchBackgroundColor
+        searchBar.backgroundColor = .gray
         
         // SearchBar cancel color
         searchBar.tintColor = style.searchCancelColor
         
         // Apply keyboard color
         searchBar.keyboardAppearance = style.isDarkApp ? UIKeyboardAppearance.dark : UIKeyboardAppearance.light
-
+        
         // SearchBar field color
-        let fieldBg = Imaging.imageWithColor(style.searchFieldBgColor, size: CGSize(width: 14,height: 28))
-            .roundCorners(14, h: 28, roundSize: 4)
-        searchBar.setSearchFieldBackgroundImage(fieldBg.stretchableImage(withLeftCapWidth: 7, topCapHeight: 0), for: UIControlState())
+        let fieldBg = Imaging.imageWithColor(style.searchFieldBgColor, size: CGSize(width: 14,height: 40))
+            .roundCorners(14, h: 40, roundSize: 50)
+        searchBar.setSearchFieldBackgroundImage(fieldBg.stretchableImage(withLeftCapWidth: 9, topCapHeight: 0), for: UIControl.State())
+        
+        searchBar.height = 40
+
+        searchBar.barTintColor = .gray
         
         // SearchBar field text color
         for subView in searchBar.subviews {
@@ -459,30 +463,31 @@ private class AAManagedSearchController<BindCell>: NSObject, UISearchBarDelegate
                 }
             }
         }
-
-        self.searchDisplay = UISearchDisplayController(searchBar: searchBar, contentsController: controller)
+        
+        //self.searchDisplay = UISearchDisplayController(searchBar: searchBar, contentsController: controller)
         
         super.init()
-
+        
         // Creating Search Display Controller
         
-        self.searchDisplay.searchBar.delegate = self
-        self.searchDisplay.searchResultsDataSource = self
-        self.searchDisplay.searchResultsDelegate = self
-        self.searchDisplay.delegate = self
+//        self.searchDisplay.searchBar.delegate = self
+//        self.searchDisplay.searchResultsDataSource = self
+//        self.searchDisplay.searchResultsDelegate = self
+//        self.searchDisplay.delegate = self
         
         // Styling search list
         
-        self.searchDisplay.searchResultsTableView.separatorStyle = UITableViewCellSeparatorStyle.none
-        self.searchDisplay.searchResultsTableView.backgroundColor = ActorSDK.sharedActor().style.vcBgColor
+//        self.searchDisplay.searchResultsTableView.separatorStyle = UITableViewCell.SeparatorStyle.none
+//        self.searchDisplay.searchResultsTableView.backgroundColor = ActorSDK.sharedActor().style.vcBgColor
         
         // Adding search to table header
         
-        let header = AATableViewHeader(frame: CGRect(x: 0, y: 0, width: 320, height: 48))
-        header.addSubview(self.searchDisplay.searchBar)
-        tableView.tableHeaderView = header
+        let header = AATableViewHeader(frame: CGRect(x: 0, y: 0, width: 320, height: 50))
+        //header.addSubview(self.searchDisplay.searchBar)
+        //tableView.tableHeaderView = header
         
         // Start receiving events
+        
         if let ds = searchList {
             ds.add(self)
         } else if let sm = searchModel {
@@ -493,6 +498,8 @@ private class AAManagedSearchController<BindCell>: NSObject, UISearchBarDelegate
     }
     
     // Model
+    
+    
     func objectAtIndexPath(_ indexPath: IndexPath) -> BindCell.BindData {
         if let ds = searchList {
             return ds.item(with: jint((indexPath as NSIndexPath).row)) as! BindCell.BindData
@@ -505,11 +512,11 @@ private class AAManagedSearchController<BindCell>: NSObject, UISearchBarDelegate
     }
     
     @objc func onCollectionChanged() {
-        searchDisplay.searchResultsTableView.reloadData()
+        //searchDisplay.searchResultsTableView.reloadData()
     }
     
     @objc func onChanged(_ val: Any!, withModel valueModel: ARValue!) {
-        searchDisplay.searchResultsTableView.reloadData()
+        //searchDisplay.searchResultsTableView.reloadData()
     }
     
     // Table view data
@@ -564,11 +571,11 @@ private class AAManagedSearchController<BindCell>: NSObject, UISearchBarDelegate
     @objc func searchDisplayControllerWillBeginSearch(_ controller: UISearchDisplayController) {
         UIApplication.shared.setStatusBarStyle(ActorSDK.sharedActor().style.searchStatusBarStyle, animated: true)
     }
-    
+
     @objc func searchDisplayControllerWillEndSearch(_ controller: UISearchDisplayController) {
         UIApplication.shared.setStatusBarStyle(ActorSDK.sharedActor().style.vcStatusBarStyle, animated: true)
     }
-    
+
     @objc func searchDisplayController(_ controller: UISearchDisplayController, didShowSearchResultsTableView tableView: UITableView) {
         for v in tableView.subviews {
             if (v is UIImageView) {

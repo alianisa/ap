@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import ActorSDK
+import AloSDK
 
 open class AppCocoaHttpRuntime: NSObject {
     

@@ -13,7 +13,7 @@ open class AABubbleServiceCell : AABubbleCell {
     
     fileprivate var bindedLayout: ServiceCellLayout!
     
-    @objc public init(frame: CGRect) {
+    public init(frame: CGRect) {
         super.init(frame: frame, isFullSize: true)
        
         // Configuring service label
@@ -21,7 +21,7 @@ open class AABubbleServiceCell : AABubbleCell {
         serviceText.lineBreakMode = .byWordWrapping;
         serviceText.numberOfLines = 0;
         serviceText.textColor = appStyle.chatServiceTextColor
-        serviceText.contentMode = UIViewContentMode.center
+        serviceText.contentMode = UIView.ContentMode.center
         serviceText.textAlignment = NSTextAlignment.center
         contentView.addSubview(serviceText)
         
@@ -31,6 +31,10 @@ open class AABubbleServiceCell : AABubbleCell {
         
         // Setting bubble background
         bindBubbleType(.service, isCompact: false)
+    }
+    
+    convenience override init(frame: CGRect, isFullSize: Bool) {
+        self.init(frame: frame, isFullSize: false)
     }
     
     public required init(coder aDecoder: NSCoder) {

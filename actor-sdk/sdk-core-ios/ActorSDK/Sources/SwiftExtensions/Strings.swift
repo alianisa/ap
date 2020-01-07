@@ -9,11 +9,11 @@ public extension String {
     
     //public var isEmpty: Bool { return self.characters.isEmpty }
     
-    public var length: Int { return self.characters.count }
+    public var length: Int { return self.count }
     
     public func indexOf(_ str: String) -> Int? {
         if let range = range(of: str) {
-            return characters.distance(from: startIndex, to: range.lowerBound)
+            return distance(from: startIndex, to: range.lowerBound)
         } else {
             return nil
         }
@@ -24,7 +24,7 @@ public extension String {
     }
     
     public subscript (i: Int) -> Character {
-        return self[self.characters.index(self.startIndex, offsetBy: i)]
+        return self[self.index(self.startIndex, offsetBy: i)]
     }
     
     public subscript (i: Int) -> String {
@@ -33,12 +33,12 @@ public extension String {
     
     public func first(_ count: Int) -> String {
         let realCount = min(count, length);
-        return substring(to: characters.index(startIndex, offsetBy: realCount));
+        return substring(to: index(startIndex, offsetBy: realCount));
     }
     
     public func skip(_ count: Int) -> String {
         let realCount = min(count, length);
-        return substring(from: characters.index(startIndex, offsetBy: realCount))
+        return substring(from: index(startIndex, offsetBy: realCount))
     }
     
     
@@ -140,7 +140,7 @@ public extension String {
     
     var containsEmoji: Bool {
         for scalar in unicodeScalars {
-           // print(scalar.value)
+            // print(scalar.value)
             switch scalar.value {
             case
             0x1F600...0x1F64F, // Emoticons
@@ -187,22 +187,22 @@ public extension NSAttributedString {
     }
     
     public func appendMutate(_ text: String, font: UIFont) -> NSAttributedString {
-        return self.appendMutate(NSAttributedString(string: text, attributes: [NSAttributedStringKey.font: font]))
+        return self.appendMutate(NSAttributedString(string: text, attributes: [NSAttributedString.Key.font: font]))
     }
     
     public convenience init(string: String, font: UIFont) {
-        self.init(string: string, attributes: [NSAttributedStringKey.font: font])
+        self.init(string: string, attributes: [NSAttributedString.Key.font: font])
     }
 }
 
 public extension NSMutableAttributedString {
     
     public func appendFont(_ font: UIFont) {
-        self.addAttribute(NSAttributedStringKey.font, value: font, range: NSMakeRange(0, self.length))
+        self.addAttribute(NSAttributedString.Key.font, value: font, range: NSMakeRange(0, self.length))
     }
     
     public func appendColor(_ color: UIColor) {
-        self.addAttribute(NSAttributedStringKey.foregroundColor, value: color.cgColor, range: NSMakeRange(0, self.length))
+        self.addAttribute(NSAttributedString.Key.foregroundColor, value: color.cgColor, range: NSMakeRange(0, self.length))
     }
 }
 

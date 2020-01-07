@@ -25,7 +25,7 @@
 // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#import <ActorSDK/RMPhoneFormat.h>
+#import <AloSDK/RMPhoneFormat.h>
 
 /*
  * This class depends on a copy of an Apple provided private framework file named Default.phoneformat being copied
@@ -644,7 +644,7 @@ static NSMutableDictionary *flagRules = nil;
 
 - (id)initWithDefaultCountry:(NSString *)countryCode {
     if ((self = [super init])) {
-        _data = [NSData dataWithContentsOfFile:[[NSBundle bundleWithIdentifier:@"im.actor.ActorSDK"] pathForResource:@"PhoneFormats" ofType:@"dat"]];
+        _data = [NSData dataWithContentsOfFile:[[NSBundle bundleWithIdentifier:@"im.alo.AloSDK"] pathForResource:@"PhoneFormats" ofType:@"dat"]];
         NSAssert(_data, @"The file PhoneFormats.dat is not in the resource bundle. See the README.");
         
         if (countryCode.length) {

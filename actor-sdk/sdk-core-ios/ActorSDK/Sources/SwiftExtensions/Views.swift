@@ -28,6 +28,18 @@ public extension UIView {
             return nil
         }
     }
+    
+    static var nib: UINib {
+        return UINib(nibName: "\(self)", bundle: nil)
+    }
+    
+    static func instantiateFromNib() -> Self? {
+        func instanceFromNib<T: UIView>() -> T? {
+            return nib.instantiate() as? T
+        }
+        
+        return instanceFromNib()
+    }
 }
 
 private class ClosureTarget {
@@ -119,10 +131,10 @@ public extension UIView {
             view.translatesAutoresizingMaskIntoConstraints = false
             viewsDictionary[key] = view
         }
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: format, options: NSLayoutFormatOptions(), metrics: nil, views: viewsDictionary))
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: format, options: NSLayoutConstraint.FormatOptions(), metrics: nil, views: viewsDictionary))
     }
     
-    public func addConstraintsWithFormat(_ format: String, formatOptions: NSLayoutFormatOptions, views: UIView...) {
+    public func addConstraintsWithFormat(_ format: String, formatOptions: NSLayoutConstraint.FormatOptions, views: UIView...) {
         var viewsDictionary = [String: UIView]()
         for (index, view) in views.enumerated() {
             let key = "v\(index)"
@@ -150,7 +162,7 @@ open class UIViewMeasure {
         // Measuring text with reduced width
         let rect = text.boundingRect(with: CGSize(width: width - 2, height: CGFloat.greatestFiniteMagnitude),
             options: NSStringDrawingOptions.usesLineFragmentOrigin,
-            attributes: [NSAttributedStringKey.font: font, NSAttributedStringKey.paragraphStyle: style],
+            attributes: [NSAttributedString.Key.font: font, NSAttributedString.Key.paragraphStyle: style],
             context: nil)
         
         // Returning size with expanded width
@@ -318,10 +330,10 @@ public extension UIApplication {
                 animation.fromValue = NSValue(cgPoint: startPosition)
                 animation.toValue = NSValue(cgPoint: position)
                 
-                animation.fillMode = kCAFillModeForwards
+                animation.fillMode = CAMediaTimingFillMode.forwards
                 animation.isRemovedOnCompletion = false
                 
-                animation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut)
+                animation.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
                 
                 view.layer.add(animation, forKey: "ac_position")
             }

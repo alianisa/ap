@@ -23,12 +23,17 @@ open class GroupMembersController: AAContactsListContentController, AAContactsLi
         self.groupImage = image
         
         navigationItem.title = AALocalized("CreateGroupMembersTitle")
-        
+        if #available(iOS 11.0, *) {
+            navigationItem.largeTitleDisplayMode = .never
+        } else {
+            // Fallback on earlier versions
+        }
         if AADevice.isiPad {
-            self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: AALocalized("NavigationCancel"), style: UIBarButtonItemStyle.plain, target: self, action: #selector(self.dismissController))
+            self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: AALocalized("NavigationCancel"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(self.dismissController))
         }
         
-        navigationItem.rightBarButtonItem = UIBarButtonItem(title: AALocalized("NavigationDone"), style: UIBarButtonItemStyle.done, target: self, action: #selector(GroupMembersController.doNext))
+//        navigationItem.rightBarButtonItem = UIBarButtonItem(title: AALocalized("NavigationDone"), style: UIBarButtonItemStyle.done, target: self, action: #selector(GroupMembersController.doNext))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: AALocalized("NavigationDone"), style: UIBarButtonItem.Style.done, target: self, action: #selector(self.doNext))
     }
 
     public required init(coder aDecoder: NSCoder) {
@@ -44,15 +49,16 @@ open class GroupMembersController: AAContactsListContentController, AAContactsLi
         tokenView.backgroundColor = appStyle.vcTokenFieldBgColor
         tokenView.tintColor = appStyle.vcTokenTintColor
         tokenView.fieldName = ""
+        tokenView.drawBottomBorder = true
         
         let placeholder = AALocalized("CreateGroupMembersPlaceholders")
         let attributedPlaceholder = NSMutableAttributedString(string: placeholder)
-        attributedPlaceholder.addAttribute(NSAttributedStringKey.foregroundColor, value: appStyle.vcHintColor, range: NSRange(location: 0, length: placeholder.length))
+        attributedPlaceholder.addAttribute(NSAttributedString.Key.foregroundColor, value: appStyle.vcHintColor, range: NSRange(location: 0, length: placeholder.length))
         tokenView.placeholderAttributedText = attributedPlaceholder
         
         self.view.addSubview(tokenView)
         
-        tableView.keyboardDismissMode = UIScrollViewKeyboardDismissMode.onDrag
+        tableView.keyboardDismissMode = UIScrollView.KeyboardDismissMode.onDrag
     }
     
     open func contactDidTap(_ controller: AAContactsListContentController, contact: ACContact) -> Bool {
@@ -81,10 +87,10 @@ open class GroupMembersController: AAContactsListContentController, AAContactsLi
             res?.replaceInt(at: UInt(i), with: selected[i].contact.uid)
         }
         
-        executePromise(Actor.createGroup(withTitle: groupTitle, withAvatar: nil, withUids: res)).then { (res: JavaLangInteger!) in
+        _ = executePromise(Actor.createGroup(withTitle: groupTitle, withAvatar: nil, withUids: res)).then { (res: JavaLangInteger!) in
             let gid = res.int32Value
             if self.groupImage != nil {
-                Actor.changeGroupAvatar(gid, image: self.groupImage!)
+                _ = Actor.changeGroupAvatar(gid, image: self.groupImage!)
             }
             if let customController = ActorSDK.sharedActor().delegate.actorControllerForConversation(ACPeer.group(with: gid)) {
                 self.navigateDetail(customController)
@@ -127,7 +133,7 @@ open class GroupMembersController: AAContactsListContentController, AAContactsLi
             tableView.frame = CGRect(x: 0, y: tokenViewHeight, width: view.frame.width, height: view.frame.height - tokenViewHeight)
         } else {
             tokenView.frame = CGRect(x: 0, y: 64, width: view.frame.width, height: tokenViewHeight)
-            tableView.frame = CGRect(x: 0, y: tokenViewHeight, width: view.frame.width, height: view.frame.height - tokenViewHeight)
+            tableView.frame = CGRect(x: 0, y: tokenViewHeight + 20, width: view.frame.width, height: view.frame.height - tokenViewHeight)
         }
     }
 }

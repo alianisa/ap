@@ -68,7 +68,7 @@ open class AABindedRows<BindCell>: NSObject, AAManagedRange, ARDisplayList_Apple
     
     open func rangeCellForItem(_ table: AAManagedTable, indexPath: AARangeIndexPath) -> UITableViewCell {
         let data = displayList.item(with: jint(indexPath.item)) as! BindCell.BindData
-        let cell = table.tableView.dequeueReusableCell(withIdentifier: cellReuseId, for: indexPath.indexPath as IndexPath) as! BindCell
+        let cell = self.table.tableView.dequeueReusableCell(withIdentifier: cellReuseId, for: indexPath.indexPath as IndexPath) as! BindCell
         cell.bind(data, table: table, index: indexPath.item, totalCount: lastItemsCount)
         displayList.touch(with: jint(indexPath.item))
         didBind?(cell, data)
@@ -124,6 +124,9 @@ open class AABindedRows<BindCell>: NSObject, AAManagedRange, ARDisplayList_Apple
 
         if oldCount != lastItemsCount {
             table.tableView.reloadData()
+//            let app = ActorSDK.sharedActor()
+//                app.contactsList = displayList
+//                NotificationCenter.default.post(name:NSNotification.Name(rawValue: "displayList"), object: nil)
         } else {
             if let indexes = table.tableView.indexPathsForVisibleRows {
                 let cells = table.tableView.visibleCells
@@ -158,11 +161,11 @@ open class AABindedRows<BindCell>: NSObject, AAManagedRange, ARDisplayList_Apple
                 UIView.setAnimationsEnabled(false)
             }
             
-            let animationType: UITableViewRowAnimation
+            let animationType: UITableView.RowAnimation
             if animated && !modification.isLoadMore {
-                animationType = UITableViewRowAnimation.automatic
+                animationType = UITableView.RowAnimation.automatic
             } else {
-                animationType = UITableViewRowAnimation.none
+                animationType = UITableView.RowAnimation.none
             }
             
             if modification.nonUpdateCount() > 0 {
@@ -181,7 +184,7 @@ open class AABindedRows<BindCell>: NSObject, AAManagedRange, ARDisplayList_Apple
                 if modification.addedCount() > 0 {
                     var rows = [IndexPath]()
                     for i in 0..<modification.addedCount() {
-                        rows.append(IndexPath(row: Int(modification.getAdded(jint(i))).advanced(by: Int(topOffset)), section: section))
+                        rows.append(IndexPath(row: Int(modification.getAdded(jint(i))) + topOffset, section: section))
                     }
                     tableView.insertRows(at: rows, with: animationType)
                 }
@@ -224,6 +227,8 @@ open class AABindedRows<BindCell>: NSObject, AAManagedRange, ARDisplayList_Apple
             
             if oldCount != lastItemsCount {
                 table.tableView.reloadData()
+//                let app = ActorSDK.sharedActor()
+//                app.displayList = displayList
             } else {
                 if let indexes = table.tableView.indexPathsForVisibleRows {
                     let cells = table.tableView.visibleCells

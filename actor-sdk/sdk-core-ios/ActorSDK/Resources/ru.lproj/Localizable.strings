@@ -8,7 +8,7 @@
 
 "TabMessages" = "Сообщения";
 
-"TabPeople" = "Люди";
+"TabPeople" = "Контакты";
 
 "TabSettings" = "Настройки";
 
@@ -22,11 +22,11 @@
 
 "ContactsAddHint" = "Укажите номер телефона";
 
-"ContactsActionInvite" = "Пригласить друзей";
+"ContactsActionInvite" = "Пригласить в";
 
 "ContactsActionAdd" = "Добавить друга";
 
-"ContactsBack" = "Люди";
+"ContactsBack" = "Контакты";
 
 /*
  * Dialogs
@@ -58,25 +58,25 @@
 
 "SettingsWallpapers" = "Обои чата";
 
-"SettingsMedia" = "Настойки медиа";
+"SettingsMedia" = "Настройки медиа";
 
-"SettingsUsernameTitle" = "Изменить ник";
+"SettingsUsernameTitle" = "Изменить имя пользователя";
 
 "SettingsNotifications" = "Оповещения и звуки";
 
 "SettingsAboutNotSet" = "Указать информацию";
 
-"SettingsUsernameNotSet" = "Указать ник";
+"SettingsUsernameNotSet" = "Указать имя пользователя";
 
-"SettingsUsernameTitle" = "Ник";
+"SettingsUsernameTitle" = "Имя пользователя";
 
-"SettingsUsernameHintField" = "Введите свой ник";
+"SettingsUsernameHintField" = "Введите свое имя пользователя";
 
-"SettingsUsernameHint" = "Вы можете выбрать ник в {appname}. Если вы это сделаете, то другие люди смогут найти вас без номера телефона.\n\nВы можете использовать латинские буквы, цифры и подчеркивание. Минимальная длина - 5 символов.";
+"SettingsUsernameHint" = "Вы можете выбрать имя пользователя в {appname}. Если вы это сделаете, то другие люди смогут найти вас без номера телефона.\n\nВы можете использовать латинские буквы, цифры и подчеркивание. Минимальная длина - 5 символов.";
 
 "SettingsChangeAboutTitle" = "О себе";
 
-"SettingsChangeAboutHint" = "Расскажите что-нибудь о себе";
+"SettingsChangeAboutHint" = "Любые подробности о себе";
 
 "SettingsAskQuestion" = "Задать вопрос";
 
@@ -128,7 +128,7 @@
 
 "NotificationsOnlyMentions" = "Только с упоминанием";
 
-"NotificationsOnlyMentionsHint" = "Вы можете включить оповещения в группе только для сообщений, в которых упоминается ваш ник";
+"NotificationsOnlyMentionsHint" = "Вы можете включить оповещения в группе только для сообщений, в которых упоминается ваше имя пользователя";
 
 /*
  * Media
@@ -177,6 +177,25 @@
 "PrivacyTerminateHint" = "Выйти из всех устройств, кроме этого.";
 
 /*
+ * Quality
+ */
+
+"QualityImageHeader" = "Качество передаваемого фото";
+
+"QualityImage" = "Настройка качества";
+
+"QualityImageHint" = "Укажите качество передаваемого фото. Качество фото влияет на скорость отправки: высокое - долго, низкое - быстро";
+
+"QualityImageNoneCompress" = "Без сжатия";
+
+"QualityImageLarge" = "Высокое";
+
+"QualityImageMedium" = "Среднее";
+
+"QualityImageSmall" = "Низкое";
+
+
+/*
  * Wallpapers
  */
 
@@ -202,7 +221,15 @@
 
 "CallsVideo" = "видео";
 
-"CallStateRinging" = "Исходящий звонок";
+"CallStateDialing" = "Набор...";
+
+"CallStateRinging" = "Вызов";
+
+"CallStateBusy" = "Абонент занят...";
+
+"CallStateNoAnswer" = "Нет ответа...";
+
+"CallStateNotAvailable" = "Пользователь не доступен...";
 
 "CallStateConnecting" = "Подключаемся";
 
@@ -244,7 +271,7 @@
 
 "ProfilePhone" = "Телефон";
 
-"ProfileUsername" = "Ник";
+"ProfileUsername" = "Имя пользователя";
 
 "ProfileTitle" = "Информация";
 
@@ -380,6 +407,12 @@
 
 "GroupMemberKickAction" = "Исключить";
 
+"ChannelMemberKick" = "Исключить";
+
+"ChannelMemberKickMessage" = "Вы уверены, что хотите исключить {name} из канала?";
+
+"ChannelMemberKickAction" = "Исключить";
+
 "GroupMemberWrite" = "Написать";
 
 "GroupMemberCall" = "Позвонить";
@@ -456,7 +489,7 @@
  * Chat
  */
 
-"ChatPlaceholder" = "Введите текст...";
+"ChatPlaceholder" = "Введите сообщение...";
 
 "ChatSend" = "Отпр.";
 
@@ -465,6 +498,8 @@
 "ChatDeleted" = "Этот чат был удален владельцем.";
 
 "ChatJoin" = "Присоединиться";
+
+"ChatNewMessages" = "Новые сообщения";
 
 /*
  * Chat attachment menu
@@ -480,9 +515,9 @@
 
 "FindTitle" = "Поиск людей";
 
-"FindFieldHint" = "Телефон, почта или ник";
+"FindFieldHint" = "Телефон, почта или имя пользователя";
 
-"FindHint" = "Для поиска введите номер телефона, адрес электронной почты или ник.";
+"FindHint" = "Для поиска введите номер телефона, адрес электронной почты или имя пользователя.";
 
 "FindNotFound" = "К сожалению, мы не смогли никого найти по этому запросу.";
 
@@ -500,7 +535,7 @@
 
 "Placeholder_Empty_Action2" = "ДОБАВИТЬ КОНТАКТ";
 
-"Placeholder_Loading_Title" = "Синхронизируемся";
+"Placeholder_Loading_Title" = "Инициализация";
 
 "Placeholder_Loading_Message" = "Пожалуйста, подождите пока мы инициализируем приложение.";
 
@@ -528,9 +563,9 @@
  * Welcome
  */
 
-"WelcomeTitle" = "Добро пожаловать!";
+"WelcomeTitle" = "Добро пожаловать в {app_name}";
 
-"WelcomeTagline" = "Беслпатное, быстрое и безопасное общение.";
+"WelcomeTagline" = "Быстрое и безопасное общение.";
 
 "WelcomeSignUp" = "Регистрация";
 
@@ -553,15 +588,15 @@
 
 "AuthLoginPhoneEmail" = "Телефон или e-mail";
 
-"AuthNameTitle" = "Привет! Как вас зовут?";
+"AuthNameTitle" = "Ваше полное имя";
 
-"AuthNamePlaceholder" = "Ваше полное имя";
+"AuthNamePlaceholder" = "";
 
-"AuthPhoneTitle" = "Ваш номер телефона?";
+"AuthPhoneTitle" = "Телефон";
 
-"AuthPhoneHint" = "Нам необходим номер телефона, чтобы вас авторизовать и защитить вашу персональную информацию.";
+"AuthPhoneHint" = "Нам необходим Ваш номер телефона, для авторизации и защиты информации.";
 
-"AuthPhonePlaceholder" = "Ваш номер телефона";
+"AuthPhonePlaceholder" = "";
 
 "AuthPhoneUseEmail" = "Вход через e-mail";
 
@@ -589,13 +624,13 @@
 
 "AuthOTPEmailHint" = "Мы отправили вам письмо с кодом активации.\nПожалуйста, введите их ниже.";
 
-"AuthOTPPhoneHint" = "Мы отправили вам СМС с кодом активации.\nПожалуйста, введите их ниже.";
+"AuthOTPPhoneHint" = "Мы отправили СМС с кодом активации.\nПожалуйста, введите их ниже.";
 
 "AuthOTPPlaceholder" = "Код активации";
 
 "AuthOTPNoCode" = "Не получили код?";
 
-"AuthOTPCallHint" = "{app_name} позвонит вам через {time}";
+"AuthOTPCallHint" = "Запросить код еще раз можно через {time}";
 
 /*
  * Common Elements
@@ -603,7 +638,7 @@
 
 "CurrentLocale" = "Ru";
 
-"InviteText" = "Привет! Давай продолжим наше общение в {appname} {link}";
+"InviteText" = "Привет! Я использую {appname} для общения. Можешь скачать по ссылке  {link}";
 
 "PhotoRemove" = "Удалить фото";
 
@@ -685,7 +720,7 @@
 
 "ActionOpenCode" = "Посмотреть код";
 
-"ActionMute" = "Заглушить";
+"ActionMute" = "Выключить оповещения";
 
 "ActionUnmute" = "Включить оповещения";
 
@@ -693,31 +728,27 @@
 
 "ActionDeleteChannel" = "Удалить канал";
 
-"ActionDeleteChannelMessage" = "Стой! Удаление этого канала исключит всех подписчиков и все сообщения будут потеряны. Продолжить все равно?";
+"ActionDeleteChannelTitle" = "Удаление канала";
+
+"ActionDeleteChannelMessage" = "Удаление этого канала исключит всех подписчиков и все сообщения будут потеряны. Продолжить все равно?";
 
 "ActionDeleteGroup" = "Удалить группу";
 
-"ActionDeleteGroupMessage" = "Стой! Удаление этой группы исключит всех участников и все сообщения будут потеряны. Продолжить все равно?";
+"ActionDeleteGroupTitle" = "Удаление группы";
+
+"ActionDeleteGroupMessage" = "Удаление этой группы исключит всех участников и все сообщения будут потеряны. Продолжить все равно?";
+
+"ActionDeleteChannelTitle" = "Удаление канала";
+
+"ActionDeleteChatTitle" = "Удаление сообщений";
 
 "ActionDeleteAndExit" = "Удалить и выйти";
 
 "ActionClearHistory" = "Очистить историю";
 
-
-
 "ActionDelete" = "Удалить";
 
 "ActionDeleteMessage" = "Вы уверены что хотите удалить чат?";
-
-
-"ActionDeleteChannel" = "Удалть канал";
-
-"ActionDeleteChannelMessage" = "Стой! Удаление этого канала исключит всех подписчиков и все сообщения будут потеряны. Продолжить все равно?";
-
-"ActionDeleteGroup" = "Удалить группу";
-
-"ActionDeleteGroupMessage" = "Стой! Удаление этой группы исключит всех участников и все сообщения будут потеряны. Продолжить все равно?";
-
 
 "ActionLeaveChannel" = "Покинуть канал";
 
@@ -745,7 +776,7 @@
 
 "StatusConnecting" = "Подключение...";
 
-"StatusSyncing" = "Синхронизация...";
+"StatusSyncing" = "Обновление...";
 
 /*
  * Errors
@@ -760,3 +791,9 @@
 "ErrorUnableToJoin" = "Невозможно вступить в группу";
 
 "ErrorUnableToCall" = "Невозможно позвонить на этот номер";
+
+"EditingMessage" = "Редактирование";
+
+"MessageToOld" = "Невозможно редактировать данное сообщение";
+
+"IsNotLastMessage" = "Это не последнее сообщение";

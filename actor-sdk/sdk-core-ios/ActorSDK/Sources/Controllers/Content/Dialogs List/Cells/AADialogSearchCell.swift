@@ -8,20 +8,28 @@ open class AADialogSearchCell: AATableViewCell, AABindedSearchCell {
     
     public typealias BindData = ACSearchResult
     
-    open static func bindedCellHeight(_ item: BindData) -> CGFloat {
+    public static func bindedCellHeight(_ item: BindData) -> CGFloat {
+        
         return 76
     }
     
     fileprivate let avatarView: AAAvatarView = AAAvatarView()
     fileprivate let titleView: UILabel = UILabel()
+    fileprivate let titleGlobal: UILabel = UILabel()
     
-    public override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    public override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         
-        super.init(style: UITableViewCellStyle.default, reuseIdentifier: reuseIdentifier)
+        super.init(style: UITableViewCell.CellStyle.default, reuseIdentifier: reuseIdentifier)
         
-        titleView.font = UIFont.mediumSystemFontOfSize(19)
-        titleView.textColor = ActorSDK.sharedActor().style.dialogTextColor
+        titleGlobal.font = UIFont.mediumSystemFontOfSize(15)
+        titleGlobal.textColor = ActorSDK.sharedActor().style.cellTextColor
+        titleGlobal.text = "Global"
+        titleGlobal.layer.backgroundColor = ActorSDK.sharedActor().style.cellBgSelectedColor.cgColor
         
+        titleView.font = UIFont.lightSystemFontOfSize(17)
+        titleView.textColor = UIColor.black
+        
+        contentView.addSubview(titleGlobal)
         contentView.addSubview(avatarView)
         contentView.addSubview(titleView)
     }
@@ -47,7 +55,9 @@ open class AADialogSearchCell: AATableViewCell, AABindedSearchCell {
         let leftPadding = CGFloat(76)
         let padding = CGFloat(14)
         
+        //titleGlobal.frame = CGRect(x: 2, y: 3, width: width, height: 25)
         avatarView.frame = CGRect(x: padding, y: padding, width: 52, height: 52)
         titleView.frame = CGRect(x: leftPadding, y: 0, width: width - leftPadding - (padding + 50), height: contentView.bounds.size.height)
+
     }
 }

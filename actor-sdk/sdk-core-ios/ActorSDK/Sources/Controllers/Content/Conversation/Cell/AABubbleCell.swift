@@ -46,15 +46,15 @@ extension AABubbleLayouter {
 */
 open class AABubbleCell: UICollectionViewCell {
     
-    open static let bubbleContentTop: CGFloat = 6
-    open static let bubbleContentBottom: CGFloat = 6
-    open static let bubbleTop: CGFloat = 3
-    open static let bubbleTopCompact: CGFloat = 1
-    open static let bubbleBottom: CGFloat = 3
-    open static let bubbleBottomCompact: CGFloat = 1
-    open static let avatarPadding: CGFloat = 39
-    open static let dateSize: CGFloat = 30
-    open static let newMessageSize: CGFloat = 30
+    public static let bubbleContentTop: CGFloat = 6
+    public static let bubbleContentBottom: CGFloat = 6
+    public static let bubbleTop: CGFloat = 3
+    public static let bubbleTopCompact: CGFloat = 1
+    public static let bubbleBottom: CGFloat = 3
+    public static let bubbleBottomCompact: CGFloat = 1
+    public static let avatarPadding: CGFloat = 39
+    public static let dateSize: CGFloat = 30
+    public static let newMessageSize: CGFloat = 30
     
     //
     // Cached text bubble images
@@ -89,26 +89,26 @@ open class AABubbleCell: UICollectionViewCell {
     // Cached Service bubble images
     //
     
-    fileprivate static var cachedServiceBg:UIImage = Imaging.roundedImage(ActorSDK.sharedActor().style.chatServiceBubbleColor, size: CGSize(width: 18, height: 18), radius: 9)
+    fileprivate static var cachedServiceBg:UIImage = Imaging.roundedImage(ActorSDK.sharedActor().style.chatServiceBubbleColor, size: CGSize(width: 21, height: 21), radius: 10)
 
     //
     // Cached Date bubble images
     //
     
-//    private static var dateBgImage = Imaging.roundedImage(ActorSDK.sharedActor().style.chatDateBubbleColor, size: CGSizeMake(18, 18), radius: 9)
+    fileprivate static var dateBgImage = Imaging.roundedImage(ActorSDK.sharedActor().style.chatDateBubbleColor, size: CGSize(width: 21, height: 21), radius: 10)
     
-    fileprivate static var dateBgImage = ActorSDK.sharedActor().style.statusBackgroundImage
+//    fileprivate static var dateBgImage = ActorSDK.sharedActor().style.statusBackgroundImage
     
     // MARK: -
     // MARK: Public vars
     
     // Views
-    open let avatarView = AAAvatarView()
-    open var avatarAdded: Bool = false
+    public let avatarView = AAAvatarView()
+    public var avatarAdded: Bool = false
     
-    open let bubble = UIImageView()
-    open let bubbleShadow = UIImageView()
-    open let bubbleBorder = UIImageView()
+    public let bubble = UIImageView()
+    public let bubbleShadow = UIImageView()
+    public let bubbleBorder = UIImageView()
     
     fileprivate let dateText = UILabel()
     fileprivate let dateBg = UIImageView()
@@ -129,11 +129,11 @@ open class AABubbleCell: UICollectionViewCell {
     }
     open var needLayout: Bool = true
     
-    open let groupContentInsetY = 20.0
-    open let groupContentInsetX = 40.0
-    open var bubbleVerticalSpacing: CGFloat = 6.0
-    open let bubblePadding: CGFloat = 6;
-    open let bubbleMediaPadding: CGFloat = 10;
+    public let groupContentInsetY = 20.0
+    public let groupContentInsetX = 40.0
+    public var bubbleVerticalSpacing: CGFloat = 6.0
+    public let bubblePadding: CGFloat = 6;
+    public let bubbleMediaPadding: CGFloat = 10;
     
     // Binded data
     open var peer: ACPeer!
@@ -158,19 +158,19 @@ open class AABubbleCell: UICollectionViewCell {
     // MARK: Constructors
 
     public init(frame: CGRect, isFullSize: Bool) {
-        super.init(frame: frame)
+            super.init(frame: frame)
         
         self.isFullSize = isFullSize
   
         dateBg.image = AABubbleCell.dateBgImage
-        dateText.font = UIFont.mediumSystemFontOfSize(12)
+        dateText.font = UIFont.mediumSystemFontOfSize(14)
         dateText.textColor = appStyle.chatDateTextColor
-        dateText.contentMode = UIViewContentMode.center
+        dateText.contentMode = UIView.ContentMode.center
         dateText.textAlignment = NSTextAlignment.center
         
-        newMessage.font = UIFont.mediumSystemFontOfSize(14)
+        newMessage.font = UIFont.boldSystemFont(ofSize: 14)
         newMessage.textColor = appStyle.chatUnreadTextColor
-        newMessage.contentMode = UIViewContentMode.center
+        newMessage.contentMode = UIView.ContentMode.center
         newMessage.textAlignment = NSTextAlignment.center
         newMessage.backgroundColor = appStyle.chatUnreadBgColor
         newMessage.text = AALocalized("ChatNewMessages")
@@ -203,8 +203,16 @@ open class AABubbleCell: UICollectionViewCell {
         //self.contentView.layer.drawsAsynchronously = true
     }
     
-    public required init(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+//    public required init(coder aDecoder: NSCoder) {
+//        fatalError("init(coder:) has not been implemented")
+//    }
+
+    convenience override init(frame: CGRect) {
+        self.init(frame: frame, isFullSize: false)
+    }
+    
+    required public init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
     }
     
     func setConfig(_ peer: ACPeer, controller: AAConversationContentController) {
@@ -218,7 +226,7 @@ open class AABubbleCell: UICollectionViewCell {
     open override var canBecomeFirstResponder : Bool {
         return false
     }
-
+    
     open override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
         if action == #selector(UIResponderStandardEditActions.delete(_:)) {
             return true
@@ -229,6 +237,7 @@ open class AABubbleCell: UICollectionViewCell {
     open override func delete(_ sender: Any?) {
         let rids = IOSLongArray(length: 1)
         rids?.replaceLong(at: 0, withLong: bindedMessage!.rid)
+        print("Delete Message peer: \(self.peer) rid: \(rids)")
         Actor.deleteMessages(with: self.peer, withRids: rids)
     }
     
@@ -251,13 +260,13 @@ open class AABubbleCell: UICollectionViewCell {
         if !reuse && !isFullSize {
             if (!isOut && isGroup) {
                 let user = Actor.getUserWithUid(message.senderId)
-                        
+                
                 // Small hack for replacing senter name and title
                 // with current group title
                 if user.isBot() && user.getNameModel().get() == "Bot" {
                     let group = Actor.getGroupWithGid(self.peer.peerId)
-                    let avatar: ACAvatar? = group.getAvatarModel().get()
-                    let name = group.getNameModel().get()
+                    let avatar: ACAvatar? = group.avatar.get()
+                    let name = group.name.get()
                     avatarView.bind(name!, id: Int(user.getId()), avatar: avatar)
                 } else {
                     let avatar: ACAvatar? = user.getAvatarModel().get()
@@ -416,8 +425,8 @@ open class AABubbleCell: UICollectionViewCell {
             dateText.frame = CGRect(x: 0, y: 0, width: 1000, height: 1000)
             dateText.sizeToFit()
             dateText.frame = CGRect(
-                x: (self.contentView.frame.size.width-dateText.frame.width)/2, y: 8, width: dateText.frame.width, height: 18)
-            dateBg.frame = CGRect(x: dateText.frame.minX - 8, y: dateText.frame.minY, width: dateText.frame.width + 16, height: 18)
+                x: (self.contentView.frame.size.width-dateText.frame.width)/2, y: 8, width: dateText.frame.width, height: 21)
+            dateBg.frame = CGRect(x: dateText.frame.minX - 8, y: dateText.frame.minY, width: dateText.frame.width + 16, height: 21)
             
             dateText.isHidden = false
             dateBg.isHidden = false

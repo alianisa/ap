@@ -1,7 +1,3 @@
-//
-//  Copyright (c) 2014-2016 Actor LLC. <https://actor.im>
-//
-
 import Foundation
 import UIKit
 import MediaPlayer
@@ -10,7 +6,7 @@ import AVFoundation
 
 open class AAConversationContentController: SLKTextViewController, ARDisplayList_AppleChangeListener {
 
-    open let peer: ACPeer
+    public let peer: ACPeer
     
     fileprivate let delayLoad = false
     
@@ -39,20 +35,20 @@ open class AAConversationContentController: SLKTextViewController, ARDisplayList
     open var currentAudioFileId: jlong = 0
     open var voicesCache: Dictionary<jlong,Float> = Dictionary<jlong,Float>()
     
-    public init?(peer: ACPeer) {
+    public init(peer: ACPeer) {
         self.peer = peer
         
-        super.init(collectionViewLayout: collectionViewLayout)
+        super.init(collectionViewLayout: collectionViewLayout)!
         
         self.collectionView?.backgroundColor = UIColor.clear
-       // self.collectionView?.alwaysBounceVertical = true
+        self.collectionView?.alwaysBounceVertical = true
   
         for layout in AABubbles.layouters {
             self.collectionView?.register(layout.cellClass(), forCellWithReuseIdentifier: layout.cellReuseId())
         }
     }
     
-    public required init!(coder decoder: NSCoder) {
+    public required init!(coder decoder: NSCoder!) {
         fatalError("Not implemented");
     }
     
@@ -68,7 +64,7 @@ open class AAConversationContentController: SLKTextViewController, ARDisplayList
     
     open override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-          
+        
         isVisible = true
         
         // Hack for delaying collection view init from first animation frame
@@ -148,6 +144,7 @@ open class AAConversationContentController: SLKTextViewController, ARDisplayList
     }
     
     open func bindCell(_ collectionView: UICollectionView, cellForRowAtIndexPath indexPath: IndexPath, cell: UICollectionViewCell) {
+        NSLog("UPDATE_MSG bindCeelll")
         
         let list = getProcessedList()
         let message = list!.items[(indexPath as NSIndexPath).row]
@@ -161,7 +158,7 @@ open class AAConversationContentController: SLKTextViewController, ARDisplayList
     }
     
     open func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAtIndex section: Int) -> UIEdgeInsets {
-        return UIEdgeInsets.zero
+        return UIEdgeInsets(top: 6, left: 0, bottom: 100, right: 0)
     }
     
     open func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAtIndex section: Int) -> CGFloat {
@@ -218,15 +215,18 @@ open class AAConversationContentController: SLKTextViewController, ARDisplayList
     
     open override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
+        
         isVisible = false
+        
         if isBinded {
             isBinded = false
+            
             // Remove listener on exit
             self.displayList.removeAppleListener(self)
+            
             // Unbinding read/receive states
             self.binder.unbindAll()
         }
-        self.stopVoicePlayer()
     }
     
     // Model updates
@@ -256,17 +256,19 @@ open class AAConversationContentController: SLKTextViewController, ARDisplayList
     
     open func onCollectionChanged(withChanges modification: ARAppleListUpdate!) {
         
-//        if isUpdating {
-//            pendingUpdates.append(modification)
-//            return
-//        }
-        
-        if modification.isLoadMore {
-            UIView.setAnimationsEnabled(false)
+        if isUpdating {
+            pendingUpdates.append(modification)
+            return
         }
         
+        if modification.isLoadMore {
+            UIView.setAnimationsEnabled(true)
+        }
+        
+//        NSLog("👮🏻 onCollectionChanged called was: \(prevCount)")
         
         self.willUpdate()
+//        NSLog("👮🏻 willUpdate called")
         
         let list = self.displayList.getProcessedList() as? AAPreprocessedList
         
@@ -275,8 +277,10 @@ open class AAConversationContentController: SLKTextViewController, ARDisplayList
         if modification.nonUpdateCount() > 0 {
             
             isUpdating = true
-            
+//            NSLog("👮🏻 batch updates")
             self.collectionView?.performBatchUpdates({ () -> Void in
+                
+//                NSLog("👮🏻 batch started")
                 
                 // Removed rows
                 if modification.removedCount() > 0 {
@@ -284,6 +288,7 @@ open class AAConversationContentController: SLKTextViewController, ARDisplayList
                     for i in 0..<modification.removedCount() {
                         let removedRow = Int(modification.getRemoved(jint(i)))
                         rows.append(IndexPath(row: removedRow, section: 0))
+//                        NSLog("👮🏻 removed \(removedRow)")
                     }
                     self.collectionView?.deleteItems(at: rows)
                 }
@@ -294,6 +299,7 @@ open class AAConversationContentController: SLKTextViewController, ARDisplayList
                     for i in 0..<modification.addedCount() {
                         let insertedRow = Int(modification.getAdded(jint(i)))
                         rows.append(IndexPath(row: insertedRow, section: 0))
+//                        print("👮🏻 inserted \(insertedRow)")
                     }
                     
                     self.collectionView?.insertItems(at: rows)
@@ -306,6 +312,7 @@ open class AAConversationContentController: SLKTextViewController, ARDisplayList
                         let sourceRow = Int((mov?.getSourceIndex())!)
                         let destRow = Int((mov?.getDestIndex())!)
                         self.collectionView?.moveItem(at: IndexPath(row: sourceRow, section: 0), to: IndexPath(row: destRow, section: 0))
+//                        NSLog("👮🏻 moved \(sourceRow) -> \(destRow)")
                     }
                 }
                 
@@ -313,9 +320,11 @@ open class AAConversationContentController: SLKTextViewController, ARDisplayList
                 self.prevCount = self.getCount()
                 self.collectionViewLayout.beginUpdates(modification.isLoadMore, list: list, unread: self.unreadMessageId)
                 isAppliedList = true
+//                NSLog("👮🏻 batch updates:end \(self.prevCount)")
             }, completion: { (b) -> Void in
-
+//                NSLog("👮🏻 batch updates:completion")
             })
+//            NSLog("👮🏻 batch updates:after")
         }
         
         if !isAppliedList {
@@ -328,7 +337,9 @@ open class AAConversationContentController: SLKTextViewController, ARDisplayList
         
         if modification.updatedCount() > 0 {
             for i in 0..<modification.updatedCount() {
+                
                 let updIndex = Int(modification.getUpdated(i))
+                // Is forced update not marking as required for soft update
                 if (list!.forceUpdated[updIndex]) {
                     continue
                 }
@@ -357,7 +368,7 @@ open class AAConversationContentController: SLKTextViewController, ARDisplayList
         let visibleIndexes = self.collectionView?.indexPathsForVisibleItems
         for ind in updated {
             let indexPath = IndexPath(row: ind, section: 0)
-            if (visibleIndexes?.contains(indexPath))! {
+            if visibleIndexes!.contains(indexPath) {
                 let cell = self.collectionView?.cellForItem(at: indexPath)
                 self.bindCell(self.collectionView!, cellForRowAtIndexPath: indexPath, cell: cell!)
             }
@@ -376,6 +387,7 @@ open class AAConversationContentController: SLKTextViewController, ARDisplayList
         }
         
         self.didUpdate()
+//        NSLog("👮🏻 didUpdate Called")
         
         if modification.isLoadMore {
             UIView.setAnimationsEnabled(true)
@@ -426,7 +438,7 @@ open class AAConversationContentController: SLKTextViewController, ARDisplayList
     open func didUpdate() {
         if isLoadedAfter {
             if unreadIndex != nil {
-                self.collectionView?.scrollToItem(at: IndexPath(item: unreadIndex!, section: 0), at: UICollectionViewScrollPosition.bottom, animated: false)
+                self.collectionView?.scrollToItem(at: IndexPath(item: unreadIndex!, section: 0), at: UICollectionView.ScrollPosition.bottom, animated: false)
                 unreadIndex = nil
             }
         }
@@ -461,48 +473,60 @@ open class AAConversationContentController: SLKTextViewController, ARDisplayList
     // MARK: - audio play
     ///////////////////////
     
-    func stopVoicePlayer(){
-        if let vp = self.voicePlayer {
-            vp.stop()
-            vp.audioPlayerStopAndFinish()
-            self.voicesCache[self.currentAudioFileId] = 0.0
-        }
-    }
-    
     
     func playVoiceFromPath(_ path:String,fileId:jlong,position:Float) {
         
         if (self.currentAudioFileId != fileId) {
-            self.stopVoicePlayer()
+            
+            self.voicePlayer?.stop()
+            self.voicePlayer?.audioPlayerStopAndFinish()
+            
+            self.voicesCache[self.currentAudioFileId] = 0.0
+            
             self.voicePlayer = AAModernConversationAudioPlayer(filePath:path)
             self.voiceContext = self.voicePlayer.inlineMediaContext()
+            
             self.voicePlayer?.play()
+            
             self.currentAudioFileId = fileId
+            
         } else {
+            
             if (position == 0.0  || position == 0) {
+                
                 self.voicePlayer = AAModernConversationAudioPlayer(filePath:path)
                 self.voiceContext = self.voicePlayer.inlineMediaContext()
+                
                 self.voicePlayer?.play()
+                
             } else {
+                
                 if self.voicePlayer?.isPaused() == false {
                     self.voicePlayer?.pause()
                 } else {
                     self.voicePlayer?.play()
                 }
+                
             }
+            
         }
         
     }
     
     func playVideoFromPath(_ path:String) {
+        
         let player = AVPlayer(url: URL(fileURLWithPath: path))
         let playerController = AVPlayerViewController()
         playerController.player = player
         self.present(playerController, animated: true) {
             player.play()
         }
+        
     }
     
+
+    
     open func onEditMessageTap(rid:Int64, msg:String){}
+    open func onReplyMessageTap(sid:jint, msg:String){}
     
 }

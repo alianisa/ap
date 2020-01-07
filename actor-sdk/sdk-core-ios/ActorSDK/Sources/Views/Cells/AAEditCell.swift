@@ -6,10 +6,10 @@ import Foundation
 
 open class AAEditCell: AATableViewCell {
     
-    open let textPrefix = UILabel()
-    open let textField = UITextField()
+    public let textPrefix = UILabel()
+    public let textField = UITextField()
     
-    public override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    public override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         textField.autocapitalizationType = .none

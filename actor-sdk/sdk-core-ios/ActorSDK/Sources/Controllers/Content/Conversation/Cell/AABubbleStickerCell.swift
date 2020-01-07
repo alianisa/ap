@@ -32,7 +32,7 @@ open class AABubbleStickerCell: AABubbleBaseFileCell {
         timeLabel.font = UIFont.italicSystemFont(ofSize: 11)
         timeLabel.textColor = appStyle.chatMediaDateColor
         
-        statusView.contentMode = UIViewContentMode.center
+        statusView.contentMode = UIView.ContentMode.center
         
         preview.contentMode = .scaleAspectFit
         
@@ -46,6 +46,12 @@ open class AABubbleStickerCell: AABubbleBaseFileCell {
         preview.isUserInteractionEnabled = true
         
         contentInsets = UIEdgeInsets(top: 1, left: 1, bottom: 1, right: 1)
+        
+//        self.contentView.isUserInteractionEnabled = true
+    }
+    
+    convenience override init(frame: CGRect, isFullSize: Bool) {
+        self.init(frame: frame, isFullSize: false)
     }
     
     public required init(coder aDecoder: NSCoder) {
@@ -180,9 +186,9 @@ open class AABubbleStickerCell: AABubbleBaseFileCell {
 open class StikerCellLayout: AACellLayout {
     
     // public let fastThumb: NSData?
-    open let contentSize: CGSize
-    open let screenSize: CGSize
-    open let autoDownload: Bool
+    public let contentSize: CGSize
+    public let screenSize: CGSize
+    public let autoDownload: Bool
     
     /**
      Creting layout for media bubble

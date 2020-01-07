@@ -23,7 +23,7 @@ class AAThumbnailCollectionCell: UICollectionViewCell {
         self.imgSelected = UIImageView()
         self.imgSelected.backgroundColor = UIColor.clear
         self.imgSelected.isUserInteractionEnabled = true
-        self.imgSelected.contentMode = UIViewContentMode.scaleAspectFill
+        self.imgSelected.contentMode = UIView.ContentMode.scaleAspectFill
         
         self.isCheckSelected = false
         self.animated        = false
@@ -50,7 +50,7 @@ class AAThumbnailCollectionCell: UICollectionViewCell {
             self.imgSelected.image = UIImage.bundled("ImageSelectedOn")
             
             self.imgSelected.transform = CGAffineTransform(scaleX: 0.5,y: 0.5)
-            UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 0.5, options: UIViewAnimationOptions(), animations: { () -> Void in
+            UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 0.5, options: UIView.AnimationOptions(), animations: { () -> Void in
                 
                 self.imgSelected.transform = CGAffineTransform.identity
                 
@@ -65,7 +65,7 @@ class AAThumbnailCollectionCell: UICollectionViewCell {
             self.imgSelected.image = UIImage.bundled("ImageSelectedOff")
             
             self.imgSelected.transform = CGAffineTransform(scaleX: 0.5,y: 0.5)
-            UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 0.5, options: UIViewAnimationOptions(), animations: { () -> Void in
+            UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 0.5, options: UIView.AnimationOptions(), animations: { () -> Void in
                 
                 self.imgSelected.transform = CGAffineTransform.identity
                 

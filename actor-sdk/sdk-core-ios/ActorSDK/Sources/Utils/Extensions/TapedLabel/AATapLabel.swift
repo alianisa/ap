@@ -6,8 +6,8 @@ import Foundation
 
 open class TapLabel: UILabel, NSLayoutManagerDelegate {
     
-    open static let LinkContentName = "TapLabelLinkContentName"
-    open static let SelectedForegroudColorName = "TapLabelSelectedForegroudColorName"
+    public static let LinkContentName = "TapLabelLinkContentName"
+    public static let SelectedForegroudColorName = "TapLabelSelectedForegroudColorName"
     
     open weak var delegate: AATapLabelDelegate?
     
@@ -23,23 +23,23 @@ open class TapLabel: UILabel, NSLayoutManagerDelegate {
         didSet {
             if let (_, range) = selected
             {
-                if let currentColor = textStorage.attribute(NSAttributedStringKey.foregroundColor,
+                if let currentColor = textStorage.attribute(NSAttributedString.Key.foregroundColor,
                     at: range.location,
                     effectiveRange: nil) as? UIColor
                 {
                     defaultSelectedForegroundColor = currentColor
                 }
                 
-                if let color = textStorage.attribute(NSAttributedStringKey(rawValue: TapLabel.SelectedForegroudColorName),
+                if let color = textStorage.attribute(NSAttributedString.Key(rawValue: TapLabel.SelectedForegroudColorName),
                     at: range.location,
                     effectiveRange: nil) as? UIColor
                 {
-                    textStorage.addAttribute(NSAttributedStringKey.foregroundColor, value: color, range: range)
+                    textStorage.addAttribute(NSAttributedString.Key.foregroundColor, value: color, range: range)
                 }
             }
             else if let (_, range) = oldValue
             {
-                textStorage.addAttribute(NSAttributedStringKey.foregroundColor,
+                textStorage.addAttribute(NSAttributedString.Key.foregroundColor,
                     value: defaultSelectedForegroundColor!,
                     range: range)
             }
@@ -103,7 +103,7 @@ open class TapLabel: UILabel, NSLayoutManagerDelegate {
     fileprivate func updateLinks() {
         links = [String: NSRange]()
         
-        attributedText.enumerateAttribute(NSAttributedStringKey(rawValue: TapLabel.LinkContentName),
+        attributedText.enumerateAttribute(NSAttributedString.Key(rawValue: TapLabel.LinkContentName),
             in: NSMakeRange(0, attributedText.length),
             options: NSAttributedString.EnumerationOptions(rawValue: 0))
             {

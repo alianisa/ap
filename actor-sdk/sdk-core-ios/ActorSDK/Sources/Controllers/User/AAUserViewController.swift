@@ -27,7 +27,7 @@ open class AAUserViewController: AAContentTableController {
     override open func tableDidLoad() {
         
         // Profile
-        section { (s) -> () in
+        _ = section { (s) -> () in
             
             // Profile: Avatar
             self.headerRow = s.avatar { (r) -> () in
@@ -68,7 +68,7 @@ open class AAUserViewController: AAContentTableController {
             
             if (ActorSDK.sharedActor().enableCalls && !self.isBot) {
                 // Profile: Starting Voice Call
-                s.action("CallsStartAudio") { (r) -> () in
+                _ = s.action("CallsStartAudio") { (r) -> () in
                     r.selectAction = { () -> Bool in
                         self.execute(Actor.doCall(withUid: jint(self.uid)))
                         return false
@@ -77,7 +77,7 @@ open class AAUserViewController: AAContentTableController {
             }
             
             // Profile: Send messages
-            s.action("ProfileSendMessage") { (r) -> () in
+            _ = s.action("ProfileSendMessage") { (r) -> () in
                 r.selectAction = { () -> Bool in
                     if let customController = ActorSDK.sharedActor().delegate.actorControllerForConversation(ACPeer.user(with: jint(self.uid))) {
                         self.navigateDetail(customController)
@@ -96,7 +96,7 @@ open class AAUserViewController: AAContentTableController {
         if !self.isBot || nick != nil || about != nil {
             
             // Contact
-            section { (s) -> () in
+            _ = section { (s) -> () in
                 
                 // Contact: Nickname
                 if let n = nick {
@@ -105,7 +105,7 @@ open class AAUserViewController: AAContentTableController {
                 
                 if  !ActorSDK.sharedActor().delegate.useOnClientPrivacy() || self.user.isInPhoneBookModel().get().booleanValue() {
                     // Contact: Phones
-                    s.arrays { (r: AAManagedArrayRows<ACUserPhone, AATitledCell>) -> () in
+                    _ = s.arrays { (r: AAManagedArrayRows<ACUserPhone, AATitledCell>) -> () in
                         r.height = 55
                         r.data = self.user.getPhonesModel().get().toSwiftArray()
                         r.bindData = { (c: AATitledCell, d: ACUserPhone) -> () in
@@ -128,7 +128,7 @@ open class AAUserViewController: AAContentTableController {
                     }
                     
                     // Contact: Emails
-                    s.arrays { (r: AAManagedArrayRows<ACUserEmail, AATitledCell>) -> () in
+                    _ = s.arrays { (r: AAManagedArrayRows<ACUserEmail, AATitledCell>) -> () in
                         r.height = 55
                         r.data = self.user.getEmailsModel().get().toSwiftArray()
                         r.bindData = { (c: AATitledCell, d: ACUserEmail) -> () in
@@ -147,13 +147,13 @@ open class AAUserViewController: AAContentTableController {
                 
                 // Contact: About
                 if let a = about {
-                    s.text("ProfileAbout", content: a)
+                    _ = s.text("ProfileAbout", content: a)
                 }
             }
         }
         
         section { (s) -> () in
-            s.common { (r) -> () in
+            _ = s.common { (r) -> () in
                 let peer = ACPeer.user(with: jint(self.uid))
                 r.style = .switch
                 r.content = AALocalized("ProfileNotifications")
@@ -202,7 +202,7 @@ open class AAUserViewController: AAContentTableController {
         }
         
         // Edit contact
-        section { (s) -> () in
+        _ = section { (s) -> () in
             
             // Edit contact: Add/Remove
             self.isContactRow = s.common { (r) -> () in
@@ -228,7 +228,7 @@ open class AAUserViewController: AAContentTableController {
             
             if !self.isBot {
                 // Edit contact: Renaming
-                s.action("ProfileRename") { (r) -> () in
+                _ = s.action("ProfileRename") { (r) -> () in
                     r.selectAction = { () -> Bool in
                         
                         func renameUser() {
@@ -264,8 +264,8 @@ open class AAUserViewController: AAContentTableController {
         }
         
         // Block Contact
-        section { (s) -> () in
-            s.common { (r) -> () in
+        _ = section { (s) -> () in
+            _ = s.common { (r) -> () in
                 r.bindAction = { (r) -> () in
                     if !self.user.isBlockedModel().get().booleanValue() {
                         r.content = AALocalized("ProfileBlockContact")
@@ -294,6 +294,40 @@ open class AAUserViewController: AAContentTableController {
                     r.reload()
                     return true
                 }
+            }
+        }
+        
+        // Verified Contact
+        _ = section { (s) -> () in
+            _ = s.common { (r) -> () in
+                r.bindAction = { (r) -> () in
+                    if !self.user.isVerifiedModel().get().booleanValue() {
+//                        r.content = AALocalized("Verified")
+                    } else {
+//                        r.content = AALocalized("UnVerified")
+                    }
+                    r.style = .destructive
+                }
+                
+                /*r.selectAction = { () -> Bool in
+                    if !self.user.isVerifiedModel().get().booleanValue() {
+                        self.executePromise(Actor.blockUser(jint(self.uid)),
+                                            successBlock: { success in
+                                                DispatchQueue.main.async(execute: {
+                                                    r.reload()
+                                                })
+                        } ,failureBlock:nil)
+                    } else {
+                        self.executePromise(Actor.unblockUser(jint(self.uid)),
+                                            successBlock: { success in
+                                                DispatchQueue.main.async(execute: {
+                                                    r.reload()
+                                                })
+                        } ,failureBlock:nil)
+                    }
+                    r.reload()
+                    return true
+                }*/
             }
         }
     }

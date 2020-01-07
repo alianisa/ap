@@ -30,8 +30,14 @@ open class AABubbleContactCell: AABubbleCell, ABNewPersonViewControllerDelegate,
         
         tapView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(AABubbleContactCell.contactDidTap)))
         tapView.isUserInteractionEnabled = true
+        
+//        self.contentView.isUserInteractionEnabled = true
     }
 
+    convenience override init(frame: CGRect, isFullSize: Bool) {
+        self.init(frame: frame, isFullSize: false)
+    }
+    
     public required init(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -70,17 +76,17 @@ open class AABubbleContactCell: AABubbleCell, ABNewPersonViewControllerDelegate,
                     let person: ABRecord = ABPersonCreate().takeRetainedValue()
                     let name = c.getName().trim()
                     let nameParts = name.components(separatedBy: " ")
-                    ABRecordSetValue(person, kABPersonFirstNameProperty, nameParts[0] as CFTypeRef!, nil)
+                    ABRecordSetValue(person, kABPersonFirstNameProperty, nameParts[0] as CFTypeRef?, nil)
                     if (nameParts.count >= 2) {
                         let lastName = name.substring(from: nameParts[0].endIndex).trim()
-                        ABRecordSetValue(person, kABPersonLastNameProperty, lastName as CFTypeRef!, nil)
+                        ABRecordSetValue(person, kABPersonLastNameProperty, lastName as CFTypeRef?, nil)
                     }
                     
                     if (phones!.size() > 0) {
                         let phonesValues: ABMultiValue = ABMultiValueCreateMutable(UInt32(kABMultiStringPropertyType)).takeRetainedValue()
                         for i in 0..<phones!.size() {
                             let p = phones!.getWith(i) as! String
-                            ABMultiValueAddValueAndLabel(phonesValues, p.replace(" ", dest: "") as CFTypeRef!, kABPersonPhoneMainLabel, nil)
+                            ABMultiValueAddValueAndLabel(phonesValues, p.replace(" ", dest: "") as CFTypeRef?, kABPersonPhoneMainLabel, nil)
                         }
                         ABRecordSetValue(person, kABPersonPhoneProperty, phonesValues, nil)
                     }
@@ -89,7 +95,7 @@ open class AABubbleContactCell: AABubbleCell, ABNewPersonViewControllerDelegate,
                         let phonesValues: ABMultiValue = ABMultiValueCreateMutable(UInt32(kABMultiStringPropertyType)).takeRetainedValue()
                         for i in 0..<emails!.size() {
                             let p = emails!.getWith(i) as! String
-                            ABMultiValueAddValueAndLabel(phonesValues, p.replace(" ", dest: "") as CFTypeRef!, kABPersonPhoneMainLabel, nil)
+                            ABMultiValueAddValueAndLabel(phonesValues, p.replace(" ", dest: "") as CFTypeRef?, kABPersonPhoneMainLabel, nil)
                         }
                         ABRecordSetValue(person, kABPersonEmailProperty, phonesValues, nil)
                     }

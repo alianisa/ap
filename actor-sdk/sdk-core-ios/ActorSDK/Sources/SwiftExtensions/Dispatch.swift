@@ -4,7 +4,7 @@
 
 import Foundation
 
-private let backgroundQueue = DispatchQueue(label: "im.actor.background", attributes: [])
+private let backgroundQueue = DispatchQueue(label: "im.alo.background", attributes: [])
 
 public func dispatchOnUi(_ closure: @escaping () -> Void) {
     DispatchQueue.main.async(execute: { () -> Void in

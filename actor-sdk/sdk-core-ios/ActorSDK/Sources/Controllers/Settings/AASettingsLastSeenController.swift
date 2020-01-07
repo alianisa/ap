@@ -14,7 +14,7 @@ open class AASettingsLastSeenController: AATableViewController {
     fileprivate let CellIdentifier = "CellIdentifier"
     
     public init() {
-        super.init(style: UITableViewStyle.grouped)
+        super.init(style: UITableView.Style.grouped)
         
         title = AALocalized("PrivacyLastSeen")
         
@@ -91,7 +91,7 @@ open class AASettingsLastSeenController: AATableViewController {
             
         }
         
-        cell.selectionStyle = UITableViewCellSelectionStyle.none
+        cell.selectionStyle = UITableViewCell.SelectionStyle.none
         cell.bottomSeparatorVisible = false
         cell.topSeparatorVisible = false
         cell.bottomSeparatorLeftInset = 0

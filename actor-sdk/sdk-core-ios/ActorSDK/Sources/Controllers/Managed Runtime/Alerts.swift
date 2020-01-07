@@ -10,36 +10,36 @@ private var actionShitReference = "_action_shit"
 public extension UIViewController {
     
     public func alertUser(_ message: String) {
-        let controller = UIAlertController(title: nil, message: message, preferredStyle: UIAlertControllerStyle.alert)
-        controller.addAction(UIAlertAction(title: AALocalized("AlertOk"), style: UIAlertActionStyle.cancel, handler: nil))
+        let controller = UIAlertController(title: nil, message: message, preferredStyle: UIAlertController.Style.alert)
+        controller.addAction(UIAlertAction(title: AALocalized("AlertOk"), style: UIAlertAction.Style.cancel, handler: nil))
         self.present(controller, animated: true, completion: nil)
     }
     
     public func alertUser(_ message: String, tapYes: @escaping ()->()) {
-        let controller = UIAlertController(title: nil, message: message, preferredStyle: UIAlertControllerStyle.alert)
-        controller.addAction(UIAlertAction(title: AALocalized("AlertOk"), style: UIAlertActionStyle.cancel, handler: { (alertView) -> () in
+        let controller = UIAlertController(title: nil, message: message, preferredStyle: UIAlertController.Style.alert)
+        controller.addAction(UIAlertAction(title: AALocalized("AlertOk"), style: UIAlertAction.Style.cancel, handler: { (alertView) -> () in
             tapYes()
         }))
         self.present(controller, animated: true, completion: nil)
     }
     
     public func confirmAlertUser(_ message: String, action: String, tapYes: @escaping ()->(), tapNo: (()->())? = nil) {
-        let controller = UIAlertController(title: nil, message: AALocalized(message), preferredStyle: UIAlertControllerStyle.alert)
-        controller.addAction(UIAlertAction(title: AALocalized(action), style: UIAlertActionStyle.default, handler: { (alertView) -> () in
+        let controller = UIAlertController(title: nil, message: AALocalized(message), preferredStyle: UIAlertController.Style.alert)
+        controller.addAction(UIAlertAction(title: AALocalized(action), style: UIAlertAction.Style.default, handler: { (alertView) -> () in
             tapYes()
         }))
-        controller.addAction(UIAlertAction(title: AALocalized("AlertCancel"), style: UIAlertActionStyle.cancel, handler: { (alertView) -> () in
+        controller.addAction(UIAlertAction(title: AALocalized("AlertCancel"), style: UIAlertAction.Style.cancel, handler: { (alertView) -> () in
             tapNo?()
         }))
         self.present(controller, animated: true, completion: nil)
     }
     
     public func confirmAlertUserDanger(_ message: String, action: String, tapYes: @escaping ()->(), tapNo: (()->())? = nil) {
-        let controller = UIAlertController(title: nil, message: AALocalized(message), preferredStyle: UIAlertControllerStyle.alert)
-        controller.addAction(UIAlertAction(title: AALocalized(action), style: UIAlertActionStyle.destructive, handler: { (alertView) -> () in
+        let controller = UIAlertController(title: nil, message: AALocalized(message), preferredStyle: UIAlertController.Style.alert)
+        controller.addAction(UIAlertAction(title: AALocalized(action), style: UIAlertAction.Style.destructive, handler: { (alertView) -> () in
             tapYes()
         }))
-        controller.addAction(UIAlertAction(title: AALocalized("AlertCancel"), style: UIAlertActionStyle.cancel, handler: { (alertView) -> () in
+        controller.addAction(UIAlertAction(title: AALocalized("AlertCancel"), style: UIAlertAction.Style.cancel, handler: { (alertView) -> () in
             tapNo?()
         }))
         self.present(controller, animated: true, completion: nil)
@@ -57,7 +57,7 @@ public extension UIViewController {
     
     public func showActionSheet(_ title: String?, buttons: [String], cancelButton: String?, destructButton: String?, sourceView: UIView, sourceRect: CGRect, tapClosure: @escaping (_ index: Int) -> ()) {
         
-        let controller = UIAlertController(title: title, message: nil, preferredStyle: UIAlertControllerStyle.actionSheet)
+        let controller = UIAlertController(title: title, message: nil, preferredStyle: UIAlertController.Style.actionSheet)
         
         if (AADevice.isiPad) {
             controller.popoverPresentationController?.sourceView = sourceView
@@ -65,19 +65,19 @@ public extension UIViewController {
         }
         
         if cancelButton != nil {
-            controller.addAction(UIAlertAction(title: AALocalized(cancelButton!), style: UIAlertActionStyle.cancel, handler: { (alertView) -> () in
+            controller.addAction(UIAlertAction(title: AALocalized(cancelButton!), style: UIAlertAction.Style.cancel, handler: { (alertView) -> () in
                 tapClosure(-1)
             }))
         }
         
         if destructButton != nil {
-            controller.addAction(UIAlertAction(title: AALocalized(destructButton!), style: UIAlertActionStyle.destructive, handler: { (alertView) -> () in
+            controller.addAction(UIAlertAction(title: AALocalized(destructButton!), style: UIAlertAction.Style.destructive, handler: { (alertView) -> () in
                 tapClosure(-2)
             }))
         }
         
         for b in 0..<buttons.count {
-            controller.addAction(UIAlertAction(title: AALocalized(buttons[b]), style: UIAlertActionStyle.default, handler: { (alertView) -> () in
+            controller.addAction(UIAlertAction(title: AALocalized(buttons[b]), style: UIAlertAction.Style.default, handler: { (alertView) -> () in
                 tapClosure(b)
             }))
         }

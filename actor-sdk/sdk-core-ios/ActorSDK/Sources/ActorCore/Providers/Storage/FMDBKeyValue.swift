@@ -5,7 +5,7 @@
 import Foundation
 
 @objc class FMDBKeyValue: NSObject, ARKeyValueStorage {
-
+    
     var db :FMDatabase!
     
     let databasePath: String
@@ -29,7 +29,7 @@ import Foundation
         self.queryCreate = "CREATE TABLE IF NOT EXISTS " + tableName + " (" +
             "\"ID\" INTEGER NOT NULL, " +
             "\"BYTES\" BLOB NOT NULL, " +
-            "PRIMARY KEY (\"ID\"));"
+        "PRIMARY KEY (\"ID\"));"
         self.queryItem = "SELECT \"BYTES\" FROM " + tableName + " WHERE \"ID\" = ?;"
         self.queryItems = "SELECT \"ID\", \"BYTES\" FROM " + tableName + " WHERE \"ID\" in ?;"
         self.queryAll = "SELECT \"ID\", \"BYTES\" FROM " + tableName + ";"
@@ -49,7 +49,7 @@ import Foundation
         self.db = FMDatabase(path: databasePath)
         self.db.open()
         if (!db.tableExists(tableName)) {
-            db.executeUpdate(queryCreate)
+            _ = db.executeUpdate(queryCreate)
         }
     }
     
@@ -59,7 +59,7 @@ import Foundation
         db.beginTransaction()
         for i in 0..<values.size() {
             let record = values.getWith(i) as! ARKeyValueRecord
-            db.executeUpdate(queryAdd, record.getId().toNSNumber(),record.getData().toNSData() as AnyObject)
+            _ = db.executeUpdate(queryAdd, record.getId().toNSNumber(),record.getData().toNSData() as AnyObject)
         }
         db.commit()
     }
@@ -68,7 +68,7 @@ import Foundation
         checkTable()
         
         db.beginTransaction()
-        db.executeUpdate(queryAdd, key.toNSNumber(), data!.toNSData() as AnyObject)
+        _ = db.executeUpdate(queryAdd, key.toNSNumber(), data!.toNSData() as AnyObject)
         db.commit()
     }
     
@@ -78,7 +78,7 @@ import Foundation
         db.beginTransaction()
         for i in 0..<keys.length() {
             let key = keys.long(at: UInt(i));
-            db.executeUpdate(queryDelete, key.toNSNumber())
+            _ = db.executeUpdate(queryDelete, key.toNSNumber())
         }
         db.commit()
     }
@@ -87,7 +87,7 @@ import Foundation
         checkTable()
         
         db.beginTransaction()
-        db.executeUpdate(queryDelete, key.toNSNumber())
+        _ = db.executeUpdate(queryDelete, key.toNSNumber())
         db.commit()
     }
     
@@ -108,7 +108,7 @@ import Foundation
         
         if let result = db.executeQuery(queryAll) {
             while(result.next()) {
-                res.add(withId: ARKeyValueRecord(key: jlong(result.longLongInt(forColumn: "ID")), withData: result.data(forColumn: "BYTES").toJavaBytes()))
+                res.add(withId: ARKeyValueRecord(key: jlong(result.longLongInt(forColumn: "ID")), withData: (result.data(forColumn: "BYTES")?.toJavaBytes())!))
             }
         }
         
@@ -129,7 +129,7 @@ import Foundation
         if let result = db.executeQuery(queryItems, ids as AnyObject) {
             while(result.next()) {
                 // TODO: Optimize lookup
-                res!.add(withId: ARKeyValueRecord(key: jlong(result.longLongInt(forColumn: "ID")), withData: result.data(forColumn: "BYTES").toJavaBytes()))
+                res!.add(withId: ARKeyValueRecord(key: jlong(result.longLongInt(forColumn: "ID")), withData: (result.data(forColumn: "BYTES")?.toJavaBytes())!))
             }
         }
         
@@ -140,7 +140,7 @@ import Foundation
         checkTable()
         
         db.beginTransaction()
-        db.executeUpdate(queryDeleteAll)
+        _ = db.executeUpdate(queryDeleteAll)
         db.commit()
     }
 }

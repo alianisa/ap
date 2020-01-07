@@ -5,6 +5,7 @@
 import Foundation
 import UIKit
 import YYImage
+import AudioToolbox
 
 open class AABubbleTextCell : AABubbleCell {
     
@@ -35,7 +36,12 @@ open class AABubbleTextCell : AABubbleCell {
     
     fileprivate var cellLayout: TextCellLayout!
     
-    @objc public init(frame: CGRect) {
+//    let embeddedView = URLEmbeddedView()
+
+    
+
+    
+    public init(frame: CGRect) {
         super.init(frame: frame, isFullSize: false)
         
         messageText.displaysAsynchronously = true
@@ -45,7 +51,7 @@ open class AABubbleTextCell : AABubbleCell {
         
         messageText.highlightTapAction = { (containerView: UIView, text: NSAttributedString, range: NSRange, rect: CGRect) -> () in
             let attributes = text.attributes(at: range.location, effectiveRange: nil)
-            if let attrs = attributes[NSAttributedStringKey("YYTextHighlight")] as? YYTextHighlight {
+            if let attrs = attributes[NSAttributedString.Key("YYTextHighlight")] as? YYTextHighlight {
                 if let url = attrs.userInfo!["url"] as? String {
                     self.openUrl(URL(string: url)!)
                 }
@@ -53,15 +59,14 @@ open class AABubbleTextCell : AABubbleCell {
         }
         
         messageText.highlightLongPressAction = { (containerView: UIView, text: NSAttributedString, range: NSRange, rect: CGRect) -> () in
-            //self.bubble
+            self.bubble
             let attributes = text.attributes(at: range.location, effectiveRange: nil)
-            if let attrs = attributes[NSAttributedStringKey("YYTextHighlight")] as? YYTextHighlight {
+            if let attrs = attributes[NSAttributedString.Key("YYTextHighlight")] as? YYTextHighlight {
                 if let url = attrs.userInfo!["url"] as? String {
                     self.urlLongTap(URL(string: url)!)
                 }
             }
         }
-
         senderNameLabel.displaysAsynchronously = true
         senderNameLabel.ignoreCommonProperties = true
         senderNameLabel.fadeOnAsynchronouslyDisplay = true
@@ -78,12 +83,19 @@ open class AABubbleTextCell : AABubbleCell {
 //        dateText.numberOfLines = 1
 //        dateText.textAlignment = .Right
         
-        statusView.contentMode = UIViewContentMode.center
+        statusView.contentMode = UIView.ContentMode.center
         
         contentView.addSubview(messageText)
         contentView.addSubview(dateText)
         contentView.addSubview(statusView)
         contentView.addSubview(senderNameLabel)
+//        contentView.addSubview(embeddedView)
+        
+//        self.contentView.isUserInteractionEnabled = true
+    }
+    
+    convenience override init(frame: CGRect, isFullSize: Bool) {
+        self.init(frame: frame, isFullSize: false)
     }
     
     public required init(coder aDecoder: NSCoder) {
@@ -96,7 +108,7 @@ open class AABubbleTextCell : AABubbleCell {
         
         let msg:ACTextContent = (message.content as! ACTextContent)
         NSLog("UPDATE_MSG Bind da mensagem \(msg.text)")
-       
+        
         // Saving cell settings
         self.cellLayout = cellLayout as! TextCellLayout
         
@@ -156,6 +168,19 @@ open class AABubbleTextCell : AABubbleCell {
         dateText.textLayout = self.cellLayout.dateLayout
         dateWidth = self.cellLayout.dateWidth!
         
+//        OGDataProvider.shared.updateInterval = 10.days
+//        
+//        embeddedView.textProvider[.title].font = .boldSystemFont(ofSize: 18)
+//        embeddedView.textProvider[.description].fontColor = .lightGray
+//        embeddedView.textProvider[.domain].fontColor = .lightGray
+        
+        //                embeddedView.didTapHandler = { [weak self] embeddedView, URL in
+        //                    guard let URL = URL else { return }
+        //                    self?.present(SFSafariViewController(url: URL), animated: true, completion: nil)
+        //                }
+//        let urlString = "https://www.youtube.com/watch?v=5lKSKkIf4FI"
+//        embeddedView.loadURL(urlString)
+        
         if (isOut) {
             NSLog("UPDATE_MSG atualizando o status da mensagem")
             switch(message.messageState) {
@@ -187,8 +212,6 @@ open class AABubbleTextCell : AABubbleCell {
         }
     }
     
-    
-    
     // Menu for Text cell
     open override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
         
@@ -208,6 +231,12 @@ open class AABubbleTextCell : AABubbleCell {
             }
         }
         
+        if action == #selector(AABubbleTextCell.reply(_:)) {
+//            if(isOut && self.bindedMessage?.messageState == ACMessageState_SENT){
+                return true
+//            }
+        }
+        
         return false
     }
     
@@ -215,13 +244,19 @@ open class AABubbleTextCell : AABubbleCell {
         UIPasteboard.general.string = (bindedMessage!.content as! ACTextContent).text
     }
     
-    @objc open func edit(_ sender: Any?){
+    @objc open func edit(_ sender: Any?) {
         NSLog("Editando mensagem")
-        self.controller.onEditMessageTap(rid: bindedMessage!.rid, msg: (bindedMessage?.content as! ACTextContent).text)
+        self.controller.onEditMessageTap(rid: bindedMessage!.rid, msg:
+            (bindedMessage?.content as! ACTextContent).text)
         //self.needRelayout = true
     }
     
-   
+    @objc open func reply(_ sender: Any?){
+        self.controller.onReplyMessageTap(sid: bindedMessage!.senderId, msg:
+            (bindedMessage?.content as! ACTextContent).text)
+        //self.needRelayout = true
+    }
+    
     open func urlLongTap(_ url: URL) {
         if url.scheme != "source" && url.scheme == "send" {
             let actionSheet: UIAlertController = UIAlertController(title: nil, message: url.absoluteString, preferredStyle: .actionSheet)
@@ -240,7 +275,7 @@ open class AABubbleTextCell : AABubbleCell {
     open func openUrl(_ url: URL) {
         if url.scheme == "source" {
             let path = url.path
-            let index = Int(path.substring(from: path.characters.index(path.startIndex, offsetBy: 1)))!
+            let index = Int(path.substring(from: path.index(path.startIndex, offsetBy: 1)))!
             let code = self.cellLayout.sources[index]
             self.controller.navigateNext(AACodePreviewController(code: code), removeCurrent: false)
         } else if url.scheme == "send" {
@@ -269,6 +304,8 @@ open class AABubbleTextCell : AABubbleCell {
             self.dateText.frame = CGRect(x: contentWidth - insets.right - 70 + 46 - dateWidth, y: bubbleHeight + insets.top - 20, width: dateWidth, height: 26)
             self.statusView.frame = CGRect(x: contentWidth - insets.right - 24, y: bubbleHeight + insets.top - 20, width: 20, height: 26)
             self.statusView.isHidden = false
+//            self.embeddedView.frame = CGRect(x: contentWidth - bubbleWidth - insets.right, y: insets.top, width: bubbleWidth, height: bubbleHeight)
+//            self.embeddedView.isHidden = false
         } else {
             self.messageText.frame.origin = CGPoint(x: insets.left, y: insets.top/* + topPadding*/)
             self.dateText.frame = CGRect(x: insets.left + bubbleWidth - 47 + 46 - dateWidth, y: bubbleHeight + insets.top - 20, width: dateWidth, height: 26)
@@ -312,7 +349,7 @@ open class TextCellLayout: AACellLayout {
         }
     }
     
-    public static let textKey = "text"
+    fileprivate static let textKey = "text"
     fileprivate static let unsupportedKey = "unsupported"
     
     fileprivate static let stringOutPadding = " " + ("_".repeatString(7));
@@ -329,11 +366,11 @@ open class TextCellLayout: AACellLayout {
     var isUnsupported: Bool = false
     var bubbleSize: CGSize
     var sources = [String]()
-    
+
     /**
      NSAttributedString layout
      */
-    public init(senderId: Int, text: String, attributedText: NSAttributedString, date: Int64, isOut: Bool, peer: ACPeer, layoutKey: String = TextCellLayout.textKey, layouter: AABubbleLayouter) {
+    public init(senderId: Int, text: String, attributedText: NSAttributedString, date: Int64, isOut: Bool, peer: ACPeer, layoutKey: String, layouter: AABubbleLayouter) {
         
         // Setting attributed text
         self.text = text
@@ -425,7 +462,7 @@ open class TextCellLayout: AACellLayout {
             var senderName: String
             var color: UIColor
             if sender.isBot() && sender.getNameModel().get() == "Bot" {
-                senderName = Actor.getGroupWithGid(peer.peerId).getNameModel().get()
+                senderName = Actor.getGroupWithGid(peer.peerId).name.get()
                 color = colors[Int(abs(peer.peerId)) % colors.count]
             } else {
                 senderName = sender.getNameModel().get()
@@ -455,11 +492,18 @@ open class TextCellLayout: AACellLayout {
     /**
         Formatted text layout. Automatically parse text and detect formatting.
     */
-    public convenience init(senderId: Int, formattedText: String, textColor: UIColor, date: Int64, isOut: Bool, peer: ACPeer, layoutKey: String = TextCellLayout.textKey, layouter: AABubbleLayouter) {
+    public convenience init(senderId: Int, formattedText: String, textColor: UIColor, date: Int64, isOut: Bool, peer: ACPeer, layoutKey: String, layouter: AABubbleLayouter) {
         
         // Parsing markdown formatted text
-        let parser = TextParser(textColor: textColor, linkColor: ActorSDK.sharedActor().style.chatUrlColor, fontSize: AABubbleTextCell.fontSize)        
+        let parser = TextParser(textColor: textColor, linkColor: ActorSDK.sharedActor().style.chatUrlColor, fontSize: AABubbleTextCell.fontSize)
         let text = parser.parse(formattedText)
+
+        //        let parser  = YYTextSimpleMarkdownParser()
+//        parser.setColorWithDarkTheme()
+//        let text = parser.parseText(formattedText, selectedRange: NSRangePointer?)
+
+        
+
         
         // Creating attributed text layout
         self.init(senderId: senderId, text: formattedText, attributedText: text.attributedText, date: date, isOut: isOut, peer: peer, layoutKey: layoutKey, layouter: layouter)
