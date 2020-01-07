@@ -64,7 +64,7 @@ final class PlivioClient(config: Config)(implicit system: ActorSystem) {
       }
     } andThen {
       case Failure(e) ⇒ {
-    //    system.log.error(e, "Failed to make request to zenvia")
+        system.log.error(e, "Failed to make request to zenvia")
       }
     }
   }
@@ -95,7 +95,7 @@ final class PlivioClient(config: Config)(implicit system: ActorSystem) {
   }
 
   def wrap(phoneNumber: String, code: String): String = {
-
+    
     """<bulk-request login="ItService" password="1TS#RV1S" ref-id="1" delivery-notification-requested="true" version="1.0">
         <message id="1" msisdn="""" + phoneNumber + """" validity-period="3" priority="1">
         <content type="text/plain">Your Alo activation code is: """ + code + """ </content>

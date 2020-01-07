@@ -37,7 +37,8 @@ final class WebrtcServiceImpl(implicit system: ActorSystem, sessionRegion: Sessi
           participants,
           isAudioOnlyCall,
           isVideoOnlyCall,
-          isVideoPreferred) ← webrtcExt.getInfo(callId)
+          isVideoPreferred,
+          isBusy) ← webrtcExt.getInfo(callId)
         users ← FutureExt.ftraverse(participants)(ACLUtils.getUserOutPeer(_, client.authId))
       } yield Ok(ResponseGetCallInfo(
         peer = peer.asStruct,
@@ -46,7 +47,8 @@ final class WebrtcServiceImpl(implicit system: ActorSystem, sessionRegion: Sessi
         eventBusId = eventBusId,
         isAudioOnlyCall = isAudioOnlyCall,
         isVideoOnlyCall = isVideoOnlyCall,
-        isVideoPreferred = isVideoPreferred
+        isVideoPreferred = isVideoPreferred,
+        isBusy = isBusy
       ))
     }
 
@@ -56,6 +58,7 @@ final class WebrtcServiceImpl(implicit system: ActorSystem, sessionRegion: Sessi
     isAudioOnlyCall:  Option[Boolean],
     isVideoOnlyCall:  Option[Boolean],
     isVideoPreferred: Option[Boolean],
+    isBusy:           Option[Boolean],
     clientData:       ClientData
   ): Future[HandlerResult[ResponseDoCall]] =
     authorized(clientData) { implicit client ⇒
@@ -68,6 +71,7 @@ final class WebrtcServiceImpl(implicit system: ActorSystem, sessionRegion: Sessi
             isAudioOnlyCall = isAudioOnlyCall,
             isVideoOnlyCall = isVideoOnlyCall,
             isVideoPreferred = isVideoPreferred,
+            isBusy = isBusy,
             timeout = timeout
           )
         } yield Ok(ResponseDoCall(callId, eventBusId, callerDeviceId))
@@ -86,6 +90,21 @@ final class WebrtcServiceImpl(implicit system: ActorSystem, sessionRegion: Sessi
     authorized(clientData) { implicit client ⇒
       for {
         callId ← webrtcExt.rejectCall(client.userId, client.authId, callId)
+      } yield Ok(ResponseVoid)
+    }
+
+  /**
+    * Busy Call
+    *
+    * @param callId Call Id
+    */
+  override protected def doHandleBusyCall(
+    callId:     Long,
+    clientData: ClientData
+  ): Future[HandlerResult[ResponseVoid]] =
+    authorized(clientData) { implicit client ⇒
+      for {
+        callId ← webrtcExt.busyCall(client.userId, client.authId, callId)
       } yield Ok(ResponseVoid)
     }
 

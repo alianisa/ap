@@ -2,8 +2,8 @@ package im.actor.server.push.apple
 
 import akka.actor.ActorSystem
 import akka.event.Logging
-import com.relayrides.pushy.apns.PushNotificationResponse
-import com.relayrides.pushy.apns.util.SimpleApnsPushNotification
+import com.turo.pushy.apns.PushNotificationResponse
+import com.turo.pushy.apns.util.SimpleApnsPushNotification
 import im.actor.server.model.push.ApplePushCredentials
 import im.actor.server.sequence.SeqUpdatesExtension
 import im.actor.util.log.AnyRefLogSource

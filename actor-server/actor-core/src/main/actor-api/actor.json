@@ -3206,13 +3206,14 @@
 "name":"GetCallInfo",
 "header":2600,
 "response":{"type":"anonymous","header":2606, "doc":[
-{"type":"reference","argument":"peer","category":"full","description":"  Destination peer"},{"type":"reference","argument":"groups","category":"compact","description":"  Groups"},{"type":"reference","argument":"users","category":"compact","description":"  Users"},{"type":"reference","argument":"eventBusId","category":"full","description":"  Event Bus Id"},{"type":"reference","argument":"isAudioOnlyCall","category":"full","description":"  Is Audio Only Call. Default is true"},{"type":"reference","argument":"isVideoOnlyCall","category":"full","description":"  Is Video Only Call. Default is false."},{"type":"reference","argument":"isVideoPreferred","category":"full","description":"  Is Video preferred"}] ,"attributes":[{"type":{"type":"struct","childType":"Peer"},"id":1,"name":"peer"}
+  {"type":"reference","argument":"peer","category":"full","description":"  Destination peer"},{"type":"reference","argument":"groups","category":"compact","description":"  Groups"},{"type":"reference","argument":"users","category":"compact","description":"  Users"},{"type":"reference","argument":"eventBusId","category":"full","description":"  Event Bus Id"},{"type":"reference","argument":"isAudioOnlyCall","category":"full","description":"  Is Audio Only Call. Default is true"},{"type":"reference","argument":"isVideoOnlyCall","category":"full","description":"  Is Video Only Call. Default is false."},{"type":"reference","argument":"isVideoPreferred","category":"full","description":"  Is Video preferred"},{"type":"reference","argument":"isBusy","category":"full","description":"Is Call Busy"}] ,"attributes":[{"type":{"type":"struct","childType":"Peer"},"id":1,"name":"peer"}
 ,{"type":{"type":"list","childType":{"type":"struct","childType":"GroupOutPeer"}},"id":2,"name":"groups"}
 ,{"type":{"type":"list","childType":{"type":"struct","childType":"UserOutPeer"}},"id":3,"name":"users"}
 ,{"type":{"type":"alias","childType":"busId"},"id":4,"name":"eventBusId"}
 ,{"type":{"type":"opt","childType":"bool"},"id":5,"name":"isAudioOnlyCall"}
 ,{"type":{"type":"opt","childType":"bool"},"id":6,"name":"isVideoOnlyCall"}
 ,{"type":{"type":"opt","childType":"bool"},"id":7,"name":"isVideoPreferred"}
+,{"type":{"type":"opt","childType":"bool"},"id":8,"name":"isBusy"}
 ]},
 "doc":[
 "Getting Call Information",{"type":"reference","argument":"callId","category":"full","description":"Call Id"}],"attributes":[
@@ -3226,12 +3227,13 @@
 ,{"type":{"type":"alias","childType":"randomId"},"id":3,"name":"deviceId"}
 ]},
 "doc":[
-"Do Call. Right after a call client need to start sending CallInProgress",{"type":"reference","argument":"peer","category":"full","description":"destination peer"},{"type":"reference","argument":"timeout","category":"full","description":"Initial timeout"},{"type":"reference","argument":"isAudioOnlyCall","category":"full","description":"Is Audio only call. Default is true."},{"type":"reference","argument":"isVideoOnlyCall","category":"full","description":"Is Video Only call. Default is false."},{"type":"reference","argument":"isVideoPreferred","category":"full","description":"Is Video preferred"}],"attributes":[
+  "Do Call. Right after a call client need to start sending CallInProgress",{"type":"reference","argument":"peer","category":"full","description":"destination peer"},{"type":"reference","argument":"timeout","category":"full","description":"Initial timeout"},{"type":"reference","argument":"isAudioOnlyCall","category":"full","description":"Is Audio only call. Default is true."},{"type":"reference","argument":"isVideoOnlyCall","category":"full","description":"Is Video Only call. Default is false."},{"type":"reference","argument":"isVideoPreferred","category":"full","description":"Is Video preferred"},{"type":"reference","argument":"isBusy","category":"full","description":"Is Call Busy"}],"attributes":[
 {"type":{"type":"struct","childType":"OutPeer"},"id":1,"name":"peer"}
 ,{"type":{"type":"opt","childType":{"type":"alias","childType":"msec"}},"id":2,"name":"timeout"}
 ,{"type":{"type":"opt","childType":"bool"},"id":3,"name":"isAudioOnlyCall"}
 ,{"type":{"type":"opt","childType":"bool"},"id":4,"name":"isVideoOnlyCall"}
 ,{"type":{"type":"opt","childType":"bool"},"id":6,"name":"isVideoPreferred"}
+,{"type":{"type":"opt","childType":"bool"},"id":7,"name":"isBusy"}
 ]}},{"type":"rpc","content":{
 "name":"UpgradeCall",
 "header":2677,
@@ -3261,6 +3263,13 @@
 "response":{"type":"reference","name":"Void"},
 "doc":[
 "Rejecting Call",{"type":"reference","argument":"callId","category":"full","description":"Call Id"}],"attributes":[
+{"type":"int64","id":1,"name":"callId"}
+]}},{"type":"rpc","content":{
+"name":"BusyCall",
+"header":2687,
+"response":{"type":"reference","name":"Void"},
+"doc":[
+"Busy Call",{"type":"reference","argument":"callId","category":"full","description":"Call Id"}],"attributes":[
 {"type":"int64","id":1,"name":"callId"}
 ]}},{"type":"rpc","content":{
 "name":"OptimizeSDP",
@@ -3415,6 +3424,14 @@
               {
                 "name": "ENDED",
                 "id": 5
+              },
+              {
+                "name": "BUSY",
+                "id": 6
+              },
+              {
+                "name": "NO_ANSWER",
+                "id": 7
               }
           ]
         }
@@ -3423,13 +3440,15 @@
        "content": {
          "name":"CallMemberStateHolder",
 "doc":[
-"Call Member state holder",{"type":"reference","argument":"state","category":"full","description":"  State Value"},{"type":"reference","argument":"fallbackIsRinging","category":"full","description":"  Fallback flag for future compatibility of state"},{"type":"reference","argument":"fallbackIsConnected","category":"full","description":"  Fallback flag for future compatibility of state"},{"type":"reference","argument":"fallbackIsConnecting","category":"full","description":"  Fallback flag for future compatibility of state"},{"type":"reference","argument":"fallbackIsRingingReached","category":"full","description":"  Fallback flag for future compatibility of state"},{"type":"reference","argument":"fallbackIsEnded","category":"full","description":"  Fallback flag for future compatibility of state"}],"attributes":[
+"Call Member state holder",{"type":"reference","argument":"state","category":"full","description":"  State Value"},{"type":"reference","argument":"fallbackIsRinging","category":"full","description":"  Fallback flag for future compatibility of state"},{"type":"reference","argument":"fallbackIsConnected","category":"full","description":"  Fallback flag for future compatibility of state"},{"type":"reference","argument":"fallbackIsConnecting","category":"full","description":"  Fallback flag for future compatibility of state"},{"type":"reference","argument":"fallbackIsRingingReached","category":"full","description":"  Fallback flag for future compatibility of state"},{"type":"reference","argument":"fallbackIsEnded","category":"full","description":"  Fallback flag for future compatibility of state"},{"type":"reference","argument":"fallbackIsBusy","category":"full","description":"  Fallback flag for future compatibility of state"},{"type":"reference","argument":"fallbackIsNoAnswer","category":"full","description":"  Fallback flag for future compatibility of state"}],"attributes":[
 {"type":{"type":"enum","childType":"CallMemberState"},"id":1,"name":"state"}
 ,{"type":{"type":"opt","childType":"bool"},"id":2,"name":"fallbackIsRinging"}
 ,{"type":{"type":"opt","childType":"bool"},"id":3,"name":"fallbackIsConnected"}
 ,{"type":{"type":"opt","childType":"bool"},"id":4,"name":"fallbackIsConnecting"}
 ,{"type":{"type":"opt","childType":"bool"},"id":5,"name":"fallbackIsRingingReached"}
 ,{"type":{"type":"opt","childType":"bool"},"id":6,"name":"fallbackIsEnded"}
+,{"type":{"type":"opt","childType":"bool"},"id":7,"name":"fallbackIsBusy"}
+,{"type":{"type":"opt","childType":"bool"},"id":8,"name":"fallbackIsNoAnswer"}
 ]}},     {
        "type":"struct",
        "content": {

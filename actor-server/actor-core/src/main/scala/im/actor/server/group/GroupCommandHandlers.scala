@@ -14,6 +14,7 @@ import im.actor.server.acl.ACLUtils
 import im.actor.server.dialog.UserAcl
 import im.actor.server.group.GroupCommands._
 import im.actor.server.group.GroupErrors._
+import im.actor.server.group.GroupEnvelope._
 import im.actor.server.group.GroupEvents._
 import im.actor.server.model.Group
 import im.actor.server.persist.{ GroupBotRepo, GroupRepo, GroupUserRepo }

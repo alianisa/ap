@@ -3,7 +3,7 @@ package im.actor.server.webrtc
 import akka.actor._
 import akka.http.scaladsl.util.FastFuture
 import akka.pattern.pipe
-import com.relayrides.pushy.apns.util.ApnsPayloadBuilder
+import com.turo.pushy.apns.util.ApnsPayloadBuilder
 import im.actor.api.rpc._
 import im.actor.api.rpc.messaging.{ ApiServiceExPhoneCall, ApiServiceExPhoneMissed, ApiServiceMessage }
 import im.actor.api.rpc.peers.{ ApiPeer, ApiPeerType }
@@ -47,6 +47,7 @@ private[webrtc] object WebrtcCallMessages {
     isAudioOnlyCall:  Option[Boolean],
     isVideoOnlyCall:  Option[Boolean],
     isVideoPreferred: Option[Boolean],
+    isBusy:           Option[Boolean],
     timeout:          Option[Long]
   ) extends WebrtcCallMessage
   final case class StartCallAck(eventBusId: String, callerDeviceId: EventBus.DeviceId)
@@ -57,6 +58,9 @@ private[webrtc] object WebrtcCallMessages {
   final case class RejectCall(calleeUserId: UserId, authId: AuthId) extends WebrtcCallMessage
   case object RejectCallAck
 
+  final case class BusyCall(calleeUserId: UserId, authId: AuthId) extends WebrtcCallMessage
+  case object BusyCallAck
+
   case object GetInfo extends WebrtcCallMessage
   final case class GetInfoAck(
     eventBusId:         String,
@@ -64,9 +68,10 @@ private[webrtc] object WebrtcCallMessages {
     participantUserIds: Seq[UserId],
     isAudioOnlyCall:    Option[Boolean],
     isVideoOnlyCall:    Option[Boolean],
-    isVideoPreferred:   Option[Boolean]
-  ) {
-    val tupled = (eventBusId, peer, participantUserIds, isAudioOnlyCall, isVideoOnlyCall, isVideoPreferred)
+    isVideoPreferred:   Option[Boolean],
+    isBusy:             Option[Boolean]
+    ) {
+    val tupled = (eventBusId, peer, participantUserIds, isAudioOnlyCall, isVideoOnlyCall, isVideoPreferred, isBusy)
   }
 
   private[webrtc] case class SendIncomingCall(userId: UserId)
@@ -93,6 +98,7 @@ private trait Members {
     object Connecting extends MemberState
     object Connected extends MemberState
     object Ended extends MemberState
+    object Busy extends MemberState
   }
 
   case class Member(userId: UserId, state: MemberState, isJoined: Boolean, callAttempts: Int) {
@@ -104,6 +110,7 @@ private trait Members {
       case Connecting     ⇒ ApiCallMemberState.CONNECTING
       case Connected      ⇒ ApiCallMemberState.CONNECTED
       case Ended          ⇒ ApiCallMemberState.ENDED
+      case Busy           ⇒ ApiCallMemberState.BUSY
     }
   }
 
@@ -221,6 +228,7 @@ private final class WebrtcCallActor extends StashingActor with ActorLogging with
   private var isAudioOnlyCall: Option[Boolean] = None
   private var isVideoOnlyCall: Option[Boolean] = None
   private var isVideoPreferred: Option[Boolean] = None
+  private var isBusy: Option[Boolean] = None
 
   def receive = waitForStart
 
@@ -234,6 +242,7 @@ private final class WebrtcCallActor extends StashingActor with ActorLogging with
       this.isAudioOnlyCall = s.isAudioOnlyCall
       this.isVideoOnlyCall = s.isVideoOnlyCall
       this.isVideoPreferred = s.isVideoPreferred
+      this.isBusy = s.isBusy
 
       (for {
         callees ← fetchMembers(callerUserId, peer) map (_ filterNot (_ == callerUserId))
@@ -384,6 +393,27 @@ private final class WebrtcCallActor extends StashingActor with ActorLogging with
               (!this.isConversationStarted && everyoneRejected(callerUserId))) end()
           case None ⇒ throw new IllegalStateException("Attempted to reject call of a non-existent member")
         }
+      case BusyCall(userId, authId) ⇒
+        getMember(userId) match {
+          case Some(member) ⇒
+//            cancelIncomingCallUpdates(userId)
+            log.debug(s"member[userId=${userId}] busy call")
+            setMemberState(userId, MemberStates.Busy)
+            val client = EventBus.ExternalClient(userId, authId)
+            for (deviceId ← clients get client) {
+              clients -= client
+              devices -= deviceId
+            }
+            weakUpdExt.broadcastUserWeakUpdate(userId, UpdateCallHandled(id, Some(member.callAttempts)), excludeAuthIds = Set(authId))
+            broadcastSyncedSet()
+            sender() ! BusyCallAck
+
+//            if ( // If caller changed his mind until anyone picked up
+//              (!this.isConversationStarted && userId == callerUserId) ||
+//                // If everyone rejected dialing, there will no any conversation ;(
+//                (!this.isConversationStarted && everyoneRejected(callerUserId))) end()
+          case None ⇒ throw new IllegalStateException("Attempted to reject call of a non-existent member")
+        }
       case GetInfo ⇒
         if (peer.typ.isPrivate) {
           sender() ! GetInfoAck(
@@ -392,7 +422,8 @@ private final class WebrtcCallActor extends StashingActor with ActorLogging with
             participantUserIds = memberUserIds.toSeq,
             isAudioOnlyCall = isAudioOnlyCall,
             isVideoOnlyCall = isVideoOnlyCall,
-            isVideoPreferred = isVideoPreferred
+            isVideoPreferred = isVideoPreferred,
+            isBusy = isBusy
           )
         } else {
           sender() ! GetInfoAck(
@@ -401,7 +432,8 @@ private final class WebrtcCallActor extends StashingActor with ActorLogging with
             participantUserIds = memberUserIds.toSeq,
             isAudioOnlyCall = isAudioOnlyCall,
             isVideoOnlyCall = isVideoOnlyCall,
-            isVideoPreferred = isVideoPreferred
+            isVideoPreferred = isVideoPreferred,
+            isBusy = isBusy
           )
         }
       case EventBus.Joined(_, client, deviceId) ⇒
@@ -633,7 +665,9 @@ private final class WebrtcCallActor extends StashingActor with ActorLogging with
             fallbackIsConnected = Some(state == ApiCallMemberState.CONNECTED),
             fallbackIsConnecting = Some(state == ApiCallMemberState.CONNECTING),
             fallbackIsRingingReached = Some(state == ApiCallMemberState.RINGING_REACHED),
-            fallbackIsEnded = Some(state == ApiCallMemberState.ENDED)
+            fallbackIsEnded = Some(state == ApiCallMemberState.ENDED),
+            fallbackIsBusy = Some(state == ApiCallMemberState.BUSY),
+            fallbackIsNoAnswer = Some(state == ApiCallMemberState.NO_ANSWER)
           ))
       }).toByteArray
     memberUserIds foreach (valuesExt.syncedSet.put(_, Webrtc.SyncedSetName, id, activeCall))
