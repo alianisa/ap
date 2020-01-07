@@ -143,9 +143,7 @@ trait GroupQueryHandlers {
           isAsyncMembers = Some(state.isAsyncMembers),
           members = membersAndCount(state, clientUserId)._1,
           shortName = state.shortName,
-          permissions = Some(state.permissions.fullFor(clientUserId)),
-          restrictedDomains = state.restrictedDomains,
-          location = None
+          permissions = Some(state.permissions.fullFor(clientUserId))
         )
       )
     }
@@ -202,11 +200,16 @@ trait GroupQueryHandlers {
       case (_, m) ⇒
         ApiMember(m.userId, m.inviterUserId, m.invitedAt.toEpochMilli, Some(m.isAdmin))
     }
-    if (state.isAsyncMembers) {
-      // compatibility with old clients
-      apiMembers.find(_.userId == clientUserId).toVector → group.membersCount
+
+    if (state.isMember(clientUserId)) {
+      if (state.isAsyncMembers) {
+        // compatibility with old clients
+        apiMembers.find(_.userId == clientUserId).toVector → group.membersCount
+      } else {
+        apiMembers → group.membersCount
+      }
     } else {
-      apiMembers → group.membersCount
+      Vector.empty[ApiMember] → 0
     }
   }
 

@@ -68,7 +68,6 @@ public class UpdatesParser extends BaseParser<Update> {
             case 2623: return UpdateGroupMemberDiff.fromBytes(payload);
             case 2622: return UpdateGroupMembersCountChanged.fromBytes(payload);
             case 2627: return UpdateGroupMemberAdminChanged.fromBytes(payload);
-            case 2164: return UpdateRestrictedDomainsChanged.fromBytes(payload);
             case 36: return UpdateGroupInviteObsolete.fromBytes(payload);
             case 21: return UpdateGroupUserInvitedObsolete.fromBytes(payload);
             case 23: return UpdateGroupUserLeaveObsolete.fromBytes(payload);
@@ -113,8 +112,6 @@ public class UpdatesParser extends BaseParser<Update> {
             case 20: return UpdateGroupPreCreated.fromBytes(payload);
             case 22: return UpdateGroupPreRemoved.fromBytes(payload);
             case 88: return UpdateGroupPreParentChanged.fromBytes(payload);
-            case 89: return UpdateGroupPreOrderChanged.fromBytes(payload);
-            case 96: return UpdateResetGroupPre.fromBytes(payload);
         }
         throw new IOException();
     }

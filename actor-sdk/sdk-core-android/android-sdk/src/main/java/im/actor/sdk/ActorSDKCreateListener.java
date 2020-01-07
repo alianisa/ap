@@ -10,6 +10,19 @@ import im.actor.core.ConfigurationBuilder;
  */
 
 public interface ActorSDKCreateListener {
+
+    ActorSDKCreateListener stub = new ActorSDKCreateListener() {
+        @Override
+        public void onCreateActor(Application application) {
+        }
+
+        @Override
+        public AndroidMessenger createMessenger(Application application, ConfigurationBuilder builder) {
+            return new AndroidMessenger(application, builder.build());
+        }
+    };
+
     void onCreateActor(final Application application);
+
     AndroidMessenger createMessenger(Application application, ConfigurationBuilder builder);
 }

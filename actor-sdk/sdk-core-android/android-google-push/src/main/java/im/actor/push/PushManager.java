@@ -2,7 +2,10 @@ package im.actor.push;
 
 import android.content.Context;
 
-import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.google.android.gms.iid.InstanceID;
+
+import java.io.IOException;
 
 import im.actor.runtime.Log;
 import im.actor.runtime.util.ExponentialBackoff;
@@ -57,13 +60,22 @@ public class PushManager implements ActorPushManager {
 
     private void onPushRegistered(String token) {
         isRegistered = true;
+        ActorSDK.sharedActor().getMessenger().getPreferences().putBool("push_registered", true);
         ActorSDK.sharedActor().getMessenger().registerGooglePush(ActorSDK.sharedActor().getPushId(), token);
+
     }
 
     private String tryRegisterPush(Context context) {
         Log.d(TAG, "Requesting push token iteration...");
-        String regId = FirebaseInstanceId.getInstance().getToken();
-        return "FCM_" + regId;
+        try {
+            String regId = InstanceID.getInstance(context)
+                    .getToken(String.valueOf(ActorSDK.sharedActor().getPushId()),
+                            GoogleCloudMessaging.INSTANCE_ID_SCOPE);
+            return "FCM_" + regId;
+        } catch (IOException e) {
+            Log.e(TAG, e);
+            return null;
+        }
     }
 
 }

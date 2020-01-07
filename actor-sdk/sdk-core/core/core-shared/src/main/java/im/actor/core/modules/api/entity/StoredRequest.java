@@ -54,7 +54,7 @@ public class StoredRequest extends BserObject {
 //                }
 //            }
 //            if (error) {
-            throw ioe;
+                throw ioe;
 //            }
         }
     }

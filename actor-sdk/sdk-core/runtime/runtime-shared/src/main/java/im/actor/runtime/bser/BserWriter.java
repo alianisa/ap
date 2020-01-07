@@ -197,11 +197,11 @@ public class BserWriter {
                 } else if (o instanceof byte[]) {
                     writeBytes(fieldNumber, (byte[]) o);
                 } else {
-                    throw new IOException("Incorrect unmapped value in List got: " + o.getClass().getSimpleName());
+                    throw new IOException("Incorrect unmapped value in List got: "+o.getClass().getSimpleName());
                 }
             }
         } else {
-            throw new IOException("Incorrect unmapped value got: " + value.getClass().getSimpleName());
+            throw new IOException("Incorrect unmapped value got: "+value.getClass().getSimpleName());
         }
     }
 

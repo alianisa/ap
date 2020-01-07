@@ -114,7 +114,7 @@ public class DocHolder extends MessageHolder {
                             public void onDownloaded(FileSystemReference reference) {
                                 Activity activity = getAdapter().getMessagesFragment().getActivity();
                                 activity.startActivity(Intents.shareDoc(documentContent.getName(),
-                                        reference.getDescriptor(), itemView.getContext()));
+                                        reference.getDescriptor()));
                             }
                         });
                     }
@@ -352,7 +352,7 @@ public class DocHolder extends MessageHolder {
                 }
 
                 @Override
-                public void onUploaded(FileSystemReference reference) {
+                public void onUploaded() {
                     // Nothing to do
                 }
             });
@@ -462,7 +462,7 @@ public class DocHolder extends MessageHolder {
         }
 
         @Override
-        public void onUploaded(FileSystemReference reference) {
+        public void onUploaded() {
             onUploading(1);
         }
     }

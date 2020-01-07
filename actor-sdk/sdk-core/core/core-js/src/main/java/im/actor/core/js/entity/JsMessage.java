@@ -68,7 +68,7 @@ public class JsMessage extends JavaScriptObject {
             JsDate fullDate = JsDate.create(value.getDate());
 
             JsContent content = JsContent.createContent(value.getContent(),
-                    value.getSenderId(), value.getMessageState());
+                    value.getSenderId());
 
             JsArray<JsReaction> reactions = JsArray.createArray().cast();
 

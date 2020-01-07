@@ -19,7 +19,6 @@ import java.io.File;
 
 import im.actor.sdk.ActorSDK;
 import im.actor.sdk.controllers.settings.BaseActorSettingsFragment;
-import im.actor.sdk.util.Files;
 
 public class BackgroundPreviewView extends SimpleDraweeView {
 
@@ -85,8 +84,7 @@ public class BackgroundPreviewView extends SimpleDraweeView {
                 if (!customWallpaper.exists()) {
                     return;
                 }
-//                Uri uri = Uri.fromFile(customWallpaper);
-                Uri uri = Files.getUri(getContext(), customWallpaper);
+                Uri uri = Uri.fromFile(customWallpaper);
                 ImageRequest request = ImageRequestBuilder.newBuilderWithSource(uri)
                         .setResizeOptions(new ResizeOptions(width, height))
                         .build();

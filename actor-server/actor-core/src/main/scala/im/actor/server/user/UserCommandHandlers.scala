@@ -124,6 +124,7 @@ private[user] trait UserCommandHandlers {
   protected def updateIsAdmin(state: UserState, isAdmin: Option[Boolean]): Unit = {
     persist(UserEvents.IsAdminUpdated(now(), isAdmin)) { e ⇒
       context become working(updatedState(e, state))
+
       sender() ! UpdateIsAdminAck()
     }
   }

@@ -45,6 +45,7 @@ trait ElasticSearchIndexer {
     } yield ()
   }
 
+  // TODO: add failure logging
   def indexMessages(messages: Seq[IndexedMessage]): Future[Unit] = {
     if (messages.isEmpty) {
       Future.successful(())

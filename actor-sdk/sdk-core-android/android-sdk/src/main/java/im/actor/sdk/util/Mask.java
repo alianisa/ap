@@ -13,9 +13,9 @@ public abstract class Mask {
 
     private static int positioning[] = {1, 2, 3, 6, 7, 8, 9, 11, 12, 13, 14, 15};
 
-    public final static KeylistenerNumber keylistenerNumber = new KeylistenerNumber();
+    private final static KeylistenerNumber keylistenerNumber = new KeylistenerNumber();
 
-    public static class KeylistenerNumber extends NumberKeyListener {
+    private static class KeylistenerNumber extends NumberKeyListener {
         public int getInputType() {
             return InputType.TYPE_CLASS_NUMBER
                     | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS;

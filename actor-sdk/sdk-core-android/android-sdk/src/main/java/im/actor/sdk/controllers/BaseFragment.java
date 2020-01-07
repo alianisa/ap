@@ -248,12 +248,14 @@ public class BaseFragment extends BinderCompatFragment implements MediaPickerCal
             @Override
             public void onResult(T res) {
                 dismissDialog(dialog);
+                ;
                 callback.onResult(res);
             }
 
             @Override
             public void onError(Exception e) {
                 dismissDialog(dialog);
+                ;
                 callback.onError(e);
             }
         });

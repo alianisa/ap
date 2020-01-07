@@ -19,6 +19,7 @@ import im.actor.sdk.view.SelectorFactory;
 
 public class SignUpFragment extends BaseAuthFragment {
 
+
     private EditText firstNameEditText;
     private KeyboardHelper keyboardHelper;
 
@@ -38,6 +39,21 @@ public class SignUpFragment extends BaseAuthFragment {
         firstNameEditText.setTextColor(ActorSDK.sharedActor().style.getTextPrimaryColor());
         firstNameEditText.setHintTextColor(ActorSDK.sharedActor().style.getTextHintColor());
         final View sendConfirmCodeButton = v.findViewById(R.id.button_confirm_sms_code);
+        firstNameEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
 
         ((TextView) v.findViewById(R.id.sign_up_hint)).setTextColor(ActorSDK.sharedActor().style.getTextSecondaryColor());
 

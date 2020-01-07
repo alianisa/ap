@@ -17,7 +17,7 @@ import im.actor.core.modules.encryption.EncryptionModule;
 import im.actor.core.modules.eventbus.EventBusModule;
 import im.actor.core.modules.external.ExternalModule;
 import im.actor.core.modules.file.FilesModule;
-import im.actor.core.modules.grouppre.GroupsPreModule;
+import im.actor.core.modules.grouppre.GrupoPreModule;
 import im.actor.core.modules.groups.GroupsModule;
 import im.actor.core.modules.mentions.MentionsModule;
 import im.actor.core.modules.messaging.MessagesModule;
@@ -80,7 +80,7 @@ public class Modules implements ModuleContext {
     private volatile EncryptionModule encryptionModule;
     private volatile ConductorModule conductor;
     private volatile EventBusModule eventBusModule;
-    private volatile GroupsPreModule grupoPreModule;
+    private volatile GrupoPreModule grupoPreModule;
 
     public Modules(Messenger messenger, Configuration configuration) {
         this.messenger = messenger;
@@ -135,7 +135,7 @@ public class Modules implements ModuleContext {
         groups = new GroupsModule(this);
 
         timing.section("GrupoPreee");
-        grupoPreModule = new GroupsPreModule(this);
+        grupoPreModule = new GrupoPreModule(this);
 
         timing.section("Conductor");
         conductor.run();
@@ -389,7 +389,7 @@ public class Modules implements ModuleContext {
     }
 
     @Override
-    public GroupsPreModule getGrupoPreModule() {
+    public GrupoPreModule getGrupoPreModule() {
         return grupoPreModule;
     }
 

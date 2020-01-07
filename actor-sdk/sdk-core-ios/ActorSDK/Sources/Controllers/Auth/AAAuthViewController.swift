@@ -14,8 +14,8 @@ open class AAAuthViewController: AAViewController {
         
         nextBarButton.setTitle(AALocalized("NavigationNext"), for: UIControlState())
         nextBarButton.setTitleColor(UIColor.white, for: UIControlState())
-        nextBarButton.setBackgroundImage(Imaging.roundedImage(ActorSDK.sharedActor().style.nextBarColor, radius: 20), for: UIControlState())
-        nextBarButton.setBackgroundImage(Imaging.roundedImage(ActorSDK.sharedActor().style.nextBarColor.alpha(0.7), radius: 20), for: .highlighted)
+        nextBarButton.setBackgroundImage(Imaging.roundedImage(ActorSDK.sharedActor().style.nextBarColor, radius: 4), for: UIControlState())
+        nextBarButton.setBackgroundImage(Imaging.roundedImage(ActorSDK.sharedActor().style.nextBarColor.alpha(0.7), radius: 4), for: .highlighted)
         nextBarButton.addTarget(self, action: #selector(AAAuthViewController.nextDidTap), for: .touchUpInside)
 
         view.addSubview(nextBarButton)
@@ -37,7 +37,7 @@ open class AAAuthViewController: AAViewController {
     }
     
     fileprivate func layoutNextBar() {
-        nextBarButton.frame = CGRect(x: view.width - 115, y: view.height - 50 - keyboardHeight + 6, width: 105, height: 38)
+        nextBarButton.frame = CGRect(x: view.width - 95, y: view.height - 44 - keyboardHeight + 6, width: 85, height: 32)
     }
     
     @objc func keyboardWillAppearInt(_ notification: Notification) {

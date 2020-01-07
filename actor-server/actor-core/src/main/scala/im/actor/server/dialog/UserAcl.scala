@@ -37,5 +37,4 @@ trait UserAcl {
   // check that `userId` is blocked by `ownerUserId`
   protected def checkIsBlocked(userId: Int, ownerUserId: Int): Future[Boolean] =
     DbExtension(system).db.run(RelationRepo.isBlocked(ownerUserId, userId))
-
 }

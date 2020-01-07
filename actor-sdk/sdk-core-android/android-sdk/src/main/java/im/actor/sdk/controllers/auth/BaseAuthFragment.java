@@ -123,7 +123,7 @@ public abstract class BaseAuthFragment extends BaseFragment {
             } else {
                 editText.setSelection(editText.getText().length());
             }
-        }, 500);
+        }, 1000);
     }
 
 

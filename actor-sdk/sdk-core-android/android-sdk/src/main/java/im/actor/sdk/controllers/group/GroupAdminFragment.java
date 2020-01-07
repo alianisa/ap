@@ -12,6 +12,8 @@ import android.widget.Toast;
 
 import im.actor.core.entity.GroupType;
 import im.actor.core.viewmodel.GroupVM;
+import im.actor.runtime.mvvm.Value;
+import im.actor.runtime.mvvm.ValueChangedListener;
 import im.actor.sdk.R;
 import im.actor.sdk.controllers.BaseFragment;
 import im.actor.sdk.controllers.Intents;

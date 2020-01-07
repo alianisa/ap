@@ -13,6 +13,7 @@ public class GroupPermissions {
         this.settings = settings;
     }
 
+
     @ObjectiveCName("isShowAdminsToMembers")
     public boolean isShowAdminsToMembers() {
         return settings.showAdminsToMembers();

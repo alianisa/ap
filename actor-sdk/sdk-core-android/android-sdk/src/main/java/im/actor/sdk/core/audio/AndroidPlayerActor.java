@@ -3,10 +3,11 @@ package im.actor.sdk.core.audio;
 import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.net.Uri;
 
-import im.actor.runtime.Log;
+import java.io.File;
+
 import im.actor.runtime.actors.Actor;
-import im.actor.sdk.util.Files;
 
 /**
  * Created by ex3ndr on 18.03.14.
@@ -39,7 +40,7 @@ public class AndroidPlayerActor extends Actor {
         try {
             mplayer = new MediaPlayer();
             mplayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            mplayer.setDataSource(context, Files.getUri(context, currentFileName));
+            mplayer.setDataSource(context, Uri.fromFile(new File(currentFileName)));
             mplayer.prepare();
             mplayer.setLooping(false);
             mplayer.start();
@@ -49,7 +50,6 @@ public class AndroidPlayerActor extends Actor {
                 return false;
             });
         } catch (Exception e) {
-            Log.e(AndroidPlayerActor.class.getName(), e);
             destroyPlayer();
             callback.onError(currentFileName);
             return;

@@ -5,15 +5,16 @@ import org.jetbrains.annotations.NotNull;
 import im.actor.core.entity.content.AbsContent;
 
 public class MessageSearchEntity {
-
+    private
     @NotNull
-    private Peer peer;
+    Peer peer;
     private long rid;
     private long date;
     private int senderId;
 
+    private
     @NotNull
-    private AbsContent content;
+    AbsContent content;
 
     public MessageSearchEntity(@NotNull Peer peer, long rid, long date, int senderId, @NotNull AbsContent content) {
         this.peer = peer;

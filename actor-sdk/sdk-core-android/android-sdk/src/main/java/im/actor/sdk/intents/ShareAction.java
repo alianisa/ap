@@ -71,7 +71,6 @@ public class ShareAction extends BserObject {
         return docContent;
     }
 
-
     @Override
     public void parse(BserValues values) throws IOException {
         text = values.optString(1);

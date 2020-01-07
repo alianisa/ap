@@ -43,8 +43,8 @@ private[activation] final class SMTPProvider(system: ActorSystem) extends Activa
     sendAction = (code: EmailCode) ⇒ emailSender.send(
     Message(
       to = code.email,
-      subject = s"Your activation code: ${code.code}",
-      content = Content(Some(emailTemplate.replace("$$CODE$$", code.code)), Some(s"Your activation code: ${code.code}"))
+      subject = s"Actor activation code: ${code.code}",
+      content = Content(Some(emailTemplate.replace("$$CODE$$", code.code)), Some(s"Your actor activation code: ${code.code}"))
     )
   ),
     id = (code: EmailCode) ⇒ code.email
@@ -53,9 +53,7 @@ private[activation] final class SMTPProvider(system: ActorSystem) extends Activa
   override def send(txHash: String, code: Code): Future[CodeFailure Xor Unit] = code match {
     case code: EmailCode ⇒
       if (isTestEmail(code.email)) {
-        for {
-          _ <- createAuthCodeIfNeeded(Xor.right(()), txHash, "5555")
-        } yield Xor.right(())
+        FastFuture.successful(Xor.right(()))
       } else {
         for {
           resp ← (smtpStateActor ? Send(code)).mapTo[SendAck].map(_.result)

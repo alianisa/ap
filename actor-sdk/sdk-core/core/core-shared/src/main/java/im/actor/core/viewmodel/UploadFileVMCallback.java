@@ -6,8 +6,6 @@ package im.actor.core.viewmodel;
 
 import com.google.j2objc.annotations.ObjectiveCName;
 
-import im.actor.runtime.files.FileSystemReference;
-
 /**
  * Upload file View Model callback. Methods always called on Main thread.
  */
@@ -29,6 +27,6 @@ public interface UploadFileVMCallback {
     /**
      * On file uploaded
      */
-    @ObjectiveCName("onUploaded:")
-    void onUploaded(FileSystemReference reference);
+    @ObjectiveCName("onUploaded")
+    void onUploaded();
 }

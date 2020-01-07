@@ -397,7 +397,7 @@
 
 "CreateGroup" = "Criar Grupo";
 
-"CreateChannel" = "Criar Canal";
+"CreateChannel" = "Create Channel";
 
 
 "CreateGroupTitle" = "Criar Grupo";
@@ -407,18 +407,18 @@
 "CreateGroupHint" = "Please provide group subject and optional group icon";
 
 
-"CreateChannelTitle" = "Criar Canal";
+"CreateChannelTitle" = "Create Channel";
 
-"CreateChannelHint" = "Por favor insira o nome e o ícone do canal";
+"CreateChannelHint" = "Please provide the channel name and an optional channel icon";
 
-"CreateChannelNamePlaceholder" = "Nome do Canal";
+"CreateChannelNamePlaceholder" = "Channel Name";
 
 
-"CreateGroupMembersTitle" = "Convidar membros";
+"CreateGroupMembersTitle" = "Invite members";
 
-"CreateGroupMembersPlaceholders" = "Entrar com nomes";
+"CreateGroupMembersPlaceholders" = "Enter Names";
 
-"ChatDeleted" = "Esta conversa foi exclúida pelo proprietário";
+"ChatDeleted" = "This chat was deleted by owner.";
 
 /*
  * Location
@@ -432,9 +432,9 @@
  * Wallpapers
  */
 
-"WallpapersTitle" = "Papeis de parede";
+"WallpapersTitle" = "Wallpapers";
 
-"WallpapersPhoto" = "Biblioteca de fotos";
+"WallpapersPhoto" = "Photo Library";
 
 /*
  * Chat
@@ -446,27 +446,27 @@
 
 "ChatNoGroupAccess" = "Você não é membro";
 
-"ChatDeleted" = "Esta conversa foi exclúida pelo proprietário";
+"ChatDeleted" = "This chat was deleted by owner.";
 
-"ChatJoin" = "Entrar";
+"ChatJoin" = "Join";
 
 /*
  * Find
  */
 
-"FindTitle" = "Encontrar pessoas";
+"FindTitle" = "Find People";
 
-"FindFieldHint" = "telefone, email ou nome do usuário";
+"FindFieldHint" = "phone number, email or nickname";
 
-"FindHint" = "Entre com o numero do telefone, email ou nome do usuário e pressione buscar";
+"FindHint" = "Enter phone number, email or nickname and press search";
 
-"FindNotFound" = "Desculpe, não encontramos nenhum resuldado para sua pesquisa";
+"FindNotFound" = "Sorry, but we are unable to find person for this search query";
 
 /*
  * Placeholders
  */
 
-"Placeholder_Empty_Title" = "Convide seus amigos";
+"Placeholder_Empty_Title" = "COnvide seus amigos";
 
 "Placeholder_Empty_Message" = "Nenhum dos seus contatos usa {appname}. Use o botão abaixo para convidá-los.";
 
@@ -520,7 +520,7 @@
 
 "AuthUnsupported" = "Essa conta não é suportada nesta versão do {app_name}. Favor atualizar para logar nessa conta.";
 
-"AuthLoginTitle" = "Entrar no {app_name}";
+"AuthLoginTitle" = "Login no {app_name}";
 
 "AuthLoginPhone" = "Fone";
 
@@ -683,19 +683,19 @@
 "ActionDeleteGroupMessage" = "Wait! Deleting this group will remove all members and all messages will be lost. Delete the group anyway?";
 
 
-"ActionLeaveChannel" = "Sair do Canal";
+"ActionLeaveChannel" = "Leave Channel";
 
-"ActionLeaveChannelMessage" = "Tem certeza que deseja deixar o canal?";
+"ActionLeaveChannelMessage" = "Are you sure want to leave channel?";
 
-"ActionLeaveChannelAction" = "Sair";
+"ActionLeaveChannelAction" = "Leave";
 
 
 
-"ActionDeleteAndExit" = "Excluir e sair";
+"ActionDeleteAndExit" = "Delete and Exit";
 
-"ActionDeleteAndExitMessage" = "Tem certeza que deseja deixar o grupo e excluir as mensagens?";
+"ActionDeleteAndExitMessage" = "Are you sure want to exit group and delete all messages?";
 
-"ActionDeleteAndExitAction" = "Sair";
+"ActionDeleteAndExitAction" = "Exit";
 
 
 
@@ -730,15 +730,3 @@
 "MessageToOld" = "A mensagem é muito antiga";
 
 "IsNotLastMessage" = "Esta não é a ultima mensagem";
-
-/*
- *
- */
-"GroupsPre" = "Grupos predefinidos";
-"ChannelsPre" = "Canais predefinidos";
-
-/*
- *
- */
-"INCLUDING_YOU" = "incluindo você";
-"MEMBERS" = "membros";

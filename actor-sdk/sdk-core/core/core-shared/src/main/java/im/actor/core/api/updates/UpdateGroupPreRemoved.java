@@ -23,13 +23,9 @@ public class UpdateGroupPreRemoved extends Update {
     }
 
     private ApiGroupPre groupPre;
-    private List<Integer> removedChildren;
-    private List<Integer> parentChildren;
 
-    public UpdateGroupPreRemoved(@NotNull ApiGroupPre groupPre, @NotNull List<Integer> removedChildren, @NotNull List<Integer> parentChildren) {
+    public UpdateGroupPreRemoved(@NotNull ApiGroupPre groupPre) {
         this.groupPre = groupPre;
-        this.removedChildren = removedChildren;
-        this.parentChildren = parentChildren;
     }
 
     public UpdateGroupPreRemoved() {
@@ -41,21 +37,9 @@ public class UpdateGroupPreRemoved extends Update {
         return this.groupPre;
     }
 
-    @NotNull
-    public List<Integer> getRemovedChildren() {
-        return this.removedChildren;
-    }
-
-    @NotNull
-    public List<Integer> getParentChildren() {
-        return this.parentChildren;
-    }
-
     @Override
     public void parse(BserValues values) throws IOException {
         this.groupPre = values.getObj(1, new ApiGroupPre());
-        this.removedChildren = values.getRepeatedInt(2);
-        this.parentChildren = values.getRepeatedInt(3);
     }
 
     @Override
@@ -64,8 +48,6 @@ public class UpdateGroupPreRemoved extends Update {
             throw new IOException();
         }
         writer.writeObject(1, this.groupPre);
-        writer.writeRepeatedInt(2, this.removedChildren);
-        writer.writeRepeatedInt(3, this.parentChildren);
     }
 
     @Override

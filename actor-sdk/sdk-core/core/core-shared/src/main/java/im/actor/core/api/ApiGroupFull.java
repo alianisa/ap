@@ -27,10 +27,8 @@ public class ApiGroupFull extends BserObject {
     private Boolean isSharedHistory;
     private String shortName;
     private Long permissions;
-    private String restrictedDomains;
-    private ApiLocation location;
 
-    public ApiGroupFull(int id, long createDate, @Nullable Integer ownerUid, @NotNull List<ApiMember> members, @Nullable String theme, @Nullable String about, @Nullable ApiMapValue ext, @Nullable Boolean isAsyncMembers, @Nullable Boolean isSharedHistory, @Nullable String shortName, @Nullable Long permissions, @Nullable String restrictedDomains, @Nullable ApiLocation location) {
+    public ApiGroupFull(int id, long createDate, @Nullable Integer ownerUid, @NotNull List<ApiMember> members, @Nullable String theme, @Nullable String about, @Nullable ApiMapValue ext, @Nullable Boolean isAsyncMembers, @Nullable Boolean isSharedHistory, @Nullable String shortName, @Nullable Long permissions) {
         this.id = id;
         this.createDate = createDate;
         this.ownerUid = ownerUid;
@@ -42,8 +40,6 @@ public class ApiGroupFull extends BserObject {
         this.isSharedHistory = isSharedHistory;
         this.shortName = shortName;
         this.permissions = permissions;
-        this.restrictedDomains = restrictedDomains;
-        this.location = location;
     }
 
     public ApiGroupFull() {
@@ -103,16 +99,6 @@ public class ApiGroupFull extends BserObject {
         return this.permissions;
     }
 
-    @Nullable
-    public String getRestrictedDomains() {
-        return this.restrictedDomains;
-    }
-
-    @Nullable
-    public ApiLocation getLocation() {
-        return this.location;
-    }
-
     @Override
     public void parse(BserValues values) throws IOException {
         this.id = values.getInt(1);
@@ -130,8 +116,6 @@ public class ApiGroupFull extends BserObject {
         this.isSharedHistory = values.optBool(10);
         this.shortName = values.optString(14);
         this.permissions = values.optLong(27);
-        this.restrictedDomains = values.optString(28);
-        this.location = values.optObj(29, new ApiLocation());
         if (values.hasRemaining()) {
             setUnmappedObjects(values.buildRemaining());
         }
@@ -165,12 +149,6 @@ public class ApiGroupFull extends BserObject {
         }
         if (this.permissions != null) {
             writer.writeLong(27, this.permissions);
-        }
-        if (this.restrictedDomains != null) {
-            writer.writeString(28, this.restrictedDomains);
-        }
-        if (this.location != null) {
-            writer.writeObject(29, this.location);
         }
         if (this.getUnmappedObjects() != null) {
             SparseArray<Object> unmapped = this.getUnmappedObjects();

@@ -177,7 +177,8 @@ public class SignPhoneFragment extends BaseAuthFragment {
 
         phoneNumberEditText = (BackspaceKeyEditText) v.findViewById(R.id.tv_phone_number);
         phoneNumberEditText.setTextColor(ActorSDK.sharedActor().style.getTextPrimaryColor());
-        phoneNumberEditText.setKeyListener(Mask.keylistenerNumber);
+
+        phoneNumberEditText.addTextChangedListener(Mask.telephoneMask(phoneNumberEditText));
 
         phoneNumberEditText.setBackspaceListener(() -> {
             if (phoneNumberEditText.getText().length() == 0) {
@@ -309,10 +310,7 @@ public class SignPhoneFragment extends BaseAuthFragment {
     public void onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
         menu.clear();
-
-        if ((ActorSDK.sharedActor().getAuthType() & AuthActivity.AUTH_TYPE_EMAIL) == AuthActivity.AUTH_TYPE_EMAIL) {
-            getActivity().getMenuInflater().inflate(R.menu.sign_in_phone, menu);
-        }
+        getActivity().getMenuInflater().inflate(R.menu.sign_in_phone, menu);
     }
 
 }

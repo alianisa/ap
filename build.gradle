@@ -6,8 +6,8 @@ buildscript {
         maven { url "https://jitpack.io" }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.1.2'
-        classpath 'com.google.gms:google-services:3.1.0'
+        classpath 'com.android.tools.build:gradle:3.0.1'
+        classpath "com.google.gms:google-services:3.0.0"
         classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.11.0"
         classpath 'com.github.dcendents:android-maven-plugin:1.2'
     }
@@ -21,19 +21,22 @@ allprojects {
         google()
         maven { url "http://nexus.diegosilva.com.br:8081/content/repositories/snapshots/"}
         maven { url "https://jitpack.io" }
-        flatDir {
-            dirs 'libs'
-        }
     }
 
     buildscript {
         repositories {
             jcenter()
             google()
-            flatDir {
-                dirs 'libs'
-            }
         }
+//
+//        dependencies {
+//            classpath 'com.github.dcendents:android-maven-plugin:1.2'
+//            classpath 'com.android.tools.build:gradle:3.0.0'
+//            classpath "com.google.gms:google-services:3.0.0"
+//            classpath 'com.github.dcendents:android-maven-plugin:1.2'
+//            classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.11.0"
+//
+//        }
     }
 }
 

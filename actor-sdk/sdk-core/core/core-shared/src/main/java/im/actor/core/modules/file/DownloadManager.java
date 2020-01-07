@@ -55,7 +55,6 @@ public class DownloadManager extends ModuleActor {
         }
 
         Downloaded downloaded1 = downloaded.getValue(fileId);
-
         if (downloaded1 != null) {
             FileSystemReference reference = Storage.fileFromDescriptor(downloaded1.getDescriptor());
             boolean isExist = reference.isExist();

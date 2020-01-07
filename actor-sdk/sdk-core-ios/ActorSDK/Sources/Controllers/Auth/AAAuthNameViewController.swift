@@ -19,6 +19,7 @@ open class AAAuthNameViewController: AAAuthViewController {
     public init(transactionHash: String? = nil) {
         self.transactionHash = transactionHash
         super.init(nibName: nil, bundle: nil)
+        
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: AALocalized("NavigationCancel"), style: .plain, target: self, action: #selector(AAViewController.dismissController))
     }
 

@@ -128,6 +128,7 @@ public class SearchModule extends AbsModule {
     }
 
     public Promise<List<PeerSearchEntity>> findPeers(ArrayList<ApiSearchCondition> conditions) {
+
         return api(new RequestPeerSearch(conditions, ApiSupportConfiguration.OPTIMIZATIONS))
                 .chain(responsePeerSearch ->
                         updates().applyRelatedData(

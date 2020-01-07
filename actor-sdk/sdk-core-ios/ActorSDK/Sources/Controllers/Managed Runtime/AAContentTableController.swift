@@ -5,6 +5,7 @@
 import Foundation
 
 public enum AAContentTableStyle {
+    
     case settingsPlain
     case settingsGrouped
     case plain

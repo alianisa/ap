@@ -15,7 +15,6 @@ import im.actor.core.entity.Contact;
 import im.actor.core.entity.Dialog;
 import im.actor.core.entity.FileReference;
 import im.actor.core.entity.Group;
-import im.actor.core.entity.GroupPre;
 import im.actor.core.entity.Message;
 import im.actor.core.entity.Peer;
 import im.actor.core.entity.PeerType;
@@ -29,7 +28,6 @@ import im.actor.core.js.entity.JsDialog;
 import im.actor.core.js.entity.JsDialogGroup;
 import im.actor.core.js.entity.JsEventBusCallback;
 import im.actor.core.js.entity.JsGroup;
-import im.actor.core.js.entity.JsGroupPre;
 import im.actor.core.js.entity.JsMessage;
 import im.actor.core.js.entity.JsOnlineGroup;
 import im.actor.core.js.entity.JsOnlineUser;
@@ -266,6 +264,7 @@ public class JsMessenger extends Messenger {
         return jsBindingModule.getSharedDialogList();
     }
 
+
     public JsDisplayList<JsContact, Contact> getSharedContactList() {
         return jsBindingModule.getSharedContactList();
     }
@@ -276,10 +275,6 @@ public class JsMessenger extends Messenger {
 
     public JsDisplayList<JsMessage, Message> getSharedChatList(Peer peer) {
         return jsBindingModule.getSharedMessageList(peer);
-    }
-
-    public JsDisplayList<JsGroupPre, GroupPre> getSharedGrouppreList(Integer parentId){
-        return jsBindingModule.getGroupspreList(parentId);
     }
 
     public JsBindedValue<JsArray<JsDialogGroup>> getDialogsGroupedList() {
@@ -312,5 +307,4 @@ public class JsMessenger extends Messenger {
     public String getFileUrl(FileReference fileReference) {
         return filesModule.getFileUrl(fileReference.getFileId(), fileReference.getAccessHash());
     }
-
 }

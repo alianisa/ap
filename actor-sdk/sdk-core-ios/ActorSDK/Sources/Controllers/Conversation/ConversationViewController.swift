@@ -90,12 +90,13 @@ final public class ConversationViewController:
         
         // Create controller
         
-        super.init(peer: peer)!
+        super.init(peer: peer)
         
         
         //
         // Background
         //
+        
         backgroundView.clipsToBounds = true
         backgroundView.contentMode = .scaleAspectFill
         backgroundView.backgroundColor = appStyle.chatBgColor
@@ -252,7 +253,6 @@ final public class ConversationViewController:
         } else {
             isBot = false
         }
-        
         if (ActorSDK.sharedActor().enableCalls && !isBot && peer.isPrivate) {
             if ActorSDK.sharedActor().enableVideoCalls {
                 let callButtonView = AACallButton(image: UIImage.bundled("ic_call_outline_22")?.tintImage(ActorSDK.sharedActor().style.navigationTintColor))
@@ -275,7 +275,7 @@ final public class ConversationViewController:
         }
     }
     
-    required public init(coder aDecoder: NSCoder) {
+    required public init(coder aDecoder: NSCoder!) {
         fatalError("init(coder:) has not been implemented")
     }
     
@@ -366,11 +366,9 @@ final public class ConversationViewController:
                 self.titleView.text = String(value!);
                 self.navigationView.sizeToFit();
             })
-            
             binder.bind(group.getAvatarModel(), closure: { (value: ACAvatar?) -> () in
                 self.avatarView.bind(group.getNameModel().get(), id: Int(group.getId()), avatar: value)
             })
-            
             binder.bind(Actor.getGroupTyping(withGid: group.getId()), valueModel2: group.membersCount, valueModel3: group.getPresenceModel(), closure: { (typingValue:IOSIntArray?, membersCount: JavaLangInteger?, onlineCount:JavaLangInteger?) -> () in
                 if (!group.isMemberModel().get().booleanValue()) {
                     self.subtitleView.text = AALocalized("ChatNoGroupAccess")
@@ -568,7 +566,7 @@ final public class ConversationViewController:
         self.textInputbar.beginTextEditing()
     }
     
-    open override func didCommitTextEditing(_ sender: Any){
+    open override func didCommitTextEditing(_ sender: Any!){
         if(self.editingId != nil){
             Actor.updateMessage(with: peer, withText: textView.text, withRid: self.editingId).failure { (e: JavaLangException!) -> () in
                 if let re:ACRpcException = (e as! ACRpcException){
@@ -731,16 +729,18 @@ final public class ConversationViewController:
     
     override open func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let res = AAAutoCompleteCell(style: UITableViewCellStyle.default, reuseIdentifier: "user_name")
-        res.bindData(filteredMembers[(indexPath as NSIndexPath).row], highlightWord: foundWord!)
+        res.bindData(filteredMembers[(indexPath as NSIndexPath).row], highlightWord: foundWord)
         return res
     }
     
     override open func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let user = filteredMembers[(indexPath as NSIndexPath).row]
+
         var postfix = " "
         if foundPrefixRange.location == 0 {
             postfix = ": "
         }
+        
         acceptAutoCompletion(with: user.mentionString + postfix, keepPrefix: !user.isNickname)
     }
     
@@ -797,7 +797,6 @@ final public class ConversationViewController:
     
     open func pickDocument() {
         let documentPicker = UIDocumentMenuViewController(documentTypes: UTTAll as [String], in: UIDocumentPickerMode.import)
-        documentPicker.popoverPresentationController?.sourceView = self.textInputbar
         documentPicker.view.backgroundColor = UIColor.clear
         documentPicker.delegate = self
         self.present(documentPicker, animated: true, completion: nil)
@@ -1017,8 +1016,6 @@ final public class ConversationViewController:
         
         self.voiceRecorderView.isHidden = false
         self.stickersButton.isHidden = true
-        self.textView.isHidden = true
-        self.leftButton.isHidden = true
         
         let touches : Set<UITouch> = event.touches(for: button)!
         let touch = touches.first!
@@ -1054,9 +1051,6 @@ final public class ConversationViewController:
             
             self.voiceRecorderView.isHidden = true
             self.stickersButton.isHidden = false
-            self.textView.isHidden = false
-            self.leftButton.isHidden = false
-            
             self.stopAudioRecording()
             self.voiceRecorderView.recordingStoped()
             button.cancelTracking(with: event)
@@ -1096,8 +1090,6 @@ final public class ConversationViewController:
         closeRecorderAnimation()
         self.voiceRecorderView.isHidden = true
         self.stickersButton.isHidden = false
-        self.textView.isHidden = false
-        self.leftButton.isHidden = false
         self.onAudioRecordingFinished()
         self.voiceRecorderView.recordingStoped()
     }

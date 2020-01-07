@@ -36,7 +36,7 @@ public class ReceiverActor extends Actor {
         return ActorSystem.system().actorOf(proto.getActorPath() + "/receiver", Props.create(() -> new ReceiverActor(proto)));
     }
 
-    private static final int    MAX_RECEIVED_BUFFER = 1000;
+    private static final int MAX_RECEIVED_BUFFER = 1000;
 
     private ActorRef sender;
 
@@ -74,7 +74,7 @@ public class ReceiverActor extends Actor {
 
         boolean disableConfirm = false;
         try {
-            Log.d(TAG, "Received message #" + message.getMessageId());
+            // Log.d(TAG, "Received message #" + message.getMessageId());
 
 //            if (receivedMessages.contains(message.getMessageId())) {
 //                Log.w(TAG, "Already received message #" + message.getMessageId() + ": ignoring");
@@ -84,7 +84,6 @@ public class ReceiverActor extends Actor {
             if (receivedMessages.size() >= MAX_RECEIVED_BUFFER) {
                 receivedMessages.remove(0);
             }
-
             receivedMessages.add(message.getMessageId());
 
             ProtoStruct obj;
@@ -95,6 +94,8 @@ public class ReceiverActor extends Actor {
                 e.printStackTrace();
                 return;
             }
+
+            // Log.d(TAG, obj + "");
 
             if (obj instanceof NewSessionCreated) {
                 NewSessionCreated newSessionCreated = (NewSessionCreated) obj;

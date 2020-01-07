@@ -2,8 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key></key>
-	<string></string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
@@ -66,14 +64,10 @@
 			</dict>
 		</dict>
 	</dict>
-	<key>NSCameraUsageDescription</key>
-	<string>Camera</string>
 	<key>NSContactsUsageDescription</key>
 	<string>$(PRODUCT_NAME) precisa acessar seus contatos</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Sharing location</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>Microphone</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>$(PRODUCT_NAME) precisa acessar suas fotos</string>
 	<key>UIBackgroundModes</key>

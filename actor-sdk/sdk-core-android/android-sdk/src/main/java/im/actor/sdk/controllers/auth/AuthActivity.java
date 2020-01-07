@@ -249,7 +249,6 @@ public class AuthActivity extends BaseFragmentActivity implements Observer {
     public void signUp(Promise<AuthRes> promise, String name, int sex) {
         currentName = name;
         currentSex = sex;
-        showProgress();
         promise.then(authRes -> {
             dismissProgress();
             messenger().doCompleteAuth(authRes).then(aBoolean -> updateState(LOGGED_IN)).failure(e -> handleAuthError(e));

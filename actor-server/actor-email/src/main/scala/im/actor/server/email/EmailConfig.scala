@@ -7,7 +7,7 @@ import com.github.kxbmap.configs.syntax._
 import com.typesafe.config.Config
 
 private[email] case class Sender(address: String, name: String, prefix: String)
-private[email] case class Smtp(host: String, port: Int, username: String, password: String, tls: Boolean, ssl: Boolean)
+private[email] case class Smtp(host: String, port: Int, username: String, password: String, tls: Boolean)
 
 case class EmailConfig(
   sender: Sender,

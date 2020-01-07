@@ -18,7 +18,7 @@ import im.actor.core.modules.calls.CallsProcessor;
 import im.actor.core.modules.contacts.ContactsProcessor;
 import im.actor.core.modules.encryption.EncryptedProcessor;
 import im.actor.core.modules.eventbus.EventBusProcessor;
-import im.actor.core.modules.grouppre.GroupsPreProcessor;
+import im.actor.core.modules.grouppre.GroupPreProcessor;
 import im.actor.core.modules.groups.GroupsProcessor;
 import im.actor.core.modules.messaging.MessagesProcessor;
 import im.actor.core.modules.presence.PresenceProcessor;
@@ -30,7 +30,6 @@ import im.actor.core.modules.stickers.StickersProcessor;
 import im.actor.core.modules.typing.TypingProcessor;
 import im.actor.core.modules.users.UsersProcessor;
 import im.actor.core.network.parser.Update;
-import im.actor.runtime.Log;
 import im.actor.runtime.actors.messages.Void;
 import im.actor.runtime.function.Supplier;
 import im.actor.runtime.promise.Promise;
@@ -40,8 +39,6 @@ public class UpdateProcessor extends AbsModule {
 
     // Do Not Remove! WorkAround for missing j2objc translator include
     private static final Void DUMB = null;
-
-    private static final String TAG = UpdateProcessor.class.getName();
 
     private MessagesProcessor messagesProcessor;
 
@@ -60,7 +57,7 @@ public class UpdateProcessor extends AbsModule {
                 messagesProcessor,
                 new UsersProcessor(context),
                 new GroupsProcessor(context),
-                new GroupsPreProcessor(context),
+                new GroupPreProcessor(context),
                 new ContactsProcessor(context),
                 new EncryptedProcessor(context),
                 new StickersProcessor(context),
@@ -84,7 +81,6 @@ public class UpdateProcessor extends AbsModule {
     //
 
     public void processWeakUpdate(Update update, long date) {
-        Log.d(TAG, "Receiving weakupdate: "+update.getClass().getName());
         for (WeakProcessor w : weakProcessors) {
             if (w.process(update, date)) {
                 return;
@@ -93,8 +89,6 @@ public class UpdateProcessor extends AbsModule {
     }
 
     public Promise<Void> processUpdate(Update update) {
-
-        Log.d(TAG, "Receiving update: "+update.getClass().getName());
 
         // Small hack for stopping typing indicator
         if (update instanceof UpdateMessage) {
@@ -118,8 +112,6 @@ public class UpdateProcessor extends AbsModule {
     //
 
     public Promise<Void> applyDifferenceUpdate(List<Update> updates) {
-
-        Log.d(TAG, "ApplyDifferenceUpdate: "+updates);
 
         CombinedDifference combinedDifference = GetDiffCombiner.buildDiff(updates);
 

@@ -37,7 +37,6 @@ import im.actor.sdk.ActorSDK;
 import im.actor.sdk.R;
 import im.actor.sdk.controllers.conversation.messages.MessagesAdapter;
 import im.actor.sdk.controllers.conversation.messages.content.preprocessor.PreprocessedData;
-import im.actor.sdk.util.Files;
 import im.actor.sdk.util.Screen;
 import im.actor.sdk.view.TintImageView;
 
@@ -243,7 +242,7 @@ public class LocationHolder extends MessageHolder {
         }
 
         protected void onPostExecute(File result) {
-            ImageRequest request = ImageRequestBuilder.newBuilderWithSource(Files.getUri(context, result) /*Uri.fromFile(result)*/)
+            ImageRequest request = ImageRequestBuilder.newBuilderWithSource(Uri.fromFile(result))
                     .setResizeOptions(new ResizeOptions(previewView.getLayoutParams().width,
                             previewView.getLayoutParams().height))
                     .build();

@@ -6,7 +6,7 @@ import Foundation
 
 open class AAAuthEmailViewController: AAAuthViewController {
     
-    let name: String!
+    let name: String
     
     let scrollView = UIScrollView()
     
@@ -21,11 +21,6 @@ open class AAAuthEmailViewController: AAAuthViewController {
     
     public init(name: String) {
         self.name = name
-        super.init(nibName: nil, bundle: nil)
-    }
-    
-    public override init() {
-        self.name = nil
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -79,6 +74,8 @@ open class AAAuthEmailViewController: AAAuthViewController {
                 hintText = AALocalized("AuthDisclaimerProvacyOnly")
             }
 
+            
+            
             
             let attributedTerms = NSMutableAttributedString(string: hintText)
             attributedTerms.yy_color = ActorSDK.sharedActor().style.authHintColor
@@ -160,14 +157,8 @@ open class AAAuthEmailViewController: AAAuthViewController {
     
     @objc open func usePhoneDidPressed() {
         let controllers = self.navigationController!.viewControllers
-        if let n = self.name {
-            let updatedControllers = Array(controllers[0..<(controllers.count - 1)]) + [AAAuthPhoneViewController(name: n)]
-            self.navigationController?.setViewControllers(updatedControllers, animated: false)
-        }else{
-            let updatedControllers = Array(controllers[0..<(controllers.count - 1)]) + [AAAuthPhoneViewController()]
-            self.navigationController?.setViewControllers(updatedControllers, animated: false)
-        }
-        
+        let updatedControllers = Array(controllers[0..<(controllers.count - 1)]) + [AAAuthPhoneViewController(name: name)]
+        self.navigationController?.setViewControllers(updatedControllers, animated: false)
     }
     
     open override func nextDidTap() {
@@ -181,11 +172,7 @@ open class AAAuthEmailViewController: AAAuthViewController {
         
         Actor.doStartAuth(withEmail: email).startUserAction().then { (res: ACAuthStartRes!) -> () in
             if res.authMode == ACAuthMode_OTP {
-                if let n = self.name {
-                    self.navigateNext(AAAuthOTPViewController(email: email, name: self.name, transactionHash: res.transactionHash))
-                }else{
-                    self.navigateNext(AAAuthOTPViewController(email: email, transactionHash: res.transactionHash))
-                }
+                self.navigateNext(AAAuthOTPViewController(email: email, name: self.name, transactionHash: res.transactionHash))
             } else {
                 self.alertUser(AALocalized("AuthUnsupported").replace("{app_name}", dest: ActorSDK.sharedActor().appName))
             }

@@ -7,9 +7,16 @@ package im.actor.runtime.android.view;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 
-import im.actor.runtime.Runtime;
+import java.util.List;
+
 import im.actor.runtime.bser.BserObject;
+import im.actor.runtime.generic.mvvm.AndroidListUpdate;
+import im.actor.runtime.generic.mvvm.BindedDisplayList;
+import im.actor.runtime.generic.mvvm.ChangeDescription;
+import im.actor.runtime.generic.mvvm.DisplayList;
 import im.actor.runtime.generic.mvvm.SimpleBindedDisplayList;
+import im.actor.runtime.storage.ListEngineDisplayExt;
+import im.actor.runtime.storage.ListEngineDisplayListener;
 import im.actor.runtime.storage.ListEngineItem;
 
 public abstract class SimpleBindedListAdapter<V extends BserObject & ListEngineItem,
@@ -33,16 +40,16 @@ public abstract class SimpleBindedListAdapter<V extends BserObject & ListEngineI
 
     @Override
     public int getItemCount() {
-        if (displayList != null) {
-            return displayList.getSize();
-        }
+//        if (displayList != null) {
+//            return displayList.getCount();
+//        }
         return 0;
     }
 
     protected V getItem(int position) {
-        if (displayList != null) {
-            return displayList.getValue(position);
-        }
+//        if (displayList != null) {
+//            return displayList.getValue(position);
+//        }
         return null;
     }
 
@@ -61,23 +68,17 @@ public abstract class SimpleBindedListAdapter<V extends BserObject & ListEngineI
 
     public abstract void onBindViewHolder(T dialogHolder, int index, V item);
 
+
     public void resume() {
-        displayList.resume();
-        displayList.setListChangeListener(size -> {
-            Runtime.postToMainThread(() -> notifyDataSetChanged());
-        });
+//        displayList.subscribe(listener);
+        notifyDataSetChanged();
     }
 
     public void pause() {
-        displayList.dispose();
-        displayList.setListChangeListener(null);
+//        displayList.unsubscribe(listener);
     }
 
     public void dispose() {
         pause();
-    }
-
-    public SimpleBindedDisplayList<V> getDisplayList() {
-        return displayList;
     }
 }

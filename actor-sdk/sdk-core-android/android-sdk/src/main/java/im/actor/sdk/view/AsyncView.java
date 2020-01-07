@@ -147,7 +147,7 @@ public class AsyncView<T, L> extends View {
     }
 
     public StaticLayout singleLineText(CharSequence sequence, TextPaint paint, int maxWidth) {
-        CharSequence ellipsizedTitle = TextUtils.ellipsize(sequence, paint, maxWidth - Screen.dp(1),
+        CharSequence ellipsizedTitle = TextUtils.ellipsize(sequence, paint, maxWidth - Screen.dp(2),
                 TextUtils.TruncateAt.END);
         return new StaticLayout(ellipsizedTitle, paint, maxWidth, Layout.Alignment.ALIGN_NORMAL,
                 1.0f, 0.0f, false);

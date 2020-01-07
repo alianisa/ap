@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.support.v7.widget.RecyclerView;
 import android.text.Layout;
@@ -25,6 +26,8 @@ import com.facebook.imagepipeline.common.ResizeOptions;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 
+import java.io.File;
+
 import im.actor.core.entity.Avatar;
 import im.actor.core.entity.AvatarImage;
 import im.actor.core.entity.ContentType;
@@ -37,7 +40,6 @@ import im.actor.runtime.mvvm.ValueModel;
 import im.actor.sdk.ActorSDK;
 import im.actor.sdk.ActorStyle;
 import im.actor.sdk.R;
-import im.actor.sdk.util.Files;
 import im.actor.sdk.util.Fonts;
 import im.actor.sdk.util.Screen;
 import im.actor.sdk.view.ListItemBackgroundView;
@@ -175,8 +177,7 @@ public class DialogView extends ListItemBackgroundView<Dialog, DialogView.Dialog
             // Content
             //
             if (isTyping) {
-                if(typingText != null && textActivePaint != null)
-                    canvas.drawText(typingText, Screen.dp(72), Screen.dp(54), textActivePaint);
+                canvas.drawText(typingText, Screen.dp(72), Screen.dp(54), textActivePaint);
             } else {
                 if (layout.getTextLayout() != null) {
                     canvas.save();
@@ -184,6 +185,7 @@ public class DialogView extends ListItemBackgroundView<Dialog, DialogView.Dialog
                     layout.getTextLayout().draw(canvas);
                     canvas.restore();
                 }
+
                 if (layout.getCounter() != null) {
                     int left = getWidth() - Screen.sp(12) - layout.getCounterWidth();
                     int top = Screen.dp(37);
@@ -298,8 +300,9 @@ public class DialogView extends ListItemBackgroundView<Dialog, DialogView.Dialog
                 String desc = messenger().findDownloadedDescriptor(image.getFileReference().getFileId());
                 if (desc != null) {
                     ImageRequest request = ImageRequestBuilder.newBuilderWithSource(
-                            Files.getUri(getContext(), desc))
+                            Uri.fromFile(new File(desc)))
                             .setResizeOptions(new ResizeOptions(Screen.dp(52), Screen.dp(52)))
+                            //.setImageType(ImageRequest.ImageType.SMALL)
                             .build();
                     res.setImageRequest(request);
                 } else {
@@ -400,9 +403,9 @@ public class DialogView extends ListItemBackgroundView<Dialog, DialogView.Dialog
                     String senderName = messenger().getFormatter().formatPerformerName(arg.getSenderId()) + ": ";
                     if (arg.getMessageType() == ContentType.TEXT) {
                         SpannableStringBuilder builder = new SpannableStringBuilder();
-                        builder.append(Emoji.replaceEmoji(senderName, textPaint.getFontMetricsInt(), Screen.dp(17), false));
+                        builder.append(senderName);
                         builder.setSpan(new ForegroundColorSpan(senderTextColor), 0, senderName.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-                        builder.append(Emoji.replaceEmoji(contentText, textPaint.getFontMetricsInt(), Screen.dp(17), false));
+                        builder.append(contentText);
                         res.setTextLayout(singleLineText(builder, textPaint, maxWidth));
                     } else {
                         CharSequence contentResult = new StringBuilder(Emoji.replaceEmoji(senderName, textActivePaint.getFontMetricsInt(), Screen.dp(17), false))

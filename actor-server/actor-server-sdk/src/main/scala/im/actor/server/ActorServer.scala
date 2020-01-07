@@ -20,7 +20,7 @@ import im.actor.server.api.rpc.service.features.FeaturesServiceImpl
 import im.actor.server.api.rpc.service.files.FilesServiceImpl
 import im.actor.server.api.rpc.service.grouppre.GroupsPreServiceImpl
 import im.actor.server.api.rpc.service.groups.{GroupInviteConfig, GroupsServiceImpl}
-import im.actor.server.api.rpc.service.messaging.{MessagingServiceImpl, ReverseHooksListener}
+import im.actor.server.api.rpc.service.messaging.MessagingServiceImpl
 import im.actor.server.api.rpc.service.privacy.PrivacyServiceImpl
 import im.actor.server.api.rpc.service.profile.ProfileServiceImpl
 import im.actor.server.api.rpc.service.push.PushServiceImpl
@@ -44,7 +44,6 @@ import im.actor.server.migrations._
 import im.actor.server.migrations.v2.{MigrationNameList, MigrationTsActions}
 import im.actor.server.oauth.{GoogleProvider, OAuth2GoogleConfig}
 import im.actor.server.presences.{GroupPresenceExtension, PresenceExtension}
-import im.actor.server.search.IndexerExtension
 import im.actor.server.sequence._
 import im.actor.server.session.{Session, SessionConfig, SessionMessage}
 import im.actor.server.social.SocialExtension
@@ -173,9 +172,6 @@ final case class ActorServerBuilder(defaultConfig: Config = ConfigFactory.empty(
       GroupPreExtension(system).processorRegion
       GroupPreExtension(system).viewRegion
 
-      system.log.debug("Starting IndexerExtension")
-      IndexerExtension(system)
-
       system.log.debug("Starting IntegrationTokenMigrator")
       IntegrationTokenMigrator.migrate()
 
@@ -185,11 +181,10 @@ final case class ActorServerBuilder(defaultConfig: Config = ConfigFactory.empty(
       system.log.debug("Starting RichMessageWorker")
       RichMessageWorker.startWorker(richMessageConfig)
       // system.log.debug("Starting ReverseHooksListener")
-//       ReverseHooksListener.startSingleton()
+      // ReverseHooksListener.startSingleton()
 
       system.log.debug("Starting WebhooksExtension")
       WebhooksExtension(system)
-
 
       system.log.debug("Starting Services")
 

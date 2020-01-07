@@ -15,7 +15,6 @@ import im.actor.core.entity.Avatar;
 import im.actor.core.entity.Contact;
 import im.actor.core.entity.Dialog;
 import im.actor.core.entity.Group;
-import im.actor.core.entity.GroupPre;
 import im.actor.core.entity.Message;
 import im.actor.core.entity.Peer;
 import im.actor.core.entity.PeerType;
@@ -35,7 +34,6 @@ import im.actor.core.js.entity.JsDialogGroup;
 import im.actor.core.js.entity.JsDialogShort;
 import im.actor.core.js.entity.JsEventBusCallback;
 import im.actor.core.js.entity.JsGroup;
-import im.actor.core.js.entity.JsGroupPre;
 import im.actor.core.js.entity.JsMessage;
 import im.actor.core.js.entity.JsOnlineGroup;
 import im.actor.core.js.entity.JsOnlineUser;
@@ -81,7 +79,6 @@ public class JsBindingModule extends AbsModule implements JsFileLoadedListener {
     private JsDisplayList<JsContact, Contact> contactsList;
     private JsDisplayList<JsSearchEntity, SearchEntity> searchList;
     private HashMap<Peer, JsDisplayList<JsMessage, Message>> messageLists = new HashMap<>();
-    private HashMap<Integer, JsDisplayList<JsGroupPre, GroupPre>> groupsPreList = new HashMap<>();
 
     private JsBindedValue<JsCounter> globalCounter;
     private JsBindedValue<JsCounter> tempGlobalCounter;
@@ -284,6 +281,7 @@ public class JsBindingModule extends AbsModule implements JsFileLoadedListener {
         if (!groups.containsKey(gid)) {
             final GroupVM groupVM = context().getGroupsModule().getGroupsCollection().get(gid);
             final JsBindedValue<JsGroup> value = new JsBindedValue<>(JsGroup.fromGroupVM(groupVM, messenger));
+
             // Bind updates
             groupVM.subscribe(new ModelChangedListener<GroupVM>() {
                 @Override
@@ -420,27 +418,26 @@ public class JsBindingModule extends AbsModule implements JsFileLoadedListener {
         return dialogsList;
     }
 
+
     public JsDisplayList<JsMessage, Message> getSharedMessageList(Peer peer) {
         if (!messageLists.containsKey(peer)) {
             messageLists.put(peer,
                     (JsDisplayList<JsMessage, Message>) context().getDisplayListsModule().getMessagesSharedList(peer));
         }
-        return messageLists.get(peer);
-    }
 
-    public JsDisplayList<JsGroupPre, GroupPre> getGroupspreList(Integer parentId){
-        if(!groupsPreList.containsKey(parentId)){
-            groupsPreList.put(parentId,
-                    (JsDisplayList<JsGroupPre, GroupPre>) context().getDisplayListsModule().getGroupspreSharedList(parentId));
-        }
-        return groupsPreList.get(parentId);
+        return messageLists.get(peer);
     }
 
     public JsBindedValue<JsCounter> getGlobalCounter() {
         if (globalCounter == null) {
             ValueModel<Integer> counter = context().getConductor().getGlobalStateVM().getGlobalCounter();
             globalCounter = new JsBindedValue<>(JsCounter.create(counter.get()));
-            counter.subscribe((val, valueModel) -> globalCounter.changeValue(JsCounter.create(val)), false);
+            counter.subscribe(new ValueChangedListener<Integer>() {
+                @Override
+                public void onChanged(Integer val, Value<Integer> valueModel) {
+                    globalCounter.changeValue(JsCounter.create(val));
+                }
+            }, false);
         }
         return globalCounter;
     }
@@ -449,7 +446,12 @@ public class JsBindingModule extends AbsModule implements JsFileLoadedListener {
         if (tempGlobalCounter == null) {
             ValueModel<Integer> counter = context().getConductor().getGlobalStateVM().getGlobalTempCounter();
             tempGlobalCounter = new JsBindedValue<>(JsCounter.create(counter.get()));
-            counter.subscribe((val, valueModel) -> tempGlobalCounter.changeValue(JsCounter.create(val)), false);
+            counter.subscribe(new ValueChangedListener<Integer>() {
+                @Override
+                public void onChanged(Integer val, Value<Integer> valueModel) {
+                    tempGlobalCounter.changeValue(JsCounter.create(val));
+                }
+            }, false);
         }
         return tempGlobalCounter;
     }

@@ -104,6 +104,17 @@ public class TextHolder extends MessageHolder {
         // Fixing url long tap
         text.setMovementMethod(new CustomLinkMovementMethod());
 
+        // Fixing span offsets
+//        if (rawText instanceof Spannable) {
+//            Spannable s = (Spannable) rawText;
+//            QuoteSpan[] qSpans = s.getSpans(0, s.length(), QuoteSpan.class);
+//            text.setMinimumWidth(0);
+//            if (qSpans.length > 0) {
+//                text.measure(0, 0);
+//                text.setMinimumWidth(text.getMeasuredWidth() + qSpans[0].getLeadingMargin(true));
+//            }
+//        }
+
         if (message.getSenderId() == myUid()) {
             status.setVisibility(View.VISIBLE);
             switch (message.getMessageState()) {

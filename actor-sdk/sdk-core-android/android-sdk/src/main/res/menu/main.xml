@@ -16,14 +16,4 @@
         android:id="@+id/profile"
         android:title="Profile"
         app:showAsAction="never" />
-
-    <item
-        android:id="@+id/preDefinedGroups"
-        android:title="Pre Defined Groups"
-        app:showAsAction="never" />
-
-    <item
-        android:id="@+id/preDefinedChannels"
-        android:title="Pre Defined Channels"
-        app:showAsAction="never" />
 </menu>

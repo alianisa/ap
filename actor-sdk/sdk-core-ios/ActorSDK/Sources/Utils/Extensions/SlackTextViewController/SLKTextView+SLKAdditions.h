@@ -1,14 +1,20 @@
 //
-//  SlackTextViewController
-//  https://github.com/slackhq/SlackTextViewController
+//   Copyright 2014 Slack Technologies, Inc.
 //
-//  Copyright 2014-2016 Slack Technologies, Inc.
-//  Licence: MIT-Licence
+//   Licensed under the Apache License, Version 2.0 (the "License");
+//   you may not use this file except in compliance with the License.
+//   You may obtain a copy of the License at
+//
+//       http://www.apache.org/licenses/LICENSE-2.0
+//
+//   Unless required by applicable law or agreed to in writing, software
+//   distributed under the License is distributed on an "AS IS" BASIS,
+//   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//   See the License for the specific language governing permissions and
+//   limitations under the License.
 //
 
 #import "SLKTextView.h"
-
-NS_ASSUME_NONNULL_BEGIN
 
 /** @name SLKTextView additional features used for SlackTextViewController. */
 @interface SLKTextView (SLKAdditions)
@@ -47,15 +53,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)slk_insertTextAtCaretRange:(NSString *)text;
 
 /**
- Insert a string at the caret's position with stylization from the attributes.
- 
- @param text The string to be appended to the current text.
- @param attributes The attributes used to stylize the text.
- */
-- (void)slk_insertTextAtCaretRange:(NSString *)text
-                    withAttributes:(NSDictionary<NSString *, id> *)attributes;
-
-/**
  Adds a string to a specific range.
  
  @param text The string to be appended to the current text.
@@ -66,57 +63,22 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSRange)slk_insertText:(NSString *)text inRange:(NSRange)range;
 
 /**
- Adds a string to a specific range, with stylization from the attributes.
+ Finds the word close to the caret's position, if any.
  
- @param text The string to be appended to the current text.
- @param attributes The attributes used to stylize the text.
- @param range The range where to insert text.
- @return The range of the newly inserted text.
+ @param range Returns the range of the found word.
+ @returns The found word.
  */
-- (NSRange)slk_insertText:(NSString *)text
-           withAttributes:(NSDictionary<NSString *, id> *)attributes
-                  inRange:(NSRange)range;
+- (NSString *)slk_wordAtCaretRange:(NSRangePointer)range;
+
 
 /**
- Sets the text attributes for the attributed string in the provided range.
+ Finds the word close to specific range.
  
- @param attributes The attributes used to style NSAttributedString class.
- @param range The range of the text that needs to be stylized by the given attributes.
- @return An attributed string.
+ @param range The range to be used for searching the word.
+ @param rangePointer Returns the range of the found word.
+ @returns The found word.
  */
-- (NSAttributedString *)slk_setAttributes:(NSDictionary<NSString *, id> *)attributes
-                                  inRange:(NSRange)range;
-
-/**
- Inserts an attributed string at the caret's position.
- 
- @param attributedText The attributed string to be appended.
- */
-- (void)slk_insertAttributedTextAtCaretRange:(NSAttributedString *)attributedText;
-
-/**
- Adds an attributed string to a specific range.
- 
- @param text The string to be appended to the current text.
- @param range The range where to insert text.
- @return The range of the newly inserted text.
- */
-- (NSRange)slk_insertAttributedText:(NSAttributedString *)attributedText inRange:(NSRange)range;
-
-/**
- Removes all attributed string attributes from the text view, for the given range.
- 
- @param range The range to remove the attributes.
- */
-- (void)slk_clearAllAttributesInRange:(NSRange)range;
-
-/**
- Returns a default attributed string, using the text view's font and text color.
- 
- @param text The string to be used for creating a new attributed string.
- @return An attributed string.
- */
-- (NSAttributedString *)slk_defaultAttributedStringForText:(NSString *)text;
+- (NSString *)slk_wordAtRange:(NSRange)range rangeInText:(NSRangePointer)rangePointer;
 
 /**
  Registers the current text for future undo actions.
@@ -125,7 +87,12 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)slk_prepareForUndo:(NSString *)description;
 
+/**
+ Returns a constant font size difference reflecting the current accessibility settings.
+ 
+ @param category A content size category constant string.
+ @returns A float constant font size difference.
+ */
++ (CGFloat)pointSizeDifferenceForCategory:(NSString *)category;
+
 @end
-
-NS_ASSUME_NONNULL_END
-

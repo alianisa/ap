@@ -224,7 +224,7 @@
     <!-- Contacts -->
     <string name="contacts_title">Contatos</string>
     <string name="contacts_empty_short">Não há contatos</string>
-    <string name="contacts_share">Convidar seus amigos?</string>
+    <string name="contacts_share">Avise um amigo sobre o {appName}</string>
     <string name="contacts_add">Adicionar amigo...</string>
 
     <string name="contacts_empty_title">Convide seus amigos</string>
@@ -238,11 +238,11 @@
 
     <string name="contacts_invite_via_link">Convidar via link</string>
 
-    <string name="invites_select_all">Selecionar todos</string>
-    <string name="invites_select_none">Desmarcar todos</string>
+    <string name="invites_select_all">Select all</string>
+    <string name="invites_select_none">Select none</string>
 
-    <string name="invites_share_link_one">Convidar utilizando um aplicativo?</string>
-    <string name="invites_share_link_multiple">Convidar utilizando SMS/Email?</string>
+    <string name="invites_share_link_one">Share link</string>
+    <string name="invites_share_link_multiple">Send link via sms/email to multiple contacts</string>
 
     <!-- Chat -->
     <string name="chat_menu_group_info">Informações do Grupo</string>
@@ -661,32 +661,4 @@
     </array>
 
     <string name="shared_media">Mídia Compartilhada</string>
-
-    <string name="parent_group">Grupo Pai...</string>
-    <string name="parent_channel">Canal Pai...</string>
-
-    <string name="predefined_group">Grupo predefinido</string>
-    <string name="predefined_channel">Canal predefinido</string>
-    <string name="group_pre_empty">A lista está vazia</string>
-    <string name="making_group_pre">Criando grupo predefinido</string>
-    <string name="entering">Entrando</string>
-    <string name="you_can_not_enter">Você não tem permissões para entrar</string>
-    <string name="members">membros</string>
-    <string name="including_you">incluindo você</string>
-    <string name="member">membro</string>
-    <string name="and_its_you">e é você</string>
-    <string name="loading">carregando...</string>
-
-    <string name="grupo_pre_action">GroupPre</string>
-    <string name="channel_pre_admin_title">Canal pre-definido</string>
-    <string name="select_group_parent">Selecionar Grupo Pai</string>
-    <string name="select_channel_parent">Selecionar Canal Pai</string>
-
-    <string name="title_activity_photo_editor">Editar Imagem</string>
-    <string name="done">pronto</string>
-    <string name="erase">borracha</string>
-    <string name="save">salvar</string>
-    <string name="clear_all">limpar tudo</string>
-    <string name="undo">desfazer</string>
-
 </resources>

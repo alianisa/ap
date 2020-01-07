@@ -13,12 +13,12 @@ import im.actor.concurrent.FutureExt
 import im.actor.server.CommonErrors
 import im.actor.server.acl.ACLUtils
 import im.actor.server.dialog.HistoryUtils
-import im.actor.server.group.GroupCommands.{DeleteGroup, DismissUserAdmin, MakeHistoryShared, MakeUserAdmin, RevokeIntegrationToken, RevokeIntegrationTokenAck, TransferOwnership, UpdateAdminSettings, UpdateAdminSettingsAck, UpdateRestrictedAck, UpdateRestrictedDomains}
-import im.actor.server.group.GroupErrors.{NotAMember, NotAdmin, UserAlreadyAdmin, UserAlreadyNotAdmin}
-import im.actor.server.group.GroupEvents.{AdminSettingsUpdated, AdminStatusChanged, GroupDeleted, HistoryBecameShared, IntegrationTokenRevoked, OwnerChanged, RestrictedDomainsUpdated}
-import im.actor.server.names.{GlobalNameOwner, OwnerType}
-import im.actor.server.persist.{GroupBotRepo, GroupInviteTokenRepo, GroupUserRepo, HistoryMessageRepo}
-import im.actor.server.sequence.{SeqState, SeqStateDate}
+import im.actor.server.group.GroupCommands.{ DeleteGroup, DismissUserAdmin, MakeHistoryShared, MakeUserAdmin, RevokeIntegrationToken, RevokeIntegrationTokenAck, TransferOwnership, UpdateAdminSettings, UpdateAdminSettingsAck }
+import im.actor.server.group.GroupErrors.{ NotAMember, NotAdmin, UserAlreadyAdmin, UserAlreadyNotAdmin }
+import im.actor.server.group.GroupEvents.{ AdminSettingsUpdated, AdminStatusChanged, GroupDeleted, HistoryBecameShared, IntegrationTokenRevoked, OwnerChanged }
+import im.actor.server.names.{ GlobalNameOwner, OwnerType }
+import im.actor.server.persist.{ GroupBotRepo, GroupInviteTokenRepo, GroupUserRepo, HistoryMessageRepo }
+import im.actor.server.sequence.{ SeqState, SeqStateDate }
 
 import scala.concurrent.Future
 
@@ -34,6 +34,9 @@ private[group] trait AdminCommandHandlers extends GroupsImplicits {
 
       persist(IntegrationTokenRevoked(Instant.now, newToken)) { evt ⇒
         val newState = commit(evt)
+
+        //TODO: remove deprecated
+        db.run(GroupBotRepo.updateToken(groupId, newToken): @silent)
 
         val result: Future[RevokeIntegrationTokenAck] = for {
           _ ← oldToken match {
@@ -72,6 +75,9 @@ private[group] trait AdminCommandHandlers extends GroupsImplicits {
         //        val updateCanEdit = UpdateGroupCanEditInfoChanged(groupId, canEditGroup = newState.adminSettings.canAdminsEditGroupInfo)
 
         val updateObsolete = UpdateGroupMembersUpdateObsolete(groupId, members)
+
+        //TODO: remove deprecated
+        db.run(GroupUserRepo.makeAdmin(groupId, cmd.candidateUserId): @silent)
 
         val adminGROUPUpdates: Future[SeqStateDate] =
           for {
@@ -150,6 +156,9 @@ private[group] trait AdminCommandHandlers extends GroupsImplicits {
         val updatePermissions = permissionsUpdates(cmd.targetUserId, newState)
 
         val updateObsolete = UpdateGroupMembersUpdateObsolete(groupId, members)
+
+        //TODO: remove deprecated
+        db.run(GroupUserRepo.dismissAdmin(groupId, cmd.targetUserId): @silent)
 
         val result: Future[SeqState] = for {
 
@@ -296,6 +305,16 @@ private[group] trait AdminCommandHandlers extends GroupsImplicits {
             UpdateGroupDeleted(groupId)
           )
 
+        //TODO: remove deprecated. GroupInviteTokenRepo don't have replacement yet.
+        exMemberIds foreach { userId ⇒
+          db.run(
+            for {
+              _ ← GroupUserRepo.delete(groupId, userId): @silent
+              _ ← GroupInviteTokenRepo.revoke(groupId, userId): @silent
+            } yield ()
+          )
+        }
+
         val result: Future[SeqState] = for {
           // release global name of group
           _ ← globalNamesStorage.updateOrRemove(exGlobalName, newGlobalName = None, GlobalNameOwner(OwnerType.Group, groupId))
@@ -340,29 +359,6 @@ private[group] trait AdminCommandHandlers extends GroupsImplicits {
           // history deletion happens inside
           seqState ← dialogExt.delete(cmd.clientUserId, cmd.clientAuthId, apiGroupPeer.asModel)
         } yield seqState
-
-        result pipeTo sender()
-      }
-    }
-  }
-
-
-  protected def updateRestrictedDomains(cmd: UpdateRestrictedDomains): Unit = {
-    if (!state.permissions.canEditDomainRestriction(cmd.clientUserId)) {
-      sender() ! noPermission
-    } else if (cmd.domains.eq(state.restrictedDomains.getOrElse(""))) {
-      sender() ! UpdateRestrictedAck()
-    } else {
-      persist(RestrictedDomainsUpdated(Instant.now, cmd.domains)) { evt ⇒
-        val newState = commit(evt)
-        val result: Future[UpdateRestrictedAck] = for {
-          _ ← FutureExt.ftraverse(newState.memberIds.toSeq) { userId ⇒
-            if(newState.permissions.canEditDomainRestriction(userId)){
-              seqUpdExt.deliverUserUpdate(userId, UpdateRestrictedDomainsChanged(newState.id, newState.restrictedDomains.get))
-            }
-            FastFuture.successful(())
-          }
-        } yield UpdateRestrictedAck()
 
         result pipeTo sender()
       }

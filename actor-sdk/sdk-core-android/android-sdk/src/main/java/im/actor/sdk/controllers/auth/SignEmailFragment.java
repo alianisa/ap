@@ -136,9 +136,7 @@ public class SignEmailFragment extends BaseAuthFragment {
     public void onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
         menu.clear();
-        if ((ActorSDK.sharedActor().getAuthType() & AuthActivity.AUTH_TYPE_PHONE) == AuthActivity.AUTH_TYPE_PHONE) {
-            getActivity().getMenuInflater().inflate(R.menu.sign_in_email, menu);
-        }
+        getActivity().getMenuInflater().inflate(R.menu.sign_in_email, menu);
     }
 
 

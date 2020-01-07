@@ -17,7 +17,7 @@ open class ActorStyle {
     /// Tint Color. Star button
     open var vcStarButton = UIColor(red: 75/255.0, green: 110/255.0, blue: 152/255.0, alpha: 1)
     /// Tint Color. Used for "Actions". Default is sytem blue.
-    open var vcTintColor = UIColor(rgb: 0x5c6bc0)
+    open var vcTintColor = UIColor(rgb: 0x247dc7)
     /// Color of desctructive actions. Default is red
     open var vcDestructiveColor = UIColor.red
     /// Default background color
@@ -46,7 +46,7 @@ open class ActorStyle {
     open var vcBackyardColor = UIColor(rgb: 0xf0eff5)
     
     
-    open var nextBarColor = UIColor(red: 92, green: 107, blue: 192)
+    open var nextBarColor = UIColor(red: 94, green: 142, blue: 192)
     
     //
     // UINavigationBar
@@ -58,7 +58,7 @@ open class ActorStyle {
     /// Main Navigation bar hairline color
     open var navigationIsTransluent = false
     /// Navigation Bar icons colors
-    open var navigationTintColor: UIColor = UIColor(rgb: 0x5c6bc0)
+    open var navigationTintColor: UIColor = UIColor(rgb: 0x5085CB)
     /// Navigation Bar title color
     open var navigationTitleColor: UIColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0xDE/255.0)
     /// Navigation Bar subtitle color, default is 0.8 alhpa of navigationTitleColor
@@ -362,11 +362,11 @@ open class ActorStyle {
     
     // Bubble Colors
     
-    open var chatTextBubbleOutColor = UIColor(rgb: 0xDCF8C6)
+    open var chatTextBubbleOutColor = UIColor(rgb: 0xD2FEFD)
 
     open var chatTextBubbleOutSelectedColor = UIColor.lightGray
     
-    open var chatTextBubbleOutBorderColor = UIColor(rgb: 0x8a8a8a)
+    open var chatTextBubbleOutBorderColor = UIColor(rgb: 0x99E4E3)
     
     open var chatTextBubbleInColor = UIColor.white
     
@@ -721,7 +721,7 @@ open class ActorStyle {
     //
     
     /// Welcome Page Background color
-    open var welcomeBgColor = UIColor(red: 92, green: 107, blue: 192)
+    open var welcomeBgColor = UIColor(red: 94, green: 142, blue: 192)
     
     /// Welcome Page Background image
     open var welcomeBgImage: UIImage? = nil
@@ -736,14 +736,14 @@ open class ActorStyle {
     open var welcomeSignupBgColor = UIColor.white
     
     /// Welcome Page Signup Text Color
-    open var welcomeSignupTextColor = UIColor(red: 92, green: 107, blue: 192)
+    open var welcomeSignupTextColor = UIColor(red: 94, green: 142, blue: 192)
     
     /// Welcome Page Login Text Color
     open var welcomeLoginTextColor = UIColor.white
     
     /// Welcome Logo
     open var welcomeLogo:     UIImage? = UIImage.bundled("logo_welcome")
-    open var welcomeLogoSize: CGSize = CGSize(width: 120, height: 120)
+    open var welcomeLogoSize: CGSize = CGSize(width: 90, height: 90)
     open var logoViewVerticalGap: CGFloat = 145
     
     //

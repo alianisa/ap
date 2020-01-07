@@ -88,10 +88,8 @@ private[group] object GroupState {
       isHidden = false,
       isHistoryShared = false,
       isAsyncMembers = false,
-      restrictedDomains = None,
       members = Map.empty,
       invitedUserIds = Set.empty,
-      banedUserIds = Set.empty,
       accessHash = 0L,
       adminSettings = AdminSettings.PlainDefault,
       bot = None,
@@ -121,13 +119,10 @@ private[group] final case class GroupState(
   isHidden:        Boolean,
   isHistoryShared: Boolean,
   isAsyncMembers:  Boolean,
-  restrictedDomains: Option[String],
 
   // members info
   members:        Map[Int, Member],
   invitedUserIds: Set[Int],
-
-  banedUserIds: Set[Int],
 
   //security and etc.
   accessHash:         Long,
@@ -149,8 +144,6 @@ private[group] final case class GroupState(
   def nonMember(userId: Int): Boolean = !isMember(userId)
 
   def isInvited(userId: Int): Boolean = invitedUserIds.contains(userId)
-
-  def isBaned(userId: Int): Boolean = banedUserIds.contains(userId)
 
   def isBot(userId: Int): Boolean = userId == 0 || (bot exists (_.userId == userId))
 
@@ -192,7 +185,6 @@ private[group] final case class GroupState(
         isHidden = evt.isHidden getOrElse false,
         isHistoryShared = evt.isHistoryShared getOrElse false,
         isAsyncMembers = isMemberAsync,
-        restrictedDomains = restrictedDomains,
         members = (
           evt.userIds map { userId ⇒
             userId →
@@ -205,7 +197,6 @@ private[group] final case class GroupState(
           }
         ).toMap,
         invitedUserIds = evt.userIds.filterNot(_ == evt.creatorUserId).toSet,
-        banedUserIds = Set.empty,
         accessHash = evt.accessHash,
         adminSettings =
           if (typeOfGroup.isChannel) AdminSettings.ChannelsDefault
@@ -278,8 +269,6 @@ private[group] final case class GroupState(
       this.copy(shortName = newShortName)
     case AdminSettingsUpdated(_, bitMask) ⇒
       this.copy(adminSettings = AdminSettings.fromBitMask(bitMask))
-    case RestrictedDomainsUpdated(_,newDomains) =>
-      this.copy(restrictedDomains = Some(newDomains))
     case HistoryBecameShared(_, _) ⇒
       this.copy(isHistoryShared = true)
     case MembersBecameAsync(_) ⇒
@@ -461,9 +450,6 @@ private[group] final case class GroupState(
 
     // only owner can change admin settings
     def canEditAdminSettings(clientUserId: Int): Boolean = isOwner(clientUserId)
-
-    // only owner can change admin settings
-    def canEditDomainRestriction(clientUserId: Int): Boolean = isOwner(clientUserId) || isAdmin(clientUserId)
 
     /**
      * admins list is always visible to owner and admins

@@ -29,7 +29,7 @@ open class AABubbleVoiceCell: AABubbleBaseFileCell,AAModernConversationAudioPlay
     
     // Constructors
     
-    @objc public init(frame: CGRect) {
+    public init(frame: CGRect) {
         
         super.init(frame: frame, isFullSize: false)
         

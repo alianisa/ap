@@ -75,6 +75,7 @@ public class ManagedConnection implements Connection {
         this.callback = callback;
         this.factoryCallback = factoryCallback;
         this.rawConnection = connectionFactory.createConnection(connectionId, endpoint, connectionInterface);
+        // Log.d(TAG, "Starting connection");
 
         handshakeTimeout = new CommonTimer(new TimeoutRunnable());
         pingTask = new CommonTimer(new PingRunnable());
@@ -391,13 +392,12 @@ public class ManagedConnection implements Connection {
 
     @Override
     public synchronized void close() {
-        Log.w(TAG, "close");
+        //Log.w(TAG, "close");
         if (isClosed) {
             return;
         }
         isClosed = true;
 
-        Log.w(TAG, "rawConnection.doClose()");
         rawConnection.doClose();
 
         synchronized (packageTimers) {

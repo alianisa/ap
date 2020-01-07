@@ -176,9 +176,9 @@ public class GroupEditFragment extends BaseFragment implements MediaPickerCallba
         }
         new AlertDialog.Builder(getActivity()).setItems(args, (d, which) -> {
             if (which == 0) {
-                findPicker().requestPhoto(true, false);
+                findPicker().requestPhoto(true);
             } else if (which == 1) {
-                findPicker().requestGallery(true, false);
+                findPicker().requestGallery(true);
             } else if (which == 2) {
                 messenger().removeGroupAvatar(groupId);
                 avatarView.bind(null, groupVM.getName().get(), groupId);

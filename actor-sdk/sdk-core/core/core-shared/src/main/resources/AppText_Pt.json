@@ -78,7 +78,7 @@
         "created": "{name} criou o grupo",
         "invited": "{name} convidado {name_added}",
         "joined": "{name} entrou no grupo",
-        "kicked": "{name} removeu {name_kicked}",
+        "kicked": "{name} removido {name_kicked}",
         "left": "{name} saiu do grupo",
         "title_changed": {
           "full": "{name} alterou o nome do grupo para \"{title}\"",
@@ -99,7 +99,7 @@
         "created": "Criou o canal",
         "invited": "{name} convidado {name_added}",
         "joined": "{name} entrou no canal",
-        "kicked": "{name} removeu {name_kicked}",
+        "kicked": "{name} removido {name_kicked}",
         "left": "{name} saiu do canal",
         "title_changed": {
           "full": "{name} alterou o nome do canal para \"{title}\"",

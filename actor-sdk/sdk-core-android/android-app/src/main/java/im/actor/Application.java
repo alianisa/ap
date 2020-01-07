@@ -1,6 +1,5 @@
 package im.actor;
 
-import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Build;
@@ -14,8 +13,6 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.Toast;
 
-import com.google.firebase.FirebaseApp;
-
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -27,14 +24,12 @@ import im.actor.core.entity.content.PhotoContent;
 import im.actor.develop.R;
 import im.actor.fragments.AttachFragmentEx;
 import im.actor.fragments.RootFragmentEx;
-import im.actor.runtime.android.AndroidLogProvider;
 import im.actor.runtime.json.JSONException;
 import im.actor.runtime.json.JSONObject;
 import im.actor.sdk.ActorSDK;
 import im.actor.sdk.ActorSDKApplication;
 import im.actor.sdk.ActorStyle;
 import im.actor.sdk.BaseActorSDKDelegate;
-import im.actor.sdk.controllers.auth.AuthActivity;
 import im.actor.sdk.controllers.conversation.attach.AbsAttachFragment;
 import im.actor.sdk.controllers.conversation.messages.BubbleLayouter;
 import im.actor.sdk.controllers.conversation.messages.DefaultLayouter;
@@ -54,6 +49,7 @@ public class Application extends ActorSDKApplication {
 
     @Override
     public void onCreate() {
+        MultiDex.install(this);
         super.onCreate();
 
         if (Build.VERSION.SDK_INT < 18) {
@@ -62,53 +58,51 @@ public class Application extends ActorSDKApplication {
     }
 
     @Override
-    protected void attachBaseContext(Context base) {
-        super.attachBaseContext(base);
-        MultiDex.install(this);
-    }
-
-    @Override
     public void onConfigureActorSDK() {
-        FirebaseApp.initializeApp(this);
         ActorSDK.sharedActor().setDelegate(new ActorSDKDelegate());
-        ActorSDK.sharedActor().setPushId(157558192914L);
+        ActorSDK.sharedActor().setPushId(43880936595L);
         ActorSDK.sharedActor().setOnClientPrivacyEnabled(true);
         ActorStyle style = ActorSDK.sharedActor().style;
 
-//        style.setDialogsActiveTextColor(0xff5882ac);
-//        style.setShowAvatarPrivateInTitle(false);
-//        style.setDialogsActiveTextColor(0xff5882ac);
-//        style.setMainColor(Color.parseColor("#A43436"));
-//        style.setAccentColor(Color.parseColor("#1F3255"));
-//        style.setStatusBarColor(Color.parseColor("#A43436"));
-//        style.setAccentPressedColor(Color.parseColor("#1F3255"));
-//        style.setPrimaryAltColor(Color.parseColor("#A43436"));
-//        style.setToolBarColor(Color.parseColor("#A43436"));
-//        style.setFabColor(Color.parseColor("#A43436"));
+        style.setDialogsActiveTextColor(0xff5882ac);
+        style.setShowAvatarPrivateInTitle(false);
+        style.setDialogsActiveTextColor(0xff5882ac);
+        style.setMainColor(Color.parseColor("#A43436"));
+        style.setAccentColor(Color.parseColor("#1F3255"));
+        style.setStatusBarColor(Color.parseColor("#A43436"));
+        style.setAccentPressedColor(Color.parseColor("#1F3255"));
+        style.setPrimaryAltColor(Color.parseColor("#A43436"));
+        style.setToolBarColor(Color.parseColor("#A43436"));
+        style.setFabColor(Color.parseColor("#A43436"));
 
         ActorSDK.sharedActor().setFastShareEnabled(true);
+
         ActorSDK.sharedActor().setCallsEnabled(true);
+
         ActorSDK.sharedActor().setAppName(getApplicationContext().getString(R.string.app_name));
 
-        ActorSDK.sharedActor().setTosUrl("https://conecta.im/politica.html");
-        ActorSDK.sharedActor().setTosText("Conecta IM, all rights reserved");
-        ActorSDK.sharedActor().setPrivacyText("Conecta IM, all rights reserved");
-        ActorSDK.sharedActor().setCustomApplicationName("Conecta");
-        ActorSDK.sharedActor().setHelpPhone("+55 (55) 55555-5555");
-        ActorSDK.sharedActor().setHomePage("https://conecta.im");
-        ActorSDK.sharedActor().setTwitter("conecta_im");
+        ActorSDK.sharedActor().setTosUrl("http://actor.im");
+        ActorSDK.sharedActor().setPrivacyText("bla bla bla");
 
-        ActorSDK.sharedActor().setVideoCallsEnabled(true);
+        ActorSDK.sharedActor().setVideoCallsEnabled(false);
 
-        ActorSDK.sharedActor().setHelpPhone("+55 (55) 55555-5555");
-        ActorSDK.sharedActor().setAutoJoinGroups(new String[]{"ConectaGlobal"});
+        ActorSDK.sharedActor().setAutoJoinGroups(new String[]{
+                "canalxloto"
+        });
+
         ActorSDK.sharedActor().setEndpoints(new String[]{getApplicationContext().getString(R.string.app_endpoint)});
+//        ActorSDK.sharedActor().setEndpoints(new String[]{"tcp://api-mtproto.im.xloto.com.br:9070"});
+//        ActorSDK.sharedActor().setEndpoints(new String[]{"tcp://api-mtproto.actor.diegosilva.com.br:9070"});
+        // ActorSDK.sharedActor().setAuthType(AuthActivity.AUTH_TYPE_PHONE);
 
-        ActorSDK.sharedActor().setStickersEnabled(true);
+        ActorSDK.sharedActor().setStickersEnabled(false);
 
-        ActorSDK.sharedActor().setInviteUrl("https://play.google.com/store/apps/details?id=br.com.diegosilva.conecta");
-        ActorSDK.sharedActor().setGroupInvitePrefix("https://j.conecta.im/#/join/");
-        ActorSDK.sharedActor().setInviteDataUrl("https://api.conecta.im/v1/groups/invites/");
+//        ActorSDK.sharedActor().setTwitter("");
+//        ActorSDK.sharedActor().setHomePage("http://www.foo.com");
+//        ActorSDK.sharedActor().setInviteUrl("http://www.foo.com");
+//        ActorSDK.sharedActor().setCallsEnabled(true);
+
+//        ActorSDK.sharedActor().setEndpoints(new String[]{"tcp://192.168.1.184:9070"});
 
 //        ActorStyle style = ActorSDK.sharedActor().style;
 //        style.setMainColor(Color.parseColor("#529a88"));
@@ -124,9 +118,6 @@ public class Application extends ActorSDKApplication {
 //                return content instanceof TCBotMesaage;
 //            }
 //        });
-
-        AndroidLogProvider.setWriteLogs(true);
-
     }
 
     private class ActorSDKDelegate extends BaseActorSDKDelegate {
@@ -235,12 +226,15 @@ public class Application extends ActorSDKApplication {
 
         @Override
         public View.OnClickListener getMenuFieldOnClickListener() {
-            return v -> {
-                switch (v.getId()) {
-                    case R.id.terminateSessions:
-                        Toast.makeText(v.getContext(), "hey", Toast.LENGTH_LONG).show();
-                        blablaCheckBox.toggle();
-                        break;
+            return new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    switch (v.getId()) {
+                        case R.id.terminateSessions:
+                            Toast.makeText(v.getContext(), "hey", Toast.LENGTH_LONG).show();
+                            blablaCheckBox.toggle();
+                            break;
+                    }
                 }
             };
         }

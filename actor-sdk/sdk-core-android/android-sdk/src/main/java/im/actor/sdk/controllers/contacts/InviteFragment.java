@@ -36,7 +36,6 @@ public class InviteFragment extends BaseFragment {
     private MenuInflater inflater;
 
     public InviteFragment() {
-        setRootFragment(true);
     }
 
     @Override

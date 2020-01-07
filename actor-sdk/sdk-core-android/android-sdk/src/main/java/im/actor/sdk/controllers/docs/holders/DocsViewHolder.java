@@ -92,7 +92,7 @@ public class DocsViewHolder extends AbsDocsViewHolder {
                             public void onDownloaded(FileSystemReference reference) {
                                 Context activity = itemView.getContext();
                                 activity.startActivity(Intents.shareDoc(documentContent.getName(),
-                                        reference.getDescriptor(), itemView.getContext()));
+                                        reference.getDescriptor()));
                             }
                         });
                     }
@@ -311,7 +311,7 @@ public class DocsViewHolder extends AbsDocsViewHolder {
                 }
 
                 @Override
-                public void onUploaded(FileSystemReference reference) {
+                public void onUploaded() {
                     // Nothing to do
                 }
             });
@@ -397,7 +397,7 @@ public class DocsViewHolder extends AbsDocsViewHolder {
         }
 
         @Override
-        public void onUploaded(FileSystemReference reference) {
+        public void onUploaded() {
             onUploading(1);
         }
     }

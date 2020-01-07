@@ -46,12 +46,13 @@ public class AsyncTcpConnection extends AsyncConnection {
 
     public AsyncTcpConnection(int id, ConnectionEndpoint endpoint, AsyncConnectionInterface connection) {
         super(endpoint, connection);
+
         this.TAG = "ConnectionTcp#" + id;
     }
 
     @Override
     public void doConnect() {
-        connectExecutor.submit(() -> {
+        connectExecutor.submit((Runnable) () -> {
             try {
                 ConnectionEndpoint endpoint1 = getEndpoint();
 
@@ -298,7 +299,7 @@ public class AsyncTcpConnection extends AsyncConnection {
             byte[] res = new byte[count];
             int offset = 0;
             while (offset < res.length) {
-                int readed = inputStream != null ? inputStream.read(res, offset, res.length - offset) : -1;
+                int readed = inputStream.read(res, offset, res.length - offset);
                 if (readed > 0) {
                     offset += readed;
                 } else if (readed < 0) {

@@ -201,6 +201,8 @@ open class AABubbleCell: UICollectionViewCell {
         //self.layer.rasterizationScale = UIScreen.mainScreen().scale
         //self.layer.drawsAsynchronously = true
         //self.contentView.layer.drawsAsynchronously = true
+        
+        
     }
     
     public required init(coder aDecoder: NSCoder) {

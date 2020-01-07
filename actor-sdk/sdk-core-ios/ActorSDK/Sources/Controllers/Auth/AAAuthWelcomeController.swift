@@ -39,7 +39,7 @@ open class AAWelcomeController: AAViewController {
         appNameLabel.text = AALocalized("WelcomeTitle").replace("{app_name}", dest: ActorSDK.sharedActor().appName)
         appNameLabel.textAlignment = .center
         appNameLabel.backgroundColor = UIColor.clear
-        appNameLabel.font = UIFont.mediumSystemFontOfSize(27)
+        appNameLabel.font = UIFont.mediumSystemFontOfSize(24)
         appNameLabel.textColor = ActorSDK.sharedActor().style.welcomeTitleColor
         
         someInfoLabel.text = AALocalized("WelcomeTagline")
@@ -102,15 +102,12 @@ open class AAWelcomeController: AAViewController {
     @objc open func signInAction() {
         // TODO: Remove BG after auth?
         UIApplication.shared.keyWindow?.backgroundColor = ActorSDK.sharedActor().style.welcomeBgColor
-        if ActorSDK.sharedActor().authStrategy == .phoneOnly || ActorSDK.sharedActor().authStrategy == .phoneEmail {
-            self.presentElegantViewController(AAAuthNavigationController(rootViewController: AAAuthPhoneViewController()))
-        } else {
-            self.presentElegantViewController(AAAuthNavigationController(rootViewController: AAAuthEmailViewController()))
-        }
+        self.presentElegantViewController(AAAuthNavigationController(rootViewController: AAAuthLogInViewController()))
     }
     
     open override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+     
         // TODO: Fix after cancel?
         UIApplication.shared.setStatusBarStyle(.lightContent, animated: true)
     }

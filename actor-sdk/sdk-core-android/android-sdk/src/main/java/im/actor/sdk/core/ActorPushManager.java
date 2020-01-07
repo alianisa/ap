@@ -5,3 +5,6 @@ import android.content.Context;
 public interface ActorPushManager {
     void registerPush(Context context);
 }
+
+
+

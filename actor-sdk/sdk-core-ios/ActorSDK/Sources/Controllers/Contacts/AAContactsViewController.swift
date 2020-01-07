@@ -144,40 +144,6 @@ open class AAContactsViewController: AAContactsListContentController, AAContacts
                 return true
             }
         }
-        
-        if(ActorSDK.sharedActor().enablePredefinedGroups){
-            section.custom { (r:AACustomRow<AAContactActionCell>) -> () in
-                
-                r.height = 56
-                
-                r.closure = { (cell) -> () in
-                    cell.bind("ic_pre_groups", actionTitle: AALocalized("GroupsPre"))
-                }
-                
-                r.selectAction = { () -> Bool in
-                    let gruposPredefinidosController = AAGrouppreListController(groupType:JavaLangInteger(value: ACGroupType.group()))
-                    gruposPredefinidosController.title = AALocalized("GroupsPre")
-                    self.navigateNext(gruposPredefinidosController, removeCurrent: false)
-                    return false
-                }
-            }
-            
-            section.custom { (r:AACustomRow<AAContactActionCell>) -> () in
-                
-                r.height = 56
-                
-                r.closure = { (cell) -> () in
-                    cell.bind("ic_pre_channels", actionTitle: AALocalized("ChannelsPre"))
-                }
-                
-                r.selectAction = { () -> Bool in
-                    let gruposPredefinidosController = AAGrouppreListController(groupType:JavaLangInteger(value: ACGroupType.channel()))
-                    gruposPredefinidosController.title = AALocalized("ChannelsPre")
-                    self.navigateNext(gruposPredefinidosController, removeCurrent: false)
-                    return false
-                }
-            }
-        }
     }
  
     // Searching for contact

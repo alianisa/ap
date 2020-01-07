@@ -131,9 +131,6 @@ public class Group extends WrapperExtEntity<ApiGroupFull, ApiGroup> implements K
     @Property("readonly, nonatomic")
     private boolean haveExtension;
 
-    @Property("readonly, nonatomic")
-    private String restrictedDomains;
-
     //
     // Constructors
     //
@@ -214,10 +211,6 @@ public class Group extends WrapperExtEntity<ApiGroupFull, ApiGroup> implements K
 
     public boolean isCanViewInfo() {
         return isCanViewInfo;
-    }
-
-    public String getRestrictedDomains() {
-        return restrictedDomains;
     }
 
     @NotNull
@@ -412,8 +405,6 @@ public class Group extends WrapperExtEntity<ApiGroupFull, ApiGroup> implements K
         return new Group(res, getWrappedExt());
     }
 
-
-
     public Group editExt(ApiMapValue ext) {
         ApiGroup w = getWrapped();
         ApiGroup res = new ApiGroup(
@@ -451,46 +442,7 @@ public class Group extends WrapperExtEntity<ApiGroupFull, ApiGroup> implements K
                     e.isAsyncMembers(),
                     e.isSharedHistory(),
                     e.getShortName(),
-                    e.getPermissions(),
-                    e.getRestrictedDomains(),
-                    e.getLocation());
-            fullExt.setUnmappedObjects(e.getUnmappedObjects());
-        }
-
-        ApiGroup w = getWrapped();
-        ApiGroup res = new ApiGroup(
-                w.getId(),
-                w.getAccessHash(),
-                w.getTitle(),
-                w.getAvatar(),
-                members.size(),
-                w.isMember(),
-                w.isHidden(),
-                w.getGroupType(),
-                w.getPermissions(),
-                w.isDeleted(),
-                w.getExt());
-
-        return new Group(res, fullExt);
-    }
-
-    public Group editRestrictedDomains(String domains) {
-        ApiGroupFull fullExt = null;
-        if (getWrappedExt() != null) {
-            ApiGroupFull e = getWrappedExt();
-            fullExt = new ApiGroupFull(e.getId(),
-                    e.getCreateDate(),
-                    e.getOwnerUid(),
-                    e.getMembers(),
-                    e.getTheme(),
-                    e.getAbout(),
-                    e.getExt(),
-                    e.isAsyncMembers(),
-                    e.isSharedHistory(),
-                    e.getShortName(),
-                    e.getPermissions(),
-                    domains,
-                    e.getLocation());
+                    e.getPermissions());
             fullExt.setUnmappedObjects(e.getUnmappedObjects());
         }
 
@@ -548,9 +500,7 @@ public class Group extends WrapperExtEntity<ApiGroupFull, ApiGroup> implements K
                     e.isAsyncMembers(),
                     e.isSharedHistory(),
                     e.getShortName(),
-                    e.getPermissions(),
-                    e.getRestrictedDomains(),
-                    e.getLocation());
+                    e.getPermissions());
             fullExt.setUnmappedObjects(e.getUnmappedObjects());
         }
 
@@ -602,9 +552,7 @@ public class Group extends WrapperExtEntity<ApiGroupFull, ApiGroup> implements K
                     true,
                     e.isSharedHistory(),
                     e.getShortName(),
-                    e.getPermissions(),
-                    e.getRestrictedDomains(),
-                    e.getLocation());
+                    e.getPermissions());
             fullExt.setUnmappedObjects(e.getUnmappedObjects());
 
             return new Group(getWrapped(), fullExt);
@@ -638,9 +586,7 @@ public class Group extends WrapperExtEntity<ApiGroupFull, ApiGroup> implements K
                     e.isAsyncMembers(),
                     e.isSharedHistory(),
                     e.getShortName(),
-                    e.getPermissions(),
-                    e.getRestrictedDomains(),
-                    e.getLocation());
+                    e.getPermissions());
             fullExt.setUnmappedObjects(e.getUnmappedObjects());
 
             return new Group(getWrapped(), fullExt);
@@ -666,9 +612,7 @@ public class Group extends WrapperExtEntity<ApiGroupFull, ApiGroup> implements K
                     e.isAsyncMembers(),
                     e.isSharedHistory(),
                     e.getShortName(),
-                    e.getPermissions(),
-                    e.getRestrictedDomains(),
-                    e.getLocation());
+                    e.getPermissions());
             fullExt.setUnmappedObjects(e.getUnmappedObjects());
             return new Group(getWrapped(), fullExt);
         } else {
@@ -689,9 +633,7 @@ public class Group extends WrapperExtEntity<ApiGroupFull, ApiGroup> implements K
                     e.isAsyncMembers(),
                     e.isSharedHistory(),
                     e.getShortName(),
-                    e.getPermissions(),
-                    e.getRestrictedDomains(),
-                    e.getLocation());
+                    e.getPermissions());
             fullExt.setUnmappedObjects(e.getUnmappedObjects());
             return new Group(getWrapped(), fullExt);
         } else {
@@ -712,9 +654,7 @@ public class Group extends WrapperExtEntity<ApiGroupFull, ApiGroup> implements K
                     e.isAsyncMembers(),
                     e.isSharedHistory(),
                     shortName,
-                    e.getPermissions(),
-                    e.getRestrictedDomains(),
-                    e.getLocation());
+                    e.getPermissions());
             fullExt.setUnmappedObjects(e.getUnmappedObjects());
             return new Group(getWrapped(), fullExt);
         } else {
@@ -735,9 +675,7 @@ public class Group extends WrapperExtEntity<ApiGroupFull, ApiGroup> implements K
                     e.isAsyncMembers(),
                     e.isSharedHistory(),
                     e.getShortName(),
-                    e.getPermissions(),
-                    e.getRestrictedDomains(),
-                    e.getLocation());
+                    e.getPermissions());
             fullExt.setUnmappedObjects(e.getUnmappedObjects());
             return new Group(getWrapped(), fullExt);
         } else {
@@ -758,9 +696,7 @@ public class Group extends WrapperExtEntity<ApiGroupFull, ApiGroup> implements K
                     e.isAsyncMembers(),
                     e.isSharedHistory(),
                     e.getShortName(),
-                    e.getPermissions(),
-                    e.getRestrictedDomains(),
-                    e.getLocation());
+                    e.getPermissions());
             fullExt.setUnmappedObjects(e.getUnmappedObjects());
             return new Group(getWrapped(), fullExt);
         } else {
@@ -781,9 +717,7 @@ public class Group extends WrapperExtEntity<ApiGroupFull, ApiGroup> implements K
                     e.isAsyncMembers(),
                     true,
                     e.getShortName(),
-                    e.getPermissions(),
-                    e.getRestrictedDomains(),
-                    e.getLocation());
+                    e.getPermissions());
             fullExt.setUnmappedObjects(e.getUnmappedObjects());
             return new Group(getWrapped(), fullExt);
         } else {
@@ -804,9 +738,7 @@ public class Group extends WrapperExtEntity<ApiGroupFull, ApiGroup> implements K
                     e.isAsyncMembers(),
                     e.isSharedHistory(),
                     e.getShortName(),
-                    permissions,
-                    e.getRestrictedDomains(),
-                    e.getLocation());
+                    permissions);
             fullExt.setUnmappedObjects(e.getUnmappedObjects());
             return new Group(getWrapped(), fullExt);
         } else {
@@ -873,7 +805,6 @@ public class Group extends WrapperExtEntity<ApiGroupFull, ApiGroup> implements K
             this.shortName = ext.getShortName();
             this.isAsyncMembers = ext.isAsyncMembers() != null ? ext.isAsyncMembers() : false;
             this.isSharedHistory = ext.isSharedHistory() != null ? ext.isSharedHistory() : false;
-            this.restrictedDomains = ext.getRestrictedDomains();
 
             /*
              # 0 - canEditInfo. Default is FALSE.
@@ -931,7 +862,6 @@ public class Group extends WrapperExtEntity<ApiGroupFull, ApiGroup> implements K
             this.isCanKickAnyone = false;
             this.isCanEditForeign = false;
             this.isCanDeleteForeign = false;
-            this.restrictedDomains = null;
         }
     }
 

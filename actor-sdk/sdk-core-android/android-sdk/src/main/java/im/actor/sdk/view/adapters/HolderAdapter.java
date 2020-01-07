@@ -10,7 +10,7 @@ import java.util.HashSet;
 public abstract class HolderAdapter<V> extends BaseAdapter {
     private HashSet<ViewHolder<V>> holders = new HashSet<ViewHolder<V>>();
 
-    protected Context context;
+    private Context context;
 
     protected HolderAdapter(Context context) {
         this.context = context;

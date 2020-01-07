@@ -103,7 +103,7 @@ open class AARecentViewController: AADialogsListContentController, AADialogsList
                     self.tabBarItem.badgeValue = nil
                 }
             })
-    
+            
         }
 
     }

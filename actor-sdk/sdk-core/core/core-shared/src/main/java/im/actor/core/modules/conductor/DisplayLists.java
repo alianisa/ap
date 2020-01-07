@@ -16,6 +16,7 @@ import im.actor.core.modules.AbsModule;
 import im.actor.core.modules.ModuleContext;
 import im.actor.runtime.Storage;
 import im.actor.runtime.mvvm.PlatformDisplayList;
+import im.actor.runtime.storage.ListEngineDisplayExt;
 
 public class DisplayLists extends AbsModule {
 
@@ -26,8 +27,6 @@ public class DisplayLists extends AbsModule {
     private HashMap<Peer, PlatformDisplayList<Message>> chatsDocsGlobalLists = new HashMap<>();
     private HashMap<Peer, PlatformDisplayList<Message>> chatsPhotosGlobalLists = new HashMap<>();
     private HashMap<Peer, PlatformDisplayList<Message>> chatsVideosGlobalLists = new HashMap<>();
-
-    private HashMap<Integer, PlatformDisplayList<GroupPre>> groupspreGlobalLists = new HashMap<>();
 
     public DisplayLists(ModuleContext context) {
         super(context);
@@ -87,14 +86,6 @@ public class DisplayLists extends AbsModule {
             chatsVideosGlobalLists.put(peer, buildChatVideosList(peer, true));
         }
         return chatsVideosGlobalLists.get(peer);
-    }
-
-    public PlatformDisplayList<GroupPre> getGroupspreSharedList(Integer parentId){
-        im.actor.runtime.Runtime.checkMainThread();
-        if(!groupspreGlobalLists.containsKey(parentId)){
-            groupspreGlobalLists.put(parentId, buildGroupspreList(parentId, true));
-        }
-        return groupspreGlobalLists.get(parentId);
     }
 
     public PlatformDisplayList<Dialog> buildDialogsList(boolean isShared) {
@@ -167,17 +158,6 @@ public class DisplayLists extends AbsModule {
         return res;
     }
 
-    public PlatformDisplayList<GroupPre> buildGroupspreList(final Integer parentId, boolean isShared) {
-        im.actor.runtime.Runtime.checkMainThread();
-
-        PlatformDisplayList<GroupPre> res = Storage.createDisplayList(context().getGrupoPreModule().getGrupospreEngine(parentId),
-                isShared, GroupPre.ENTITY_NAME);
-
-        res.initTop();
-
-        return res;
-    }
-
     public PlatformDisplayList<SearchEntity> buildSearchList(boolean isGlobalList) {
         im.actor.runtime.Runtime.checkMainThread();
 
@@ -188,4 +168,21 @@ public class DisplayLists extends AbsModule {
 
         return res;
     }
+
+    public PlatformDisplayList<GroupPre> buildGrupoPreList(Integer idGrupoPai, boolean isShared) {
+        im.actor.runtime.Runtime.checkMainThread();
+
+        PlatformDisplayList<GroupPre> res = Storage.createDisplayList(context().getGrupoPreModule().getGrupospreEngine(idGrupoPai),
+                isShared, GroupPre.ENTITY_NAME);
+
+        res.initTop();
+
+        return res;
+    }
+
+
+    public ListEngineDisplayExt<GroupPre> getGroupsPreListEngine(Integer idGrupoPai){
+        return (ListEngineDisplayExt<GroupPre>) context().getGrupoPreModule().getGrupospreEngine(idGrupoPai);
+    }
+
 }

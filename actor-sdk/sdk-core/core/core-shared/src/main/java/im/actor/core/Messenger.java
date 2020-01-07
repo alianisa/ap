@@ -22,7 +22,6 @@ import im.actor.core.entity.FileReference;
 import im.actor.core.entity.Group;
 import im.actor.core.entity.GroupMembersSlice;
 import im.actor.core.entity.GroupPermissions;
-import im.actor.core.entity.GroupPre;
 import im.actor.core.entity.MentionFilterResult;
 import im.actor.core.entity.MessageSearchEntity;
 import im.actor.core.entity.Peer;
@@ -70,7 +69,6 @@ import im.actor.core.viewmodel.UploadFileCallback;
 import im.actor.core.viewmodel.UploadFileVM;
 import im.actor.core.viewmodel.UploadFileVMCallback;
 import im.actor.core.viewmodel.UserVM;
-import im.actor.runtime.Log;
 import im.actor.runtime.actors.ActorSystem;
 import im.actor.runtime.actors.messages.Void;
 import im.actor.runtime.mtproto.ConnectionEndpointArray;
@@ -90,7 +88,6 @@ public class Messenger {
     private static final Void DUMB = null;
 
     protected Modules modules;
-
 
 //    public static BaseParser[] extraRpcParsers;
 
@@ -725,7 +722,7 @@ public class Messenger {
      */
     @NotNull
     @ObjectiveCName("getGroupPreVM")
-    public GroupPreVM getGroupPreVM(long groupId) {
+    public GroupPreVM getGroupPreVM(long groupId){
         return modules.getGrupoPreModule().getGrupoPreVM(groupId);
     }
 
@@ -1528,19 +1525,6 @@ public class Messenger {
     }
 
     /**
-     * Save Group's permissions
-     *
-     * @param gid           group's id
-     * @param restrictedDomains restrictedDomains
-     * @return promise of void
-     */
-    @NotNull
-    @ObjectiveCName("updateRestrictedDomainsWithGid:restrictedDomains:")
-    public Promise<Void> updateRestrictedDomains(int gid, String restrictedDomains) {
-        return modules.getGroupsModule().editRestrictedDomains(gid, restrictedDomains);
-    }
-
-    /**
      * Change group avatar
      *
      * @param gid        group's id
@@ -1585,18 +1569,6 @@ public class Messenger {
     @ObjectiveCName("changeGroupPreWithGroupId:withIsGroupPre:")
     public Promise<Void> changeGroupPre(int groupId, boolean isGroupPre) {
         return modules.getGrupoPreModule().changeGroupPre(groupId, isGroupPre);
-    }
-
-    @NotNull
-    @ObjectiveCName("changeGroupParentWithGroupId:withParentId:withOldParentId:")
-    public Promise<Void> changeGroupParent(int groupId, int parentId, int oldParentId) {
-        return modules.getGrupoPreModule().changeParent(groupId, parentId, oldParentId);
-    }
-
-    @NotNull
-    @ObjectiveCName("changeGroupPreOrderWithFromGroup:withToGroup:")
-    public Promise<Void> changeGroupPreOrder(GroupPre fromGroup, GroupPre toGroup) {
-        return modules.getGrupoPreModule().changeOrder(fromGroup, toGroup);
     }
 
     /**
@@ -1810,8 +1782,7 @@ public class Messenger {
     @NotNull
     @ObjectiveCName("joinGroupWithGid:")
     public Promise<Void> joinGroup(int gid) {
-        return modules.getGroupsModule()
-                .joinGroup(gid);
+        return modules.getGroupsModule().joinGroup(gid);
     }
 
     /**

@@ -3,7 +3,7 @@ package im.actor.server.api.http
 import akka.actor._
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives._
-import akka.http.scaladsl.server.{RejectionHandler, Route}
+import akka.http.scaladsl.server.{ RejectionHandler, Route }
 import akka.http.scaladsl.server.directives.Credentials
 import akka.http.scaladsl.settings.ServerSettings
 import akka.http.scaladsl.util.FastFuture
@@ -17,7 +17,7 @@ import im.actor.server.persist.HttpApiTokenRepo
 
 import scala.concurrent.Future
 import scala.concurrent.duration._
-import scala.util.{Failure, Success}
+import scala.util.{ Failure, Success }
 
 final class HttpApi(_system: ActorSystem) extends Extension {
   implicit val system = _system

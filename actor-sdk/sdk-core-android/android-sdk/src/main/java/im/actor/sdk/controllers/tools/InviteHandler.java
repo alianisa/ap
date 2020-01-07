@@ -83,21 +83,29 @@ public class InviteHandler {
     private static void joinViaToken(String joinGroupUrl, String title, BaseActivity activity) {
         AlertDialog.Builder b = new AlertDialog.Builder(activity);
         b.setTitle(activity.getString(R.string.invite_link_join_confirm, title))
-                .setPositiveButton(R.string.dialog_yes, (dialogInterface, i) -> {
-                    dialogInterface.dismiss();
-                    activity.execute(messenger().joinGroupViaToken(joinGroupUrl),
-                            R.string.invite_link_title, new CommandCallback<Integer>() {
-                        @Override
-                        public void onResult(Integer res) {
-                            activity.startActivity(Intents.openGroupDialog(res, true, activity));
-                        }
+                .setPositiveButton(R.string.dialog_yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                        activity.execute(messenger().joinGroupViaToken(joinGroupUrl), R.string.invite_link_title, new CommandCallback<Integer>() {
+                            @Override
+                            public void onResult(Integer res) {
+                                activity.startActivity(Intents.openGroupDialog(res, true, activity));
+                            }
 
-                        @Override
-                        public void onError(Exception e) {
-                            Toast.makeText(activity, e.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                            @Override
+                            public void onError(Exception e) {
+                                Toast.makeText(activity, e.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+
                 })
-                .setNegativeButton(R.string.dialog_cancel, (dialogInterface, i) -> dialogInterface.dismiss()).show();
+                .setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                }).show();
     }
 }

@@ -10,7 +10,7 @@ import im.actor.storage.slick.SlickConnector
 import org.flywaydb.core.Flyway
 import slick.driver.PostgresDriver.api.Database
 import slick.jdbc.hikaricp.HikariCPJdbcDataSource
-import slick.jdbc.{ DataSourceJdbcDataSource}
+import slick.jdbc.{ DataSourceJdbcDataSource, JdbcDataSource }
 
 import scala.util.{ Failure, Success, Try }
 
@@ -25,6 +25,7 @@ final class DbExtensionImpl(val db: Database, val connector: Connector) extends 
   }
 
   def clean(): Unit = flyway.clean()
+
   def migrate(): Unit = flyway.migrate()
 }
 

@@ -5,7 +5,6 @@
 package im.actor.core.viewmodel;
 
 import im.actor.core.modules.Modules;
-import im.actor.runtime.files.FileSystemReference;
 import im.actor.runtime.mvvm.AsyncVM;
 
 /**
@@ -43,8 +42,8 @@ public class UploadFileVM extends AsyncVM {
             }
 
             @Override
-            public void onUploaded(FileSystemReference reference) {
-                post(new Uploaded(reference));
+            public void onUploaded() {
+                post(new Uploaded());
             }
         };
         modules.getFilesModule().bindUploadFile(rid, callback);
@@ -57,7 +56,7 @@ public class UploadFileVM extends AsyncVM {
         } else if (obj instanceof Uploading) {
             vmCallback.onUploading(((Uploading) obj).getProgress());
         } else if (obj instanceof Uploaded) {
-            vmCallback.onUploaded(((Uploaded) obj).getFileSystemReference());
+            vmCallback.onUploaded();
         }
     }
 
@@ -89,14 +88,5 @@ public class UploadFileVM extends AsyncVM {
 
     private class Uploaded {
 
-        private FileSystemReference fileSystemReference;
-
-        private Uploaded(FileSystemReference fileSystemReference) {
-            this.fileSystemReference = fileSystemReference;
-        }
-
-        public FileSystemReference getFileSystemReference() {
-            return fileSystemReference;
-        }
     }
 }

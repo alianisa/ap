@@ -1,15 +1,21 @@
 //
-//  SlackTextViewController
-//  https://github.com/slackhq/SlackTextViewController
+//   Copyright 2014 Slack Technologies, Inc.
 //
-//  Copyright 2014-2016 Slack Technologies, Inc.
-//  Licence: MIT-Licence
+//   Licensed under the Apache License, Version 2.0 (the "License");
+//   you may not use this file except in compliance with the License.
+//   You may obtain a copy of the License at
+//
+//       http://www.apache.org/licenses/LICENSE-2.0
+//
+//   Unless required by applicable law or agreed to in writing, software
+//   distributed under the License is distributed on an "AS IS" BASIS,
+//   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//   See the License for the specific language governing permissions and
+//   limitations under the License.
 //
 
 #import <UIKit/UIKit.h>
 #import "SLKTypingIndicatorProtocol.h"
-
-NS_ASSUME_NONNULL_BEGIN
 
 /** @name A custom view to display an indicator of users typing. */
 @interface SLKTypingIndicatorView : UIView <SLKTypingIndicatorProtocol>
@@ -22,9 +28,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 /** The color of the text. Default is grayColor. */
 @property (nonatomic, strong) UIColor *textColor;
-
-/** The color of the highlighted text. Default is grayColor. */
-@property (nonatomic, strong) UIColor *highlightTextColor;
 
 /** The font of the text. Default is system font, 12 pts. */
 @property (nonatomic, strong) UIFont *textFont;
@@ -49,7 +52,7 @@ NS_ASSUME_NONNULL_BEGIN
  
  @param username The user name string.
  */
-- (void)insertUsername:(NSString *_Nullable)username;
+- (void)insertUsername:(NSString *)username;
 
 /**
  Removes a user name, if existent on the list.
@@ -57,8 +60,6 @@ NS_ASSUME_NONNULL_BEGIN
  
  @param username The user name string.
  */
-- (void)removeUsername:(NSString *_Nullable)username;
+- (void)removeUsername:(NSString *)username;
 
 @end
-
-NS_ASSUME_NONNULL_END

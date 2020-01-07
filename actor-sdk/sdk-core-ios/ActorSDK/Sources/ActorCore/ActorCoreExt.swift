@@ -85,6 +85,8 @@ public extension ACCocoaMessenger {
             } catch {
                 print("can't get thumbnail image")
             }
+        
+
         }
 
     }
@@ -113,10 +115,6 @@ public extension ACCocoaMessenger {
     
     public func requestFileState(_ fileId: jlong, onDownloaded: ((_ reference: String) -> ())?) {
         Actor.requestState(withFileId: fileId, with: AAFileCallback(notDownloaded: nil, onDownloading: nil, onDownloaded: onDownloaded))
-    }
-    
-    public func getGroupsPreSimpleDisplayList(_ parentId: JavaLangInteger, filter: @escaping (_ value: Any?)->jboolean) -> ARSimpleBindedDisplayList {
-        return ARSimpleBindedDisplayList(arListEngineDisplayExt: getModulesContext().getGrupoPreModule().getGrupospreEngine(with: parentId) as! ARListEngineDisplayExt!, with: SimpleBindedDisplayListFilter(closure: filter))
     }
 }
 
@@ -228,7 +226,7 @@ class AAUploadFileCallback : NSObject, ACUploadFileCallback {
         self.notUploaded?()
     }
     
-    func onUploaded(_ reference: ARFileSystemReference!) {
+    func onUploaded() {
         self.onUploadedClosure?()
     }
     
@@ -432,7 +430,6 @@ open class ParsedText {
 open class AAPromiseFunc: NSObject, ARPromiseFunc {
     
     let closure: (_ resolver: ARPromiseResolver) -> ()
-    
     init(closure: @escaping (_ resolver: ARPromiseResolver) -> ()){
         self.closure = closure
     }
@@ -525,34 +522,6 @@ class BindListener: NSObject, ARValueChangedListener {
         closure?(val)
     }
 }
-
-open class SimpleBindedDisplayListFilter: NSObject, ARSimpleBindedDisplayList_Filter{
-    
-    var closure: ((_ value: Any?)->jboolean)?
-    
-    init(closure: @escaping (_ value: Any?)->jboolean) {
-        self.closure = closure
-    }
-    
-    public func accept(_ val: Any!) -> jboolean {
-        return closure!(val)
-    }
-}
-
-open class SimpleListChangeListener: NSObject, ARSimpleBindedDisplayList_ListChangedListener{
-    
-    public func onListChange(_ size: jint) {
-        closure!(size)
-    }
-    
-    var closure: ((_ value: jint?)->())?
-    
-    init(closure: @escaping (_ value: jint?)->()) {
-        self.closure = closure
-    }
-}
-
-
 
 class BindHolder {
     var listener: BindListener

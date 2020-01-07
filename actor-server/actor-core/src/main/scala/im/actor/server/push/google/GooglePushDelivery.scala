@@ -19,7 +19,6 @@ private[google] object GooglePushDelivery {
 }
 
 private final class GooglePushDelivery(apiUri: String) extends ActorPublisher[NotificationDelivery] with ActorLogging {
-
   import ActorPublisherMessage._
   import GooglePushDelivery._
 
@@ -57,13 +56,11 @@ private final class GooglePushDelivery(apiUri: String) extends ActorPublisher[No
       }
     }
 
-  private def mkJob(d: Delivery): NotificationDelivery = {
-    val data = d.m.asJson.noSpaces
+  private def mkJob(d: Delivery): NotificationDelivery =
     HttpRequest(
       method = POST,
       uri = uri,
       headers = List(Authorization(GenericHttpCredentials(s"key=${d.key}", Map.empty[String, String]))),
-      entity = HttpEntity(ContentTypes.`application/json`, data)
+      entity = HttpEntity(ContentTypes.`application/json`, d.m.asJson.noSpaces)
     ) → d
-  }
 }

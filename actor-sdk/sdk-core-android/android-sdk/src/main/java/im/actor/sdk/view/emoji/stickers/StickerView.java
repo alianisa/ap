@@ -11,7 +11,6 @@ import com.facebook.drawee.drawable.ScalingUtils;
 import com.facebook.drawee.generic.GenericDraweeHierarchy;
 import com.facebook.drawee.generic.GenericDraweeHierarchyBuilder;
 import com.facebook.drawee.view.SimpleDraweeView;
-import com.facebook.imagepipeline.common.RotationOptions;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 
@@ -114,8 +113,8 @@ public class StickerView extends SimpleDraweeView {
             @Override
             public void onDownloaded(FileSystemReference reference) {
                 imageFile = new File(reference.getDescriptor());
-                ImageRequest request = ImageRequestBuilder.newBuilderWithSource(im.actor.sdk.util.Files.getUri(getContext(), imageFile) /*Uri.fromFile(imageFile)*/)
-                        .setRotationOptions(RotationOptions.autoRotate())
+                ImageRequest request = ImageRequestBuilder.newBuilderWithSource(Uri.fromFile(imageFile))
+                        .setAutoRotateEnabled(true)
                         .build();
                 PipelineDraweeController controller = (PipelineDraweeController) Fresco.newDraweeControllerBuilder()
                         .setOldController(getController())

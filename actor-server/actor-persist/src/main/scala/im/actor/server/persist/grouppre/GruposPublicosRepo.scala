@@ -8,7 +8,7 @@ import slick.dbio.Effect.Read
 import slick.driver.PostgresDriver.api._
 import slick.profile.SqlAction
 
-case class PublicGroup(id: Int, typ: String, position: Int = 0, hasChildrem: Boolean = false, parentId:Int = 0, accessHash: Long)
+case class PublicGroup(id: Int, typ: String, order: Int = 0, hasChildrem: Boolean = false, parentId:Int = 0, accessHash: Long)
 /**
  * Created by diego on 09/08/16.
  */
@@ -41,32 +41,16 @@ object PublicGroupRepo {
 
   def createOrUpdate(publicGroup: PublicGroup) = publicGroups.insertOrUpdate(publicGroup)
 
-  def updateHasChildrenByParent(parentId: Int, hasChildrem:Boolean) = {
-    publicGroups.filter(_.id === parentId).map(_.hasChildrem).update(hasChildrem)
-  }
-
-  def updateParentByOldParend(oldParentId: Int, newParentId:Int) = {
-    byIdPai(oldParentId).map(_.parentId).update(newParentId)
+  def atualizaPossuiFilhos(parentId: Int, hasChildrem:Boolean) = {
+    byIdPai(parentId).map(_.hasChildrem).update(hasChildrem)
   }
 
   def updateParent(groupId: Int, parentId:Int) = {
     publicGroups.filter(_.id === groupId).map(_.parentId).update(parentId)
   }
 
-  def updatePosition(groupId: Int, newPosition:Int) = {
-    publicGroups.filter(_.id === groupId).map(_.position).update(newPosition)
-  }
-
   def possuiFilhos(parentId: Int): SqlAction[Boolean, NoStream, Read] = {
     byIdPai(parentId).exists.result
-  }
-
-  def nextPosition(): SqlAction[Option[Int], NoStream, Read] = {
-    publicGroups.map(_.position).max.result
-  }
-
-  def childrenIds(parentId: Int) : SqlAction[Seq[Int], NoStream, Read] = {
-    byIdPai(parentId).map(_.id).result
   }
 
   def findById(groupId:Int) =
