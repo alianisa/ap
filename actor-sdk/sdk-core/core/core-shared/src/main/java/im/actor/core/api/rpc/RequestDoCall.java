@@ -27,13 +27,15 @@ public class RequestDoCall extends Request<ResponseDoCall> {
     private Boolean isAudioOnlyCall;
     private Boolean isVideoOnlyCall;
     private Boolean isVideoPreferred;
+    private Boolean isBusy;
 
-    public RequestDoCall(@NotNull ApiOutPeer peer, @Nullable Long timeout, @Nullable Boolean isAudioOnlyCall, @Nullable Boolean isVideoOnlyCall, @Nullable Boolean isVideoPreferred) {
+    public RequestDoCall(@NotNull ApiOutPeer peer, @Nullable Long timeout, @Nullable Boolean isAudioOnlyCall, @Nullable Boolean isVideoOnlyCall, @Nullable Boolean isVideoPreferred, @Nullable Boolean isBusy) {
         this.peer = peer;
         this.timeout = timeout;
         this.isAudioOnlyCall = isAudioOnlyCall;
         this.isVideoOnlyCall = isVideoOnlyCall;
         this.isVideoPreferred = isVideoPreferred;
+        this.isBusy = isBusy;
     }
 
     public RequestDoCall() {
@@ -65,6 +67,11 @@ public class RequestDoCall extends Request<ResponseDoCall> {
         return this.isVideoPreferred;
     }
 
+    @Nullable
+    public Boolean isBusy() {
+        return this.isBusy;
+    }
+
     @Override
     public void parse(BserValues values) throws IOException {
         this.peer = values.getObj(1, new ApiOutPeer());
@@ -72,6 +79,7 @@ public class RequestDoCall extends Request<ResponseDoCall> {
         this.isAudioOnlyCall = values.optBool(3);
         this.isVideoOnlyCall = values.optBool(4);
         this.isVideoPreferred = values.optBool(6);
+        this.isBusy = values.optBool(7);
     }
 
     @Override
@@ -92,6 +100,9 @@ public class RequestDoCall extends Request<ResponseDoCall> {
         if (this.isVideoPreferred != null) {
             writer.writeBool(6, this.isVideoPreferred);
         }
+        if (this.isBusy != null) {
+            writer.writeBool(7, this.isBusy);
+        }
     }
 
     @Override
@@ -102,6 +113,7 @@ public class RequestDoCall extends Request<ResponseDoCall> {
         res += ", isAudioOnlyCall=" + this.isAudioOnlyCall;
         res += ", isVideoOnlyCall=" + this.isVideoOnlyCall;
         res += ", isVideoPreferred=" + this.isVideoPreferred;
+        res += ", isBusy=" + this.isBusy;
         res += "}";
         return res;
     }

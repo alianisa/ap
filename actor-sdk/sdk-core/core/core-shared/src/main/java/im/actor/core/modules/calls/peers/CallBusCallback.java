@@ -22,6 +22,8 @@ public interface CallBusCallback {
 
     void onCallEnabled();
 
+    void onDeviceConnected();
+
     //
     // Peer Connection Callbacks
     //

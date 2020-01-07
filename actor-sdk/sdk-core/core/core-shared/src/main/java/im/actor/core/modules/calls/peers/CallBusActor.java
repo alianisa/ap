@@ -1,28 +1,22 @@
 package im.actor.core.modules.calls.peers;
 
+import im.actor.core.api.*;
+import im.actor.core.modules.calls.CallViewModels;
+import im.actor.runtime.bser.Bser;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
-import im.actor.core.api.ApiAdvertiseMaster;
-import im.actor.core.api.ApiAdvertiseSelf;
-import im.actor.core.api.ApiAnswer;
-import im.actor.core.api.ApiCandidate;
-import im.actor.core.api.ApiCloseSession;
-import im.actor.core.api.ApiEnableConnection;
-import im.actor.core.api.ApiMediaStreamsUpdated;
-import im.actor.core.api.ApiNeedDisconnect;
-import im.actor.core.api.ApiNeedOffer;
-import im.actor.core.api.ApiNegotinationSuccessful;
-import im.actor.core.api.ApiOffer;
-import im.actor.core.api.ApiOnRenegotiationNeeded;
-import im.actor.core.api.ApiWebRTCSignaling;
 import im.actor.core.modules.ModuleContext;
 import im.actor.core.modules.eventbus.EventBusActor;
 import im.actor.runtime.Log;
 import im.actor.runtime.actors.ActorRef;
 import im.actor.runtime.webrtc.WebRTCMediaTrack;
+
+import im.actor.core.viewmodel.CallState;
+import im.actor.core.viewmodel.CallVM;
 
 /*-[
 #pragma clang diagnostic ignored "-Wnullability-completeness"
@@ -41,12 +35,18 @@ public class CallBusActor extends EventBusActor implements PeerCallCallback {
     @NotNull
     private final CallBusCallback callBusCallback;
 
+
+
     private boolean isMasterReady;
     private long masterDeviceId;
     @Nullable
     private PeerCallInt peerCall;
     private boolean isConnected = false;
     private boolean isEnabled = false;
+
+    private long peerDeviceId;
+
+//    private boolean isDeviceConnected = false;
 
     public CallBusActor(@NotNull final CallBusCallback callBusCallback,
                         @NotNull PeerSettings selfSettings,
@@ -161,22 +161,52 @@ public class CallBusActor extends EventBusActor implements PeerCallCallback {
         peerCall.onVideoEnabledChanged(isEnabled);
     }
 
+    public void onChangeCallBusy(long callId, long deviceId, boolean busy) {
+
+//        try {
+//            TimeUnit.SECONDS.sleep(1);
+////            if (isMasterReady) {
+////                return;
+////            }
+//            Log.d("CallBusActor", "Event onChangeCallBusy: " + masterDeviceId);
+//            sendSignal(masterDeviceId, new ApiNeedDisconnect(masterDeviceId));
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+
+    }
+
     public void onOwnAnswered() {
         peerCall.onOwnStarted();
     }
 
+//    public void onDeviceConnected(boolean isConnected) {
+//        callBusCallback.onDeviceConnected();
+//    }
     //
     // Event Bus handler
     //
 
     @Override
     public void onDeviceConnected(int uid, long deviceId) {
+        // callViewModels.onDeviceConnected(true);
+//        peerCall.onDeviceConnected(deviceId, true);
+//        new CallViewModels.DeviceConnected(deviceId,true);
+//        onDeviceConnected(true);
+        callBusCallback.onDeviceConnected();
+        peerDeviceId = deviceId;
+        Log.d("CallBusActor", "Event connected: onDeviceConnected" + peerDeviceId);
 
     }
 
     @Override
     public void onDeviceDisconnected(int uid, long deviceId) {
         peerCall.disposePeer(deviceId);
+
+//        peerCall.onDeviceConnected(deviceId, false);
+//        new CallViewModels.DeviceConnected(deviceId, false);
+//        onDeviceConnected(false);
+        Log.d("CallBusActor", "Event connected: onDeviceDisconnected");
     }
 
     @Override
@@ -226,6 +256,7 @@ public class CallBusActor extends EventBusActor implements PeerCallCallback {
             }
             isMasterReady = true;
             masterDeviceId = senderDeviceId;
+            Log.d("CallBusActor", "Event onChangeCallBusy masterDeviceId: " + masterDeviceId);
             unstashAll(STASH);
 
             //
@@ -262,6 +293,8 @@ public class CallBusActor extends EventBusActor implements PeerCallCallback {
         }
     }
 
+
+
     @Override
     public void postStop() {
         super.postStop();
@@ -283,6 +316,8 @@ public class CallBusActor extends EventBusActor implements PeerCallCallback {
             onChangeAudioEnabled(((AudioEnabled) message).isEnabled());
         } else if (message instanceof VideoEnabled) {
             onChangeVideoEnabled(((VideoEnabled) message).isEnabled());
+        } else if (message instanceof OnCallBusy) {
+            onChangeCallBusy(((OnCallBusy) message).getCallId(),((OnCallBusy) message).getDeviceId(),((OnCallBusy) message).isBusy());
         } else if (message instanceof OnAnswered) {
             onOwnAnswered();
         } else {
@@ -324,6 +359,7 @@ public class CallBusActor extends EventBusActor implements PeerCallCallback {
         public long getDeviceId() {
             return deviceId;
         }
+
     }
 
     public static class AudioEnabled {
@@ -351,9 +387,46 @@ public class CallBusActor extends EventBusActor implements PeerCallCallback {
         }
     }
 
+    public static class OnCallBusy {
+        private long callId;
+        private long deviceId;
+        private boolean busy;
+
+        public OnCallBusy(long callId, long deviceId, boolean busy) {
+            this.callId = callId;
+            this.busy = busy;
+            this.deviceId = deviceId;
+        }
+
+        public long getCallId() {
+            return callId;
+        }
+
+        public long getDeviceId() {
+            return deviceId;
+        }
+
+        public boolean isBusy() {
+            return busy;
+        }
+    }
+
     public static class OnAnswered {
 
     }
+
+//    public static class DeviceConnected {
+//
+//        private boolean connected;
+//
+//        public DeviceConnected(boolean connected) {
+//            this.connected = connected;
+//        }
+//
+//        public boolean isConnected() {
+//            return connected;
+//        }
+//    }
 
     public class CallbackWrapper implements PeerCallCallback {
 

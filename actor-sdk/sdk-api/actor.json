@@ -107,15 +107,18 @@
 ,{"type":{"type":"opt","childType":{"type":"enum","childType":"PhoneActivationType"}},"id":3,"name":"activationType"}
 ]},
 "doc":[
-"Start Phone Activation",{"type":"reference","argument":"phoneNumber","category":"full","description":"Phone number"},{"type":"reference","argument":"appId","category":"hidden","description":"Appication Id"},{"type":"reference","argument":"apiKey","category":"hidden","description":"Application API key"},{"type":"reference","argument":"deviceHash","category":"full","description":"Hash of device unique id and app bundle id. Used for autologout users when app is reinstalled"},{"type":"reference","argument":"deviceTitle","category":"full","description":"Device Title"},"param visible systemName System Name",{"type":"reference","argument":"timeZone","category":"full","description":"TimeZone of device"},{"type":"reference","argument":"preferredLanguages","category":"full","description":"Preferred languages of device"}],"attributes":[
+"Start Phone Activation",{"type":"reference","argument":"phoneNumber","category":"full","description":"Phone number"},{"type":"reference","argument":"appId","category":"hidden","description":"Appication Id"},{"type":"reference","argument":"apiKey","category":"hidden","description":"Application API key"},{"type":"reference","argument":"deviceHash","category":"full","description":"Hash of device unique id and app bundle id. Used for autologout users when app is reinstalled"},{"type":"reference","argument":"deviceTitle","category":"full","description":"Device Title"},{"type":"reference","argument":"deviceIpAddress","category":"full","description":"Device Ip Address"},{"type":"reference","argument":"deviceLocation","category":"full","description":"Device Location"},{"type":"reference","argument":"deviceOS","category":"full","description":"Device OS"},{"type":"reference","argument":"systemName","category":"full","description":"param visible systemName System Name"},{"type":"reference","argument":"timeZone","category":"full","description":"TimeZone of device"},{"type":"reference","argument":"preferredLanguages","category":"full","description":"Preferred languages of device"}],"attributes":[
 {"type":"int64","id":1,"name":"phoneNumber"}
 ,{"type":"int32","id":2,"name":"appId"}
 ,{"type":"string","id":3,"name":"apiKey"}
 ,{"type":"bytes","id":4,"name":"deviceHash"}
 ,{"type":"string","id":5,"name":"deviceTitle"}
-,{"type":"string","id":6,"name":"systemName"}
-,{"type":{"type":"opt","childType":"string"},"id":7,"name":"timeZone"}
-,{"type":{"type":"list","childType":"string"},"id":8,"name":"preferredLanguages"}
+,{"type":"string","id":6,"name":"deviceIpAddress"}
+,{"type":"string","id":7,"name":"deviceLocation"}
+,{"type":"string","id":8,"name":"deviceOS"}
+,{"type":"string","id":9,"name":"systemName"}
+,{"type":{"type":"opt","childType":"string"},"id":10,"name":"timeZone"}
+,{"type":{"type":"list","childType":"string"},"id":11,"name":"preferredLanguages"}
 ]}},{"type":"rpc","content":{
 "name":"SendCodeByPhoneCall",
 "header":197,
@@ -132,40 +135,49 @@
 ,{"type":{"type":"enum","childType":"EmailActivationType"},"id":3,"name":"activationType"}
 ]},
 "doc":[
-"Start EMail Activation",{"type":"reference","argument":"email","category":"full","description":"Email"},{"type":"reference","argument":"appId","category":"hidden","description":"Application Id"},{"type":"reference","argument":"apiKey","category":"hidden","description":"Application API key"},{"type":"reference","argument":"deviceHash","category":"full","description":"Hash of device unique id and app bundle id. Used for autologout users when app is reinstalled"},{"type":"reference","argument":"deviceTitle","category":"full","description":"Device Title"},{"type":"reference","argument":"timeZone","category":"full","description":"TimeZone of device"},{"type":"reference","argument":"preferredLanguages","category":"full","description":"Preferred languages"}],"attributes":[
+"Start EMail Activation",{"type":"reference","argument":"email","category":"full","description":"Email"},{"type":"reference","argument":"appId","category":"hidden","description":"Application Id"},{"type":"reference","argument":"apiKey","category":"hidden","description":"Application API key"},{"type":"reference","argument":"deviceHash","category":"full","description":"Hash of device unique id and app bundle id. Used for autologout users when app is reinstalled"},{"type":"reference","argument":"deviceTitle","category":"full","description":"Device Title"},{"type":"reference","argument":"deviceIpAddress","category":"full","description":"Device Ip Address"},{"type":"reference","argument":"deviceLocation","category":"full","description":"Device Location"},{"type":"reference","argument":"deviceOS","category":"full","description":"Device OS"},{"type":"reference","argument":"timeZone","category":"full","description":"TimeZone of device"},{"type":"reference","argument":"preferredLanguages","category":"full","description":"Preferred languages"}],"attributes":[
 {"type":"string","id":1,"name":"email"}
 ,{"type":"int32","id":2,"name":"appId"}
 ,{"type":"string","id":3,"name":"apiKey"}
 ,{"type":"bytes","id":4,"name":"deviceHash"}
 ,{"type":"string","id":5,"name":"deviceTitle"}
-,{"type":{"type":"opt","childType":"string"},"id":6,"name":"timeZone"}
-,{"type":{"type":"list","childType":"string"},"id":7,"name":"preferredLanguages"}
+,{"type":"string","id":6,"name":"deviceIpAddress"}
+,{"type":"string","id":7,"name":"deviceLocation"}
+,{"type":"string","id":8,"name":"deviceOS"}
+,{"type":{"type":"opt","childType":"string"},"id":9,"name":"timeZone"}
+,{"type":{"type":"list","childType":"string"},"id":10,"name":"preferredLanguages"}
 ]}},{"type":"rpc","content":{
 "name":"StartAnonymousAuth",
 "header":198,
 "response":{"type":"reference","name":"Auth"},
 "doc":[
-"Starting Anonymous login",{"type":"reference","argument":"name","category":"full","description":"Name of new user"},{"type":"reference","argument":"appId","category":"hidden","description":"Application Id"},{"type":"reference","argument":"apiKey","category":"hidden","description":"Application API key"},{"type":"reference","argument":"deviceHash","category":"full","description":"Hash of device unique id and app bundle id. Used for autologout users when app is reinstalled"},{"type":"reference","argument":"deviceTitle","category":"full","description":"Device Title"},{"type":"reference","argument":"timeZone","category":"full","description":"TimeZone of device"},{"type":"reference","argument":"preferredLanguages","category":"full","description":"Preferred languages"}],"attributes":[
+"Starting Anonymous login",{"type":"reference","argument":"name","category":"full","description":"Name of new user"},{"type":"reference","argument":"appId","category":"hidden","description":"Application Id"},{"type":"reference","argument":"apiKey","category":"hidden","description":"Application API key"},{"type":"reference","argument":"deviceHash","category":"full","description":"Hash of device unique id and app bundle id. Used for autologout users when app is reinstalled"},{"type":"reference","argument":"deviceTitle","category":"full","description":"Device Title"},{"type":"reference","argument":"deviceIpAddress","category":"full","description":"Device Ip Address"},{"type":"reference","argument":"deviceLocation","category":"full","description":"Device Location"},{"type":"reference","argument":"deviceOS","category":"full","description":"Device OS"},{"type":"reference","argument":"timeZone","category":"full","description":"TimeZone of device"},{"type":"reference","argument":"preferredLanguages","category":"full","description":"Preferred languages"}],"attributes":[
 {"type":"string","id":1,"name":"name"}
 ,{"type":"int32","id":2,"name":"appId"}
 ,{"type":"string","id":3,"name":"apiKey"}
 ,{"type":"bytes","id":4,"name":"deviceHash"}
 ,{"type":"string","id":5,"name":"deviceTitle"}
-,{"type":{"type":"opt","childType":"string"},"id":6,"name":"timeZone"}
-,{"type":{"type":"list","childType":"string"},"id":7,"name":"preferredLanguages"}
+,{"type":"string","id":6,"name":"deviceIpAddress"}
+,{"type":"string","id":7,"name":"deviceLocation"}
+,{"type":"string","id":8,"name":"deviceOS"}
+,{"type":{"type":"opt","childType":"string"},"id":9,"name":"timeZone"}
+,{"type":{"type":"list","childType":"string"},"id":10,"name":"preferredLanguages"}
 ]}},{"type":"rpc","content":{
 "name":"StartTokenAuth",
 "header":203,
 "response":{"type":"reference","name":"Auth"},
 "doc":[
-"Starting token-based login",{"type":"reference","argument":"token","category":"full","description":"Token for authentication"},{"type":"reference","argument":"appId","category":"hidden","description":"Application Id"},{"type":"reference","argument":"apiKey","category":"hidden","description":"Application API key"},{"type":"reference","argument":"deviceHash","category":"full","description":"Hash of device unique id and app bundle id. Used for autologout users when app is reinstalled"},{"type":"reference","argument":"deviceTitle","category":"full","description":"Device Title"},{"type":"reference","argument":"timeZone","category":"full","description":"TimeZone of device"},{"type":"reference","argument":"preferredLanguages","category":"full","description":"Preferred languages"}],"attributes":[
+"Starting token-based login",{"type":"reference","argument":"token","category":"full","description":"Token for authentication"},{"type":"reference","argument":"appId","category":"hidden","description":"Application Id"},{"type":"reference","argument":"apiKey","category":"hidden","description":"Application API key"},{"type":"reference","argument":"deviceHash","category":"full","description":"Hash of device unique id and app bundle id. Used for autologout users when app is reinstalled"},{"type":"reference","argument":"deviceTitle","category":"full","description":"Device Title"},{"type":"reference","argument":"deviceIpAddress","category":"full","description":"Device Ip Address"},{"type":"reference","argument":"deviceLocation","category":"full","description":"Device Location"},{"type":"reference","argument":"deviceOS","category":"full","description":"Device OS"},{"type":"reference","argument":"timeZone","category":"full","description":"TimeZone of device"},{"type":"reference","argument":"preferredLanguages","category":"full","description":"Preferred languages"}],"attributes":[
 {"type":"string","id":1,"name":"token"}
 ,{"type":"int32","id":2,"name":"appId"}
 ,{"type":"string","id":3,"name":"apiKey"}
 ,{"type":"bytes","id":4,"name":"deviceHash"}
 ,{"type":"string","id":5,"name":"deviceTitle"}
-,{"type":{"type":"opt","childType":"string"},"id":6,"name":"timeZone"}
-,{"type":{"type":"list","childType":"string"},"id":7,"name":"preferredLanguages"}
+,{"type":"string","id":6,"name":"deviceIpAddress"}
+,{"type":"string","id":7,"name":"deviceLocation"}
+,{"type":"string","id":8,"name":"deviceOS"}
+,{"type":{"type":"opt","childType":"string"},"id":9,"name":"timeZone"}
+,{"type":{"type":"list","childType":"string"},"id":10,"name":"preferredLanguages"}
 ]}},{"type":"rpc","content":{
 "name":"StartUsernameAuth",
 "header":2571,
@@ -174,14 +186,17 @@
 ,{"type":"bool","id":2,"name":"isRegistered"}
 ]},
 "doc":[
-"Starting Login Authentication",{"type":"reference","argument":"username","category":"full","description":"Username for signing in"},{"type":"reference","argument":"appId","category":"hidden","description":"Application id"},{"type":"reference","argument":"apiKey","category":"hidden","description":"Application API key"},{"type":"reference","argument":"deviceHash","category":"full","description":"Hash of device unique id and app bundle id. Used for autologout users when app is reinstalled"},{"type":"reference","argument":"deviceTitle","category":"full","description":"Device Title"},{"type":"reference","argument":"timeZone","category":"full","description":"Time Zone of device"},{"type":"reference","argument":"preferredLanguages","category":"full","description":"Preferred languages of device"}],"attributes":[
+"Starting Login Authentication",{"type":"reference","argument":"username","category":"full","description":"Username for signing in"},{"type":"reference","argument":"appId","category":"hidden","description":"Application id"},{"type":"reference","argument":"apiKey","category":"hidden","description":"Application API key"},{"type":"reference","argument":"deviceHash","category":"full","description":"Hash of device unique id and app bundle id. Used for autologout users when app is reinstalled"},{"type":"reference","argument":"deviceTitle","category":"full","description":"Device Title"},{"type":"reference","argument":"deviceIpAddress","category":"full","description":"Device Ip Address"},{"type":"reference","argument":"deviceLocation","category":"full","description":"Device Location"},{"type":"reference","argument":"deviceOS","category":"full","description":"Device OS"},{"type":"reference","argument":"timeZone","category":"full","description":"Time Zone of device"},{"type":"reference","argument":"preferredLanguages","category":"full","description":"Preferred languages of device"}],"attributes":[
 {"type":"string","id":1,"name":"username"}
 ,{"type":"int32","id":2,"name":"appId"}
 ,{"type":"string","id":3,"name":"apiKey"}
 ,{"type":"bytes","id":4,"name":"deviceHash"}
 ,{"type":"string","id":5,"name":"deviceTitle"}
-,{"type":{"type":"opt","childType":"string"},"id":6,"name":"timeZone"}
-,{"type":{"type":"list","childType":"string"},"id":7,"name":"preferredLanguages"}
+,{"type":"string","id":6,"name":"deviceIpAddress"}
+,{"type":"string","id":7,"name":"deviceLocation"}
+,{"type":"string","id":8,"name":"deviceOS"}
+,{"type":{"type":"opt","childType":"string"},"id":9,"name":"timeZone"}
+,{"type":{"type":"list","childType":"string"},"id":10,"name":"preferredLanguages"}
 ]}},{"type":"rpc","content":{
 "name":"ValidateCode",
 "header":189,
@@ -238,16 +253,19 @@
        "content": {
          "name":"AuthSession",
 "doc":[
-"Authentication session",{"type":"reference","argument":"id","category":"full","description":"  Unuque ID of session"},{"type":"reference","argument":"authHolder","category":"full","description":"  holder of session. 0 - this device, 1 - other."},{"type":"reference","argument":"appId","category":"full","description":"  Application Id (user in SignIn/SignUp)"},{"type":"reference","argument":"appTitle","category":"full","description":"  Title of application"},{"type":"reference","argument":"deviceTitle","category":"full","description":"  Title of device"},{"type":"reference","argument":"authTime","category":"full","description":"  Time of session creating"},{"type":"reference","argument":"authLocation","category":"hidden","description":"  two-letter country code of session create"},{"type":"reference","argument":"latitude","category":"hidden","description":"  optional latitude of auth if available"},{"type":"reference","argument":"longitude","category":"hidden","description":"  optional longitude of auth if available"}],"attributes":[
+"Authentication session",{"type":"reference","argument":"id","category":"full","description":"  Unuque ID of session"},{"type":"reference","argument":"authHolder","category":"full","description":"  holder of session. 0 - this device, 1 - other."},{"type":"reference","argument":"appId","category":"full","description":"  Application Id (user in SignIn/SignUp)"},{"type":"reference","argument":"appTitle","category":"full","description":"  Title of application"},{"type":"reference","argument":"deviceTitle","category":"full","description":"  Title of device"},{"type":"reference","argument":"deviceIpAddress","category":"full","description":"Device Ip Address"},{"type":"reference","argument":"deviceLocation","category":"full","description":"Device Location"},{"type":"reference","argument":"deviceOS","category":"full","description":"Device OS"},{"type":"reference","argument":"authTime","category":"full","description":"  Time of session creating"},{"type":"reference","argument":"authLocation","category":"hidden","description":"  two-letter country code of session create"},{"type":"reference","argument":"latitude","category":"hidden","description":"  optional latitude of auth if available"},{"type":"reference","argument":"longitude","category":"hidden","description":"  optional longitude of auth if available"}],"attributes":[
 {"type":"int32","id":1,"name":"id"}
 ,{"type":{"type":"enum","childType":"AuthHolder"},"id":2,"name":"authHolder"}
 ,{"type":"int32","id":3,"name":"appId"}
 ,{"type":"string","id":4,"name":"appTitle"}
 ,{"type":"string","id":5,"name":"deviceTitle"}
-,{"type":"int32","id":6,"name":"authTime"}
-,{"type":"string","id":7,"name":"authLocation"}
-,{"type":{"type":"opt","childType":"double"},"id":8,"name":"latitude"}
-,{"type":{"type":"opt","childType":"double"},"id":9,"name":"longitude"}
+,{"type":"string","id":6,"name":"deviceIpAddress"}
+,{"type":"string","id":7,"name":"deviceLocation"}
+,{"type":"string","id":8,"name":"deviceOSVersion"}
+,{"type":"int32","id":9,"name":"authTime"}
+,{"type":"string","id":10,"name":"authLocation"}
+,{"type":{"type":"opt","childType":"double"},"id":11,"name":"latitude"}
+,{"type":{"type":"opt","childType":"double"},"id":12,"name":"longitude"}
 ]}},        {
           "type": "enum",
           "content": {
@@ -295,29 +313,35 @@
 "header":3,
 "response":{"type":"reference","name":"Auth"},
 "doc":[
-"Performing user signin",{"type":"reference","argument":"phoneNumber","category":"danger","description":"Phone number in international format"},{"type":"reference","argument":"smsHash","category":"danger","description":"Code request hash from RequestAuthCode"},{"type":"reference","argument":"smsCode","category":"danger","description":"Confirmation code from SMS"},{"type":"reference","argument":"deviceHash","category":"full","description":"Hash of device unique id and app bundle id. Used for autologout users when app is reinstalled"},{"type":"reference","argument":"deviceTitle","category":"full","description":"Device title like 'Steven's iPhone'"},{"type":"reference","argument":"appId","category":"hidden","description":"Application ID"},{"type":"reference","argument":"appKey","category":"hidden","description":"Application API key"}],"attributes":[
+"Performing user signin",{"type":"reference","argument":"phoneNumber","category":"danger","description":"Phone number in international format"},{"type":"reference","argument":"smsHash","category":"danger","description":"Code request hash from RequestAuthCode"},{"type":"reference","argument":"smsCode","category":"danger","description":"Confirmation code from SMS"},{"type":"reference","argument":"deviceHash","category":"full","description":"Hash of device unique id and app bundle id. Used for autologout users when app is reinstalled"},{"type":"reference","argument":"deviceTitle","category":"full","description":"Device title like 'Steven's iPhone'"},{"type":"reference","argument":"deviceIpAddress","category":"full","description":"Device Ip Address"},{"type":"reference","argument":"deviceLocation","category":"full","description":"Device Location"},{"type":"reference","argument":"deviceOS","category":"full","description":"Device OS"},{"type":"reference","argument":"appId","category":"hidden","description":"Application ID"},{"type":"reference","argument":"appKey","category":"hidden","description":"Application API key"}],"attributes":[
 {"type":"int64","id":1,"name":"phoneNumber"}
 ,{"type":"string","id":2,"name":"smsHash"}
 ,{"type":"string","id":3,"name":"smsCode"}
 ,{"type":"bytes","id":5,"name":"deviceHash"}
 ,{"type":"string","id":6,"name":"deviceTitle"}
-,{"type":"int32","id":7,"name":"appId"}
-,{"type":"string","id":8,"name":"appKey"}
+,{"type":"string","id":7,"name":"deviceIpAddress"}
+,{"type":"string","id":8,"name":"deviceLocation"}
+,{"type":"string","id":9,"name":"deviceOS"}
+,{"type":"int32","id":10,"name":"appId"}
+,{"type":"string","id":11,"name":"appKey"}
 ]}},{"type":"rpc","content":{
 "name":"SignUpObsolete",
 "header":4,
 "response":{"type":"reference","name":"Auth"},
 "doc":[
-"Performing user signup. If user perform signup on already registered user it just override previous","profile information",{"type":"reference","argument":"phoneNumber","category":"danger","description":"Phone number in international format"},{"type":"reference","argument":"smsHash","category":"danger","description":"Code request hash from RequestAuthCode"},{"type":"reference","argument":"smsCode","category":"danger","description":"Confirmation code from SMS"},{"type":"reference","argument":"name","category":"full","description":"User name"},{"type":"reference","argument":"deviceHash","category":"full","description":"Hash of device unique id and app bundle id. Used for autologout users when app is reinstalled"},{"type":"reference","argument":"deviceTitle","category":"full","description":"Device title like 'Steven's iPhone'"},{"type":"reference","argument":"appId","category":"hidden","description":"Application ID"},{"type":"reference","argument":"appKey","category":"hidden","description":"pplication API key"}],"attributes":[
+"Performing user signup. If user perform signup on already registered user it just override previous","profile information",{"type":"reference","argument":"phoneNumber","category":"danger","description":"Phone number in international format"},{"type":"reference","argument":"smsHash","category":"danger","description":"Code request hash from RequestAuthCode"},{"type":"reference","argument":"smsCode","category":"danger","description":"Confirmation code from SMS"},{"type":"reference","argument":"name","category":"full","description":"User name"},{"type":"reference","argument":"deviceHash","category":"full","description":"Hash of device unique id and app bundle id. Used for autologout users when app is reinstalled"},{"type":"reference","argument":"deviceTitle","category":"full","description":"Device title like 'Steven's iPhone'"},{"type":"reference","argument":"deviceIpAddress","category":"full","description":"Device Ip Address"},{"type":"reference","argument":"deviceLocation","category":"full","description":"Device Location"},{"type":"reference","argument":"deviceOS","category":"full","description":"Device OS"},{"type":"reference","argument":"appId","category":"hidden","description":"Application ID"},{"type":"reference","argument":"appKey","category":"hidden","description":"pplication API key"}],"attributes":[
 {"type":"int64","id":1,"name":"phoneNumber"}
 ,{"type":"string","id":2,"name":"smsHash"}
 ,{"type":"string","id":3,"name":"smsCode"}
 ,{"type":"string","id":4,"name":"name"}
 ,{"type":"bytes","id":7,"name":"deviceHash"}
 ,{"type":"string","id":8,"name":"deviceTitle"}
-,{"type":"int32","id":9,"name":"appId"}
-,{"type":"string","id":10,"name":"appKey"}
-,{"type":"bool","id":11,"name":"isSilent"}
+,{"type":"string","id":9,"name":"deviceIpAddress"}
+,{"type":"string","id":10,"name":"deviceLocation"}
+,{"type":"string","id":11,"name":"deviceOS"}
+,{"type":"int32","id":12,"name":"appId"}
+,{"type":"string","id":13,"name":"appKey"}
+,{"type":"bool","id":14,"name":"isSilent"}
 ]}},{"type":"rpc","content":{
 "name":"SendAuthCodeObsolete",
 "header":1,
@@ -3206,13 +3230,14 @@
 "name":"GetCallInfo",
 "header":2600,
 "response":{"type":"anonymous","header":2606, "doc":[
-{"type":"reference","argument":"peer","category":"full","description":"  Destination peer"},{"type":"reference","argument":"groups","category":"compact","description":"  Groups"},{"type":"reference","argument":"users","category":"compact","description":"  Users"},{"type":"reference","argument":"eventBusId","category":"full","description":"  Event Bus Id"},{"type":"reference","argument":"isAudioOnlyCall","category":"full","description":"  Is Audio Only Call. Default is true"},{"type":"reference","argument":"isVideoOnlyCall","category":"full","description":"  Is Video Only Call. Default is false."},{"type":"reference","argument":"isVideoPreferred","category":"full","description":"  Is Video preferred"}] ,"attributes":[{"type":{"type":"struct","childType":"Peer"},"id":1,"name":"peer"}
+  {"type":"reference","argument":"peer","category":"full","description":"  Destination peer"},{"type":"reference","argument":"groups","category":"compact","description":"  Groups"},{"type":"reference","argument":"users","category":"compact","description":"  Users"},{"type":"reference","argument":"eventBusId","category":"full","description":"  Event Bus Id"},{"type":"reference","argument":"isAudioOnlyCall","category":"full","description":"  Is Audio Only Call. Default is true"},{"type":"reference","argument":"isVideoOnlyCall","category":"full","description":"  Is Video Only Call. Default is false."},{"type":"reference","argument":"isVideoPreferred","category":"full","description":"  Is Video preferred"},{"type":"reference","argument":"isBusy","category":"full","description":"Is Call Busy"}] ,"attributes":[{"type":{"type":"struct","childType":"Peer"},"id":1,"name":"peer"}
 ,{"type":{"type":"list","childType":{"type":"struct","childType":"GroupOutPeer"}},"id":2,"name":"groups"}
 ,{"type":{"type":"list","childType":{"type":"struct","childType":"UserOutPeer"}},"id":3,"name":"users"}
 ,{"type":{"type":"alias","childType":"busId"},"id":4,"name":"eventBusId"}
 ,{"type":{"type":"opt","childType":"bool"},"id":5,"name":"isAudioOnlyCall"}
 ,{"type":{"type":"opt","childType":"bool"},"id":6,"name":"isVideoOnlyCall"}
 ,{"type":{"type":"opt","childType":"bool"},"id":7,"name":"isVideoPreferred"}
+,{"type":{"type":"opt","childType":"bool"},"id":8,"name":"isBusy"}
 ]},
 "doc":[
 "Getting Call Information",{"type":"reference","argument":"callId","category":"full","description":"Call Id"}],"attributes":[
@@ -3226,12 +3251,13 @@
 ,{"type":{"type":"alias","childType":"randomId"},"id":3,"name":"deviceId"}
 ]},
 "doc":[
-"Do Call. Right after a call client need to start sending CallInProgress",{"type":"reference","argument":"peer","category":"full","description":"destination peer"},{"type":"reference","argument":"timeout","category":"full","description":"Initial timeout"},{"type":"reference","argument":"isAudioOnlyCall","category":"full","description":"Is Audio only call. Default is true."},{"type":"reference","argument":"isVideoOnlyCall","category":"full","description":"Is Video Only call. Default is false."},{"type":"reference","argument":"isVideoPreferred","category":"full","description":"Is Video preferred"}],"attributes":[
+  "Do Call. Right after a call client need to start sending CallInProgress",{"type":"reference","argument":"peer","category":"full","description":"destination peer"},{"type":"reference","argument":"timeout","category":"full","description":"Initial timeout"},{"type":"reference","argument":"isAudioOnlyCall","category":"full","description":"Is Audio only call. Default is true."},{"type":"reference","argument":"isVideoOnlyCall","category":"full","description":"Is Video Only call. Default is false."},{"type":"reference","argument":"isVideoPreferred","category":"full","description":"Is Video preferred"},{"type":"reference","argument":"isBusy","category":"full","description":"Is Call Busy"}],"attributes":[
 {"type":{"type":"struct","childType":"OutPeer"},"id":1,"name":"peer"}
 ,{"type":{"type":"opt","childType":{"type":"alias","childType":"msec"}},"id":2,"name":"timeout"}
 ,{"type":{"type":"opt","childType":"bool"},"id":3,"name":"isAudioOnlyCall"}
 ,{"type":{"type":"opt","childType":"bool"},"id":4,"name":"isVideoOnlyCall"}
 ,{"type":{"type":"opt","childType":"bool"},"id":6,"name":"isVideoPreferred"}
+,{"type":{"type":"opt","childType":"bool"},"id":7,"name":"isBusy"}
 ]}},{"type":"rpc","content":{
 "name":"UpgradeCall",
 "header":2677,
@@ -3261,6 +3287,13 @@
 "response":{"type":"reference","name":"Void"},
 "doc":[
 "Rejecting Call",{"type":"reference","argument":"callId","category":"full","description":"Call Id"}],"attributes":[
+{"type":"int64","id":1,"name":"callId"}
+]}},{"type":"rpc","content":{
+"name":"BusyCall",
+"header":2687,
+"response":{"type":"reference","name":"Void"},
+"doc":[
+"Busy Call",{"type":"reference","argument":"callId","category":"full","description":"Call Id"}],"attributes":[
 {"type":"int64","id":1,"name":"callId"}
 ]}},{"type":"rpc","content":{
 "name":"OptimizeSDP",
@@ -3415,6 +3448,14 @@
               {
                 "name": "ENDED",
                 "id": 5
+              },
+              {
+                "name": "BUSY",
+                "id": 6
+              },
+              {
+                "name": "NO_ANSWER",
+                "id": 7
               }
           ]
         }
@@ -3423,13 +3464,15 @@
        "content": {
          "name":"CallMemberStateHolder",
 "doc":[
-"Call Member state holder",{"type":"reference","argument":"state","category":"full","description":"  State Value"},{"type":"reference","argument":"fallbackIsRinging","category":"full","description":"  Fallback flag for future compatibility of state"},{"type":"reference","argument":"fallbackIsConnected","category":"full","description":"  Fallback flag for future compatibility of state"},{"type":"reference","argument":"fallbackIsConnecting","category":"full","description":"  Fallback flag for future compatibility of state"},{"type":"reference","argument":"fallbackIsRingingReached","category":"full","description":"  Fallback flag for future compatibility of state"},{"type":"reference","argument":"fallbackIsEnded","category":"full","description":"  Fallback flag for future compatibility of state"}],"attributes":[
+"Call Member state holder",{"type":"reference","argument":"state","category":"full","description":"  State Value"},{"type":"reference","argument":"fallbackIsRinging","category":"full","description":"  Fallback flag for future compatibility of state"},{"type":"reference","argument":"fallbackIsConnected","category":"full","description":"  Fallback flag for future compatibility of state"},{"type":"reference","argument":"fallbackIsConnecting","category":"full","description":"  Fallback flag for future compatibility of state"},{"type":"reference","argument":"fallbackIsRingingReached","category":"full","description":"  Fallback flag for future compatibility of state"},{"type":"reference","argument":"fallbackIsEnded","category":"full","description":"  Fallback flag for future compatibility of state"},{"type":"reference","argument":"fallbackIsBusy","category":"full","description":"  Fallback flag for future compatibility of state"},{"type":"reference","argument":"fallbackIsNoAnswer","category":"full","description":"  Fallback flag for future compatibility of state"}],"attributes":[
 {"type":{"type":"enum","childType":"CallMemberState"},"id":1,"name":"state"}
 ,{"type":{"type":"opt","childType":"bool"},"id":2,"name":"fallbackIsRinging"}
 ,{"type":{"type":"opt","childType":"bool"},"id":3,"name":"fallbackIsConnected"}
 ,{"type":{"type":"opt","childType":"bool"},"id":4,"name":"fallbackIsConnecting"}
 ,{"type":{"type":"opt","childType":"bool"},"id":5,"name":"fallbackIsRingingReached"}
 ,{"type":{"type":"opt","childType":"bool"},"id":6,"name":"fallbackIsEnded"}
+,{"type":{"type":"opt","childType":"bool"},"id":7,"name":"fallbackIsBusy"}
+,{"type":{"type":"opt","childType":"bool"},"id":8,"name":"fallbackIsNoAnswer"}
 ]}},     {
        "type":"struct",
        "content": {

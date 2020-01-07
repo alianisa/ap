@@ -1,5 +1,7 @@
 package im.actor.core.modules.calls.peers;
 
+import im.actor.core.modules.calls.CallActor;
+import im.actor.runtime.Log;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -67,6 +69,9 @@ public class PeerCallInt extends ActorInterface {
     }
 
     public void disposePeer(long deviceId) {
+        Log.d("CallBusActor", "Event onChangeCallBusy disposePeer");
+
+//        send(new CallActor.Busy());
         send(new RTCDispose(deviceId));
     }
 
@@ -77,4 +82,5 @@ public class PeerCallInt extends ActorInterface {
     public void onVideoEnabledChanged(boolean enabled) {
         send(new PeerCallActor.VideoEnabled(enabled));
     }
+
 }

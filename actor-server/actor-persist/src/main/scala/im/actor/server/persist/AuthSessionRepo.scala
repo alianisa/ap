@@ -16,6 +16,12 @@ final class AuthSessionTable(tag: Tag) extends Table[AuthSession](tag, "auth_ses
 
   def deviceTitle = column[String]("device_title")
 
+  def deviceIpAddress = column[String]("device_ip_address")
+
+  def deviceLocation = column[String]("device_location")
+
+  def deviceOS = column[String]("device_os")
+
   def authTime = column[DateTime]("auth_time")
 
   def authLocation = column[String]("auth_location")
@@ -31,7 +37,7 @@ final class AuthSessionTable(tag: Tag) extends Table[AuthSession](tag, "auth_ses
   def deletedAt = column[Option[DateTime]]("deleted_at")
 
   def * =
-    (userId, id, authId, appId, appTitle, deviceTitle, deviceHash, authTime, authLocation, latitude, longitude) <>
+    (userId, id, authId, appId, appTitle, deviceTitle, deviceIpAddress, deviceLocation, deviceOS, deviceHash, authTime, authLocation, latitude, longitude) <>
       ((AuthSession.apply _).tupled, AuthSession.unapply)
 }
 

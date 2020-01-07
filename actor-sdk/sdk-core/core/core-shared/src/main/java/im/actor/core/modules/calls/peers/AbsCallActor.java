@@ -41,7 +41,13 @@ public abstract class AbsCallActor extends ModuleActor implements CallBusCallbac
         callBus.changeVideoEnabled(enabled);
     }
 
+    public void onCallBusyChanged(long callId, long deviceId, boolean busy) {
+        callBus.changeCallBusy(callId, deviceId, busy);
+    }
 
+//    public void onDeviceConnected(boolean connected) {
+//        callBus.changeDeviceConnected(connected);
+//    }
     //
     // Messages
     //
@@ -52,6 +58,8 @@ public abstract class AbsCallActor extends ModuleActor implements CallBusCallbac
             onAudioEnableChanged(((AudioEnabled) message).isEnabled());
         } else if (message instanceof VideoEnabled) {
             onVideoEnableChanged(((VideoEnabled) message).isEnabled());
+        } else if (message instanceof OnCallBusy) {
+            onCallBusyChanged(((OnCallBusy) message).getCallId(),((OnCallBusy) message).getDeviceId(),((OnCallBusy) message).isBusy());
         } else {
             super.onReceive(message);
         }
@@ -83,6 +91,43 @@ public abstract class AbsCallActor extends ModuleActor implements CallBusCallbac
         }
     }
 
+    public static class OnCallBusy {
+        private long callId;
+        private long deviceId;
+        private boolean busy;
+
+        public OnCallBusy(long callId, long deviceId, boolean busy) {
+            this.callId = callId;
+            this.busy = busy;
+            this.deviceId = deviceId;
+        }
+
+        public long getCallId() {
+            return callId;
+        }
+
+        public long getDeviceId() {
+            return deviceId;
+        }
+
+        public boolean isBusy() {
+            return busy;
+        }
+    }
+
+//    public static class DeviceConnected {
+//
+//        private boolean connected;
+//
+//        public DeviceConnected(boolean connected) {
+//            this.connected = connected;
+//        }
+//
+//        public boolean isConnected() {
+//            return connected;
+//        }
+//    }
+
 
     //
     // Wrapper
@@ -104,6 +149,11 @@ public abstract class AbsCallActor extends ModuleActor implements CallBusCallbac
         @Override
         public void onCallConnected() {
             self().post(() -> AbsCallActor.this.onCallConnected());
+        }
+
+        @Override
+        public void onDeviceConnected() {
+            self().post(() -> AbsCallActor.this.onDeviceConnected());
         }
 
         @Override

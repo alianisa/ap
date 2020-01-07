@@ -13,6 +13,9 @@ private[auth] abstract class AuthTransactionRepoBase[T](tag: Tag, tname: String)
   def apiKey = column[String]("api_key")
   def deviceHash = column[Array[Byte]]("device_hash")
   def deviceTitle = column[String]("device_title")
+  def deviceIpAddress = column[String]("device_ip_address")
+  def deviceLocation = column[String]("device_location")
+  def deviceOS = column[String]("device_os")
   def accessSalt = column[String]("access_salt")
   def deviceInfo = column[Array[Byte]]("device_info")
   def isChecked = column[Boolean]("is_checked")
@@ -26,6 +29,9 @@ final class AuthTransactionTable(tag: Tag) extends AuthTransactionRepoBase[AuthT
     apiKey,
     deviceHash,
     deviceTitle,
+    deviceIpAddress,
+    deviceLocation,
+    deviceOS,
     accessSalt,
     deviceInfo,
     isChecked,

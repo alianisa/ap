@@ -392,14 +392,14 @@ public class Messenger {
         return modules.getAuthModule().getEmail();
     }
 
-    /**
-     * Resetting authentication process
-     */
-    @ObjectiveCName("resetAuth")
-    @Deprecated
-    public void resetAuth() {
-        modules.getAuthModule().resetAuth();
-    }
+    // /**
+    //  * Resetting authentication process
+    //  */
+    // @ObjectiveCName("resetAuth")
+    // @Deprecated
+    // public void resetAuth() {
+    //     modules.getAuthModule().resetAuth();
+    // }
 
 
     //////////////////////////////////////
@@ -1260,7 +1260,7 @@ public class Messenger {
      */
     @ObjectiveCName("doCallWithUid:")
     public Command<Long> doCall(int uid) {
-        return modules.getCallsModule().makeCall(Peer.user(uid), false);
+      return modules.getCallsModule().makeCall(Peer.user(uid), true, false);
     }
 
     /**
@@ -1271,7 +1271,7 @@ public class Messenger {
      */
     @ObjectiveCName("doVideoCallWithUid:")
     public Command<Long> doVideoCall(int uid) {
-        return modules.getCallsModule().makeCall(Peer.user(uid), true);
+      return modules.getCallsModule().makeCall(Peer.user(uid), true, false);
     }
 
     /**
@@ -1282,7 +1282,7 @@ public class Messenger {
      */
     @ObjectiveCName("doCallWithGid:")
     public Command<Long> doGroupCall(int gid) {
-        return modules.getCallsModule().makeCall(Peer.group(gid), false);
+      return modules.getCallsModule().makeCall(Peer.group(gid), false, false);
     }
 
     /**
@@ -1293,6 +1293,11 @@ public class Messenger {
     @ObjectiveCName("endCallWithCallId:")
     public void endCall(long callId) {
         modules.getCallsModule().endCall(callId);
+    }
+
+    @ObjectiveCName("busyCallWithCallId:")
+    public void busyCall(long callId) {
+        modules.getCallsModule().busyCall(callId);
     }
 
     /**
@@ -2337,6 +2342,70 @@ public class Messenger {
     }
 
     /**
+     * Get quality state
+     *
+     * @return quality state
+     */
+    @NotNull
+    @ObjectiveCName("getQuality")
+    public String getQuality() {
+        return modules.getSettingsModule().getQuality();
+    }
+
+    /**
+     * Change quality
+     *
+     * @param quality quality state (large|medium|small)
+     */
+    @ObjectiveCName("setQualityWithQuality:")
+    public void setQuality(String quality) {
+        modules.getSettingsModule().setQuality(quality);
+    }
+
+    ///
+
+    /**
+     * Get send button state
+     *
+     * @return send button state
+     */
+    @ObjectiveCName("isSendButton")
+    public boolean isSendButton() {
+        return modules.getSettingsModule().isSendButton();
+    }
+
+    /**
+     * Change send button
+     *
+     * @param send button state (true|false)
+     */
+    @ObjectiveCName("changeSendButton:")
+    public void changeSendButton(boolean val) {
+        modules.getSettingsModule().changeSendButton(val);
+    }
+
+    /**
+     * Get iSBusy state
+     *
+     * @return iSBusy state
+     */
+    @ObjectiveCName("iSBusy")
+    public boolean iSBusy() {
+        return modules.getSettingsModule().isBusy();
+    }
+
+    /**
+     * Change iSBusy button
+     *
+    //     * @param iSBusy button state (true|false)
+     */
+    @ObjectiveCName("changeIsBusy:")
+    public void changeiSBusy(boolean val) {
+        modules.getSettingsModule().changeIsBusy(val);
+    }
+    ///
+
+    /**
      * Is notifications enabled for peer
      *
      * @param peer destination peer
@@ -2674,6 +2743,27 @@ public class Messenger {
         return callback -> modules.getSecurityModule().terminateSession(id)
                 .then(r -> callback.onResult(r))
                 .failure(e -> callback.onError(e));
+    }
+
+    @ObjectiveCName("signOut")
+    public Command<Void> signOut() {
+        return callback -> modules.getSecurityModule().signOut()
+                .then(r -> callback.onResult(r))
+                .failure(e -> callback.onError(e));
+    }
+
+    /**
+     * Resetting authentication process
+     */
+    @ObjectiveCName("resetAuth")
+
+//    public void resetAuth() {
+//        modules.onLoggedOut();
+//    }
+    public Command<Void> resetAuth() {
+        return callback -> modules.onLoggedOut();
+//                .then(r -> callback.onResult(r))
+//                .failure(e -> callback.onError(e));
     }
 
     //////////////////////////////////////

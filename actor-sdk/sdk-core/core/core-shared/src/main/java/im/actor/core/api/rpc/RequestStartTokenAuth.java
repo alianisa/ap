@@ -27,15 +27,21 @@ public class RequestStartTokenAuth extends Request<ResponseAuth> {
     private String apiKey;
     private byte[] deviceHash;
     private String deviceTitle;
+    private String deviceIpAddress;
+    private String deviceLocation;
+    private String deviceOS;
     private String timeZone;
     private List<String> preferredLanguages;
 
-    public RequestStartTokenAuth(@NotNull String token, int appId, @NotNull String apiKey, @NotNull byte[] deviceHash, @NotNull String deviceTitle, @Nullable String timeZone, @NotNull List<String> preferredLanguages) {
+    public RequestStartTokenAuth(@NotNull String token, int appId, @NotNull String apiKey, @NotNull byte[] deviceHash, @NotNull String deviceTitle, @NotNull String deviceIpAddress, @NotNull String deviceLocation, @NotNull String deviceOS, @Nullable String timeZone, @NotNull List<String> preferredLanguages) {
         this.token = token;
         this.appId = appId;
         this.apiKey = apiKey;
         this.deviceHash = deviceHash;
         this.deviceTitle = deviceTitle;
+        this.deviceIpAddress = deviceIpAddress;
+        this.deviceLocation = deviceLocation;
+        this.deviceOS = deviceOS;
         this.timeZone = timeZone;
         this.preferredLanguages = preferredLanguages;
     }
@@ -68,6 +74,21 @@ public class RequestStartTokenAuth extends Request<ResponseAuth> {
         return this.deviceTitle;
     }
 
+    @NotNull
+    public String getDeviceIpAddress() {
+        return this.deviceIpAddress;
+    }
+
+    @NotNull
+    public String getDeviceLocation() {
+        return this.deviceLocation;
+    }
+
+    @NotNull
+    public String getDeviceOS() {
+        return this.deviceOS;
+    }
+
     @Nullable
     public String getTimeZone() {
         return this.timeZone;
@@ -85,8 +106,11 @@ public class RequestStartTokenAuth extends Request<ResponseAuth> {
         this.apiKey = values.getString(3);
         this.deviceHash = values.getBytes(4);
         this.deviceTitle = values.getString(5);
-        this.timeZone = values.optString(6);
-        this.preferredLanguages = values.getRepeatedString(7);
+        this.deviceIpAddress = values.getString(6);
+        this.deviceLocation = values.getString(7);
+        this.deviceOS = values.getString(8);
+        this.timeZone = values.optString(9);
+        this.preferredLanguages = values.getRepeatedString(10);
     }
 
     @Override
@@ -108,10 +132,22 @@ public class RequestStartTokenAuth extends Request<ResponseAuth> {
             throw new IOException();
         }
         writer.writeString(5, this.deviceTitle);
-        if (this.timeZone != null) {
-            writer.writeString(6, this.timeZone);
+        if (this.deviceIpAddress == null) {
+            throw new IOException();
         }
-        writer.writeRepeatedString(7, this.preferredLanguages);
+        writer.writeString(6, this.deviceIpAddress);
+        if (this.deviceLocation == null) {
+            throw new IOException();
+        }
+        writer.writeString(7, this.deviceLocation);
+        if (this.deviceOS == null) {
+            throw new IOException();
+        }
+        writer.writeString(8, this.deviceOS);
+        if (this.timeZone != null) {
+            writer.writeString(9, this.timeZone);
+        }
+        writer.writeRepeatedString(10, this.preferredLanguages);
     }
 
     @Override
@@ -120,6 +156,9 @@ public class RequestStartTokenAuth extends Request<ResponseAuth> {
         res += "token=" + this.token;
         res += ", deviceHash=" + byteArrayToString(this.deviceHash);
         res += ", deviceTitle=" + this.deviceTitle;
+        res += ", deviceIpAddress=" + this.deviceIpAddress;
+        res += ", deviceLocation=" + this.deviceLocation;
+        res += ", deviceOS=" + this.deviceOS;
         res += ", timeZone=" + this.timeZone;
         res += ", preferredLanguages=" + this.preferredLanguages;
         res += "}";

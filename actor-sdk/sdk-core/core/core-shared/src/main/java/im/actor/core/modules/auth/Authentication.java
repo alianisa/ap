@@ -157,6 +157,9 @@ public class Authentication {
                 apiConfiguration.getAppKey(),
                 deviceHash,
                 apiConfiguration.getDeviceTitle(),
+                apiConfiguration.getDeviceIpAddress(),
+                apiConfiguration.getDeviceLocation(),
+                apiConfiguration.getDeviceOS(),
                 modules.getConfiguration().getTimeZone(),
                 langs), new RpcCallback<ResponseStartEmailAuth>() {
             @Override
@@ -180,6 +183,9 @@ public class Authentication {
                 apiConfiguration.getAppKey(),
                 deviceHash,
                 apiConfiguration.getDeviceTitle(),
+                apiConfiguration.getDeviceIpAddress(),
+                apiConfiguration.getDeviceLocation(),
+                apiConfiguration.getDeviceOS(),
                 apiConfiguration.getAppTitle(),
                 modules.getConfiguration().getTimeZone(),
                 langs), new RpcCallback<ResponseStartPhoneAuth>() {
@@ -293,6 +299,9 @@ public class Authentication {
                 apiConfiguration.getAppKey(),
                 deviceHash,
                 apiConfiguration.getDeviceTitle(),
+                apiConfiguration.getDeviceIpAddress(),
+                apiConfiguration.getDeviceLocation(),
+                apiConfiguration.getDeviceOS(),
                 modules.getConfiguration().getTimeZone(),
                 langs), new RpcCallback<ResponseAuth>() {
             @Override
@@ -337,6 +346,9 @@ public class Authentication {
                     apiConfiguration.getAppKey(),
                     deviceHash,
                     apiConfiguration.getDeviceTitle(),
+                    apiConfiguration.getDeviceIpAddress(),
+                    apiConfiguration.getDeviceLocation(),
+                    apiConfiguration.getDeviceOS(),
                     modules.getConfiguration().getTimeZone(),
                     langs1
             ), new RpcCallback<ResponseStartEmailAuth>() {
@@ -382,6 +394,9 @@ public class Authentication {
                     apiConfiguration.getAppKey(),
                     deviceHash,
                     apiConfiguration.getDeviceTitle(),
+                    apiConfiguration.getDeviceIpAddress(),
+                    apiConfiguration.getDeviceLocation(),
+                    apiConfiguration.getDeviceOS(),
                     modules.getConfiguration().getTimeZone(),
                     langs1), new RpcCallback<ResponseStartUsernameAuth>() {
 
@@ -417,6 +432,9 @@ public class Authentication {
                     apiConfiguration.getAppKey(),
                     deviceHash,
                     apiConfiguration.getDeviceTitle(),
+                    apiConfiguration.getDeviceIpAddress(),
+                    apiConfiguration.getDeviceLocation(),
+                    apiConfiguration.getDeviceOS(),
                     apiConfiguration.getAppTitle(),
                     modules.getConfiguration().getTimeZone(),
                     langs1

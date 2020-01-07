@@ -1,21 +1,31 @@
 package im.actor.core.modules.calls;
 
-import java.util.HashMap;
-import java.util.HashSet;
+import java.io.IOException;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
+import im.actor.core.api.*;
+import im.actor.core.api.rpc.RequestBusyCall;
+import im.actor.core.api.rpc.RequestDoCall;
 import im.actor.core.entity.Peer;
 import im.actor.core.modules.ModuleActor;
 import im.actor.core.modules.ModuleContext;
 import im.actor.core.modules.calls.peers.AbsCallActor;
+import im.actor.core.modules.calls.peers.CallBusActor;
+import im.actor.core.modules.messaging.actions.SenderActor;
 import im.actor.core.providers.CallsProvider;
 import im.actor.core.util.RandomUtils;
-import im.actor.core.viewmodel.CommandCallback;
+import im.actor.core.viewmodel.*;
 import im.actor.runtime.Log;
 import im.actor.runtime.Runtime;
 import im.actor.runtime.actors.ActorCreator;
 import im.actor.runtime.actors.ActorRef;
+import im.actor.runtime.actors.Props;
 import im.actor.runtime.actors.messages.PoisonPill;
+import im.actor.runtime.bser.Bser;
 import im.actor.runtime.power.WakeLock;
+
+import static im.actor.runtime.actors.ActorSystem.system;
 
 public class CallManagerActor extends ModuleActor {
 
@@ -32,7 +42,32 @@ public class CallManagerActor extends ModuleActor {
 
     private Long currentCall;
     private HashMap<Long, ActorRef> runningCalls = new HashMap<>();
+    private ActorRef sendMessageActor;
+
     private boolean isBeeping = false;
+    private volatile boolean stop = false;
+    private boolean isMaster;
+
+    private CallViewModels callViewModels;
+
+    private ApiActiveCall apiActiveCall;
+
+//    private List<ApiCallMemberStateHolder> apiCallMemberStateHolder = new ArrayList<>();
+
+    private ArrayList<CallMember> callMember = new ArrayList<>();
+
+    private ApiCallMemberStateHolder apiCallMemberStateHolder;
+    private ApiCallMemberState apiCallMemberState;
+
+    private CallVM callVM;
+
+    private CallState callState;
+
+    private  Peer caleeUser;
+
+    private long inCallId;
+
+    private byte[] activeCallData;
 
     public CallManagerActor(ModuleContext context) {
         super(context);
@@ -42,6 +77,9 @@ public class CallManagerActor extends ModuleActor {
     public void preStart() {
         super.preStart();
         provider = config().getCallsProvider();
+
+        sendMessageActor = system().actorOf(Props.create(() -> new SenderActor(context())), "alo/master/" + RandomUtils.nextRid());
+
     }
 
 
@@ -49,9 +87,7 @@ public class CallManagerActor extends ModuleActor {
     // Outgoing call
     //
 
-    private void doCall(final Peer peer, final CommandCallback<Long> callback, boolean isVideoEnabled) {
-        Log.d(TAG, "doCall (" + peer + ")");
-
+    private void doCall(final Peer peer, final CommandCallback<Long> callback, boolean isVideoEnabled, boolean isBusy) {
         //
         // Stopping current call as we started new done
         //
@@ -60,16 +96,21 @@ public class CallManagerActor extends ModuleActor {
             currentCall = null;
         }
 
+        caleeUser = peer;
+
         //
         // Spawning new Actor for call
         //
         final WakeLock wakeLock = Runtime.makeWakeLock();
-        system().actorOf("actor/master/" + RandomUtils.nextRid(), () -> {
-            return new CallActor(peer, callback, wakeLock, isVideoEnabled, context());
+        system().actorOf("alo/master/" + RandomUtils.nextRid(), () -> {
+            return new CallActor(peer, callback, wakeLock, isVideoEnabled, isBusy, context());
         });
     }
 
     private void onCallCreated(long callId, ActorRef ref) {
+
+//        ref.send(new CallActor.BusyCall(activeCallData));
+
 
         //
         // Stopping current call some are started during call establishing
@@ -104,7 +145,8 @@ public class CallManagerActor extends ModuleActor {
         //
         provider.onCallStart(callId);
         isBeeping = true;
-        provider.startOutgoingBeep();
+        provider.startOutgoingBeep(false);
+        isMaster = true;
     }
 
 
@@ -120,6 +162,9 @@ public class CallManagerActor extends ModuleActor {
         //
         if (handledCalls.contains(callId)) {
             if (handledCallAttempts.get(callId) >= attempt) {
+//                provider.onCallEnd(callId);
+//                request(new RequestBusyCall(callId));
+
                 if (wakeLock != null) {
                     wakeLock.releaseLock();
                 }
@@ -131,6 +176,7 @@ public class CallManagerActor extends ModuleActor {
         // Ignore any incoming call if we already have running call with such call id
         //
         if (runningCalls.containsKey(callId)) {
+
             if (wakeLock != null) {
                 wakeLock.releaseLock();
             }
@@ -154,25 +200,38 @@ public class CallManagerActor extends ModuleActor {
         // Spawning new Actor for call
         //
         final WakeLock finalWakeLock = wakeLock;
-        system().actorOf("actor/call" + RandomUtils.nextRid(), () -> {
+        system().actorOf("alo/call" + RandomUtils.nextRid(), () -> {
             return new CallActor(callId, finalWakeLock, context());
         });
+
     }
 
     private void onIncomingCallReady(long callId, ActorRef ref) {
+
+
+//        ref.send(new CallActor.BusyCall(activeCallData));
 
         //
         // Saving reference to incoming call
         //
         runningCalls.put(callId, ref);
-
         //
         // Change Current Call if there are no ongoing calls now
         //
         if (currentCall == null) {
             currentCall = callId;
             provider.onCallStart(callId);
+
+        } else {
+
+            request(new RequestBusyCall(callId));
+            Log.d(TAG, "onIncomingCallReady (" + callId + ")");
+
+//            provider.onCallBusy(callId);
         }
+
+//        CallViewModels.
+
     }
 
     private void onIncomingCallHandled(long callId) {
@@ -269,6 +328,94 @@ public class CallManagerActor extends ModuleActor {
         }
     }
 
+    private void onCallBusy(long callId) {
+        ActorRef ref = runningCalls.get(callId);
+        if (ref != null) {
+//            ref.send(new AbsCallActor.OnCallBusy(true));
+//            ref.send(new CallActor.BusyCall(callId));
+            ref.send(new CallActor.Busy());
+            stop = false;
+        }
+    }
+
+    public void onCallActive(byte[] data) {
+
+        try {
+            apiActiveCall = Bser.parse(new ApiActiveCall(), data);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        activeCallData = data;
+
+        List<ApiCallMember> apiCallMember = apiActiveCall.getCallMembers();
+
+        inCallId = apiActiveCall.getCallId();
+        Log.d(TAG, "callId (" + apiActiveCall.getCallId() +")");
+
+        for (ApiCallMember b : apiCallMember) {
+//            if (b.getUserId() == caleeUser.getPeerId()) {
+//                apiCallMemberState = b.getState().getState();
+//            }
+//            apiCallMember.add(b);
+
+//            List<ApiCallMemberStateHolder> callMemberState = new ArrayList<ApiCallMemberStateHolder>();
+
+
+
+//                        apiCallMemberState = Collections.enumeration(callMemberState);
+//            List<ApiCallMemberStateHolder> memberState = new ArrayList<>();
+//            for (ApiCallMemberStateHolder c : apiCallMemberStateHolder) {
+//                apiCallMemberStateHolder.add(c);
+
+//
+//            }
+//            Log.d(TAG, "onCallActive (" + b.getState().getState().toString() +")");
+            Log.d(TAG, "onCallActive (" + b.getState().getState().toString() + " uid " + b.getUserId() +")");
+
+            if (b.getState().getState() == ApiCallMemberState.BUSY) {
+                provider.onCallBusy(apiActiveCall.getCallId());
+                stop = true;
+            }
+            if (isMaster) {
+                if (b.getState().getState() == ApiCallMemberState.ENDED) {
+                    ActorRef ref = runningCalls.get(inCallId);
+                    if (ref != null) {
+                        stop = false;
+                        ref.send(new CallActor.NoAnswer());
+                    }
+                }
+            }
+            if (isMaster) {
+                Log.d("CallActor", "notAvailable stop: " + stop);
+
+                if (!stop) {
+                    if (b.getState().getState() == ApiCallMemberState.RINGING) {
+                        ActorRef ref = runningCalls.get(inCallId);
+                        if (ref != null) {
+//                            try {
+//                                while (!stop) {
+//                                    stop = true;
+//                                    TimeUnit.SECONDS.sleep(14);
+//                                    ref.send(new CallActor.NotAvailable());
+//                                }
+                                //                        }
+//                            } catch (InterruptedException e) {
+//                                e.printStackTrace();
+//                            }
+                        }
+
+
+                    }
+                } else {
+//                provider.onCallBusy(apiActiveCall.getCallId());
+                }
+            }
+
+        }
+
+    }
+
     //
     // Ending call
     //
@@ -283,14 +430,13 @@ public class CallManagerActor extends ModuleActor {
         // Removing from running calls
         //
         runningCalls.remove(callId);
-
+        stop = false;
         //
         // Notify Provider if this call was current
         //
         if (currentCall != null && currentCall == callId) {
             currentCall = null;
             provider.onCallEnd(callId);
-
             if (isBeeping) {
                 isBeeping = false;
                 provider.stopOutgoingBeep();
@@ -371,7 +517,7 @@ public class CallManagerActor extends ModuleActor {
             onCallEnded(((OnCallEnded) message).getCallId());
         } else if (message instanceof DoCall) {
             DoCall doCall = (DoCall) message;
-            doCall(doCall.getPeer(), doCall.getCallback(), doCall.isEnableVideoCall());
+            doCall(doCall.getPeer(), doCall.getCallback(), doCall.isEnableVideoCall(), doCall.isBusy());
         } else if (message instanceof DoCallComplete) {
             DoCallComplete callCreated = (DoCallComplete) message;
             onCallCreated(callCreated.getCallId(), sender());
@@ -389,6 +535,10 @@ public class CallManagerActor extends ModuleActor {
             onCallVideoDisable(((DisableVideo) message).getCallId());
         } else if (message instanceof EnableVideo) {
             onCallVideoEnable(((EnableVideo) message).getCallId());
+        } else if (message instanceof CallBusy) {
+            onCallBusy(((CallBusy) message).getCallId());
+        } else if (message instanceof ActiveCall) {
+            onCallActive(((ActiveCall) message).getData());
         } else if (message instanceof ProbablyEndCall) {
             probablyEndCall();
         } else {
@@ -549,6 +699,32 @@ public class CallManagerActor extends ModuleActor {
         }
     }
 
+    public static class ActiveCall {
+
+        private byte[] data;
+
+        public ActiveCall(byte[] data) {
+            this.data = data;
+        }
+
+        public byte[] getData() {
+            return data;
+        }
+
+    }
+
+    public static class CallBusy {
+        private long callId;
+
+        public CallBusy(long callId) {
+            this.callId = callId;
+        }
+
+        public long getCallId() {
+            return callId;
+        }
+    }
+
     //
     // Call Start
     //
@@ -558,11 +734,13 @@ public class CallManagerActor extends ModuleActor {
         private Peer peer;
         private CommandCallback<Long> callback;
         private boolean enableVideoCall;
+        private boolean isBusy;
 
-        public DoCall(Peer peer, CommandCallback<Long> callback, boolean enableVideoCall) {
+        public DoCall(Peer peer, CommandCallback<Long> callback, boolean enableVideoCall, boolean isBusy) {
             this.peer = peer;
             this.callback = callback;
             this.enableVideoCall = enableVideoCall;
+            this.isBusy = isBusy;
         }
 
         public CommandCallback<Long> getCallback() {
@@ -575,6 +753,10 @@ public class CallManagerActor extends ModuleActor {
 
         public boolean isEnableVideoCall() {
             return enableVideoCall;
+        }
+
+        public boolean isBusy() {
+            return isBusy;
         }
     }
 

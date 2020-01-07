@@ -100,7 +100,6 @@ object Dependencies {
 
     val tyrex                   = "tyrex"                         %  "tyrex"                         % "1.0.1"
 
-
     val pushy                   = "com.turo"                %  "pushy"                         % "0.13.0"
 
     val logbackClassic          = "ch.qos.logback"                % "logback-classic"                % "1.1.2"

@@ -11,6 +11,7 @@ import im.actor.core.api.rpc.RequestGetAuthSessions;
 import im.actor.core.api.rpc.RequestTerminateAllSessions;
 import im.actor.core.api.rpc.RequestTerminateSession;
 import im.actor.core.api.rpc.ResponseGetAuthSessions;
+import im.actor.core.api.rpc.RequestSignOut;
 import im.actor.core.api.rpc.ResponseVoid;
 import im.actor.core.modules.AbsModule;
 import im.actor.core.modules.ModuleContext;
@@ -39,6 +40,11 @@ public class SecurityModule extends AbsModule {
 
     public Promise<Void> terminateSession(int id) {
         return api(new RequestTerminateSession(id))
+                .map(r -> null);
+    }
+
+    public Promise<Void> signOut() {
+        return api(new RequestSignOut())
                 .map(r -> null);
     }
 }

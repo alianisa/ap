@@ -22,14 +22,18 @@ public class ApiCallMemberStateHolder extends BserObject {
     private Boolean fallbackIsConnecting;
     private Boolean fallbackIsRingingReached;
     private Boolean fallbackIsEnded;
+    private Boolean fallbackIsBusy;
+    private Boolean fallbackIsNoAnswer;
 
-    public ApiCallMemberStateHolder(@NotNull ApiCallMemberState state, @Nullable Boolean fallbackIsRinging, @Nullable Boolean fallbackIsConnected, @Nullable Boolean fallbackIsConnecting, @Nullable Boolean fallbackIsRingingReached, @Nullable Boolean fallbackIsEnded) {
+    public ApiCallMemberStateHolder(@NotNull ApiCallMemberState state, @Nullable Boolean fallbackIsRinging, @Nullable Boolean fallbackIsConnected, @Nullable Boolean fallbackIsConnecting, @Nullable Boolean fallbackIsRingingReached, @Nullable Boolean fallbackIsEnded, @Nullable Boolean fallbackIsBusy, @Nullable Boolean fallbackIsNoAnswer) {
         this.state = state;
         this.fallbackIsRinging = fallbackIsRinging;
         this.fallbackIsConnected = fallbackIsConnected;
         this.fallbackIsConnecting = fallbackIsConnecting;
         this.fallbackIsRingingReached = fallbackIsRingingReached;
         this.fallbackIsEnded = fallbackIsEnded;
+        this.fallbackIsBusy = fallbackIsBusy;
+        this.fallbackIsNoAnswer = fallbackIsNoAnswer;
     }
 
     public ApiCallMemberStateHolder() {
@@ -66,6 +70,16 @@ public class ApiCallMemberStateHolder extends BserObject {
         return this.fallbackIsEnded;
     }
 
+    @Nullable
+    public Boolean fallbackIsBusy() {
+        return this.fallbackIsBusy;
+    }
+
+    @Nullable
+    public Boolean fallbackIsNoAnswer() {
+        return this.fallbackIsNoAnswer;
+    }
+
     @Override
     public void parse(BserValues values) throws IOException {
         this.state = ApiCallMemberState.parse(values.getInt(1));
@@ -74,6 +88,8 @@ public class ApiCallMemberStateHolder extends BserObject {
         this.fallbackIsConnecting = values.optBool(4);
         this.fallbackIsRingingReached = values.optBool(5);
         this.fallbackIsEnded = values.optBool(6);
+        this.fallbackIsBusy = values.optBool(7);
+        this.fallbackIsNoAnswer = values.optBool(8);
     }
 
     @Override
@@ -97,6 +113,12 @@ public class ApiCallMemberStateHolder extends BserObject {
         if (this.fallbackIsEnded != null) {
             writer.writeBool(6, this.fallbackIsEnded);
         }
+        if (this.fallbackIsBusy != null) {
+            writer.writeBool(7, this.fallbackIsBusy);
+        }
+        if (this.fallbackIsNoAnswer != null) {
+            writer.writeBool(8, this.fallbackIsNoAnswer);
+        }
     }
 
     @Override
@@ -108,6 +130,8 @@ public class ApiCallMemberStateHolder extends BserObject {
         res += ", fallbackIsConnecting=" + this.fallbackIsConnecting;
         res += ", fallbackIsRingingReached=" + this.fallbackIsRingingReached;
         res += ", fallbackIsEnded=" + this.fallbackIsEnded;
+        res += ", fallbackIsBusy=" + this.fallbackIsBusy;
+        res += ", fallbackIsNoAnswer=" + this.fallbackIsNoAnswer;
         res += "}";
         return res;
     }

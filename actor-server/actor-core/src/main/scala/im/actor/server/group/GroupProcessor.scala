@@ -65,6 +65,10 @@ object GroupProcessor {
       20032 → classOf[GroupCommands.UpdateAdminSettingsAck],
       20033 → classOf[GroupCommands.AddExtAck],
       20034 → classOf[GroupCommands.RemoveExtAck],
+      20035 → classOf[GroupCommands.UpdateAvatarAck],
+      20036 → classOf[GroupCommands.UpdateAdminSettingsAck],
+      20037 → classOf[GroupCommands.AddExtAck],
+      20038 → classOf[GroupCommands.RemoveExtAck],
 
       21001 → classOf[GroupQueries.GetIntegrationToken],
       21002 → classOf[GroupQueries.GetIntegrationTokenResponse],
@@ -115,6 +119,10 @@ object GroupProcessor {
       22028 → classOf[GroupQueries.GetTitleResponse],
       22029 → classOf[GroupQueries.LoadMembersResponse],
       22030 → classOf[GroupQueries.GetApiFullStructResponse]
+      22031 → classOf[GroupEnvelope],
+      22032 → classOf[GroupQueries.GetTitleResponse],
+      22033 → classOf[GroupQueries.LoadMembersResponse],
+      22034 → classOf[GroupQueries.GetApiFullStructResponse]
     )
 
   def persistenceIdFor(groupId: Int): String = s"Group-${groupId}"

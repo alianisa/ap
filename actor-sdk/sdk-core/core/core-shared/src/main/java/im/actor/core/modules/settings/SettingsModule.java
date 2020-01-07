@@ -47,10 +47,13 @@ public class SettingsModule extends AbsModule {
 
     private final String KEY_WALLPAPPER;
     private final String KEY_PRIVACY;
+    private final String KEY_QUALITY;
+    private final String KEY_SEND_BUTTON;
     private final String KEY_CHAT_TEXT_SIZE;
 
-    private final String KEY_ANIMATION_AUTO_PLAY;
+    private final String KEY_IS_BUSY;
 
+    private final String KEY_ANIMATION_AUTO_PLAY;
     private final String KEY_DOC_AUTO_DOWNLOAD;
     private final String KEY_IMAGE_AUTO_DOWNLOAD;
     private final String KEY_VIDEO_AUTO_DOWNLOAD;
@@ -137,6 +140,11 @@ public class SettingsModule extends AbsModule {
 
         KEY_WALLPAPPER = "wallpaper.uri";
         KEY_PRIVACY = "privacy.last_seen";
+
+        KEY_QUALITY = "quality.image";
+        KEY_SEND_BUTTON = "send.button";
+
+        KEY_IS_BUSY = "is.busy";
 
     }
 
@@ -363,6 +371,36 @@ public class SettingsModule extends AbsModule {
 
     public void setPrivacy(String privacy) {
         changeValue(KEY_PRIVACY, privacy);
+    }
+
+    //Quality
+    public String getQuality() {
+        String quality = readValue(KEY_QUALITY);
+        return quality != null ? quality : "large";
+    }
+
+    public void setQuality(String quality) {
+        changeValue(KEY_QUALITY, quality);
+    }
+
+    //SendButton
+
+    public boolean isSendButton() {
+        return getBooleanValue(KEY_SEND_BUTTON, false);
+    }
+
+    public void changeSendButton(boolean val) {
+        setBooleanValue(KEY_SEND_BUTTON, val);
+    }
+
+    //IsBusy
+
+    public boolean isBusy() {
+        return getBooleanValue(KEY_IS_BUSY, false);
+    }
+
+    public void changeIsBusy(boolean val) {
+        setBooleanValue(KEY_IS_BUSY, val);
     }
 
     //Animation
