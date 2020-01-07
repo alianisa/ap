@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import im.actor.runtime.actors.Actor;
-import im.actor.runtime.actors.ActorCreator;
 import im.actor.runtime.actors.ActorRef;
 import im.actor.runtime.actors.Props;
 import im.actor.runtime.generic.mvvm.alg.ChangeBuilder;
@@ -60,12 +59,7 @@ public class DisplayList<T> {
 
         this.operationMode = operationMode;
 
-        this.executor = system().actorOf(Props.create(new ActorCreator() {
-            @Override
-            public ListSwitcher create() {
-                return new ListSwitcher(DisplayList.this);
-            }
-        }).changeDispatcher("display_list"), "display_lists/" + DISPLAY_LIST_ID);
+        this.executor = system().actorOf(Props.create(() -> new ListSwitcher(DisplayList.this)).changeDispatcher("display_list"), "display_lists/" + DISPLAY_LIST_ID);
         this.lists = new ArrayList[2];
 
         this.currentList = 0;

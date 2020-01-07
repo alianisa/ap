@@ -1,5 +1,6 @@
 package im.actor.sdk.core;
 
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -7,9 +8,11 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.media.SoundPool;
+import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
@@ -27,12 +30,14 @@ import im.actor.core.entity.Notification;
 import im.actor.core.entity.Peer;
 import im.actor.core.providers.NotificationProvider;
 import im.actor.core.viewmodel.FileVMCallback;
+import im.actor.runtime.android.AndroidContext;
 import im.actor.runtime.files.FileSystemReference;
 import im.actor.sdk.ActorSDK;
 import im.actor.sdk.R;
 import im.actor.sdk.controllers.Intents;
 import im.actor.sdk.util.Screen;
 import im.actor.sdk.view.avatar.AvatarPlaceholderDrawable;
+import me.leolin.shortcutbadger.ShortcutBadger;
 
 import static im.actor.core.entity.PeerType.GROUP;
 import static im.actor.core.entity.PeerType.PRIVATE;
@@ -42,6 +47,7 @@ public class AndroidNotifications implements NotificationProvider {
     private static final String TAG = AndroidNotifications.class.getName();
 
     private static final int NOTIFICATION_ID = 1;
+    private static final String MESSAGES_NOTIFICTIONS_CHANNEL_ID = "messages_notifications";
 
     private SoundPool soundPool;
     private int soundId;
@@ -71,11 +77,24 @@ public class AndroidNotifications implements NotificationProvider {
     @Override
     public void onNotification(Messenger messenger, List<Notification> topNotifications, int messagesCount, int conversationsCount) {
 
-        final NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
+        final NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel notificationChannel = new NotificationChannel(MESSAGES_NOTIFICTIONS_CHANNEL_ID, "Messages Notifications", NotificationManager.IMPORTANCE_HIGH);
+            notificationChannel.setDescription("New messages notifications");
+            notificationChannel.enableLights(true);
+            notificationChannel.setLightColor(Color.BLUE);
+            notificationChannel.setVibrationPattern(new long[]{0, 300, 0, 300});
+            notificationChannel.enableVibration(true);
+            notificationChannel.setLockscreenVisibility(android.app.Notification.VISIBILITY_PUBLIC);
+            manager.createNotificationChannel(notificationChannel);
+        }
+
+        final NotificationCompat.Builder builder = new NotificationCompat.Builder(context, MESSAGES_NOTIFICTIONS_CHANNEL_ID);
 
         builder.setAutoCancel(true);
         builder.setSmallIcon(R.drawable.ic_app_notify);
-        builder.setPriority(NotificationCompat.PRIORITY_HIGH);
+        builder.setPriority(NotificationCompat.PRIORITY_MAX);
         builder.setCategory(NotificationCompat.CATEGORY_MESSAGE);
 
         int defaults = NotificationCompat.DEFAULT_LIGHTS;
@@ -85,12 +104,6 @@ public class AndroidNotifications implements NotificationProvider {
         }
 
         builder.setDefaults(defaults);
-
-        // Wearable
-//        builder.extend(new NotificationCompat.WearableExtender()
-//                .setBackground(((BitmapDrawable) AppContext.getContext().getResources().getDrawable(R.drawable.wear_bg)).getBitmap())
-//                .setHintHideIcon(true));
-
         final Notification topNotification = topNotifications.get(topNotifications.size() - 1);
 
         android.app.Notification result;
@@ -122,8 +135,7 @@ public class AndroidNotifications implements NotificationProvider {
 
             result = buildSingleMessageNotification(avatarDrawable, builder, sender, text, topNotification);
 
-            final NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-            manager.notify(NOTIFICATION_ID, result);
+            doNotify(manager, NOTIFICATION_ID, result);
 
             if (avatar != null && avatar.getSmallImage() != null && avatar.getSmallImage().getFileReference() != null) {
                 messenger.bindFile(avatar.getSmallImage().getFileReference(), true, new FileVMCallback() {
@@ -140,11 +152,11 @@ public class AndroidNotifications implements NotificationProvider {
                     public void onDownloaded(FileSystemReference reference) {
                         RoundedBitmapDrawable d = getRoundedBitmapDrawable(reference);
                         android.app.Notification result = buildSingleMessageNotification(d, builder, sender, text, topNotification);
-                        manager.notify(NOTIFICATION_ID, result);
+                        doNotify(manager, NOTIFICATION_ID, result);
                     }
                 });
             } else {
-                manager.notify(NOTIFICATION_ID, result);
+                doNotify(manager, NOTIFICATION_ID, result);
             }
         } else if (conversationsCount == 1) {
             // Single conversation notification
@@ -182,8 +194,8 @@ public class AndroidNotifications implements NotificationProvider {
             Drawable avatarDrawable = new AvatarPlaceholderDrawable(avatarTitle, id, 18, context);
 
             result = buildSingleConversationNotification(builder, inboxStyle, avatarDrawable, topNotification);
-            final NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-            manager.notify(NOTIFICATION_ID, result);
+
+            doNotify(manager, NOTIFICATION_ID, result);
 
             if (avatar != null && avatar.getSmallImage() != null && avatar.getSmallImage().getFileReference() != null) {
                 messenger.bindFile(avatar.getSmallImage().getFileReference(), true, new FileVMCallback() {
@@ -200,11 +212,11 @@ public class AndroidNotifications implements NotificationProvider {
                     public void onDownloaded(FileSystemReference reference) {
                         RoundedBitmapDrawable d = getRoundedBitmapDrawable(reference);
                         android.app.Notification result = buildSingleConversationNotification(builder, inboxStyle, d, topNotification);
-                        manager.notify(NOTIFICATION_ID, result);
+                        doNotify(manager, NOTIFICATION_ID, result);
                     }
                 });
             } else {
-                manager.notify(NOTIFICATION_ID, result);
+                doNotify(manager, NOTIFICATION_ID, result);
             }
         } else {
             // Multiple conversations notification
@@ -230,10 +242,14 @@ public class AndroidNotifications implements NotificationProvider {
                     .build();
             addCustomLedAndSound(topNotification, result);
 
-            NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-            manager.notify(NOTIFICATION_ID, result);
-        }
 
+            doNotify(manager, NOTIFICATION_ID, result);
+        }
+    }
+
+    private void doNotify(NotificationManager manager, int notificationId, android.app.Notification notification){
+        ShortcutBadger.applyNotification(context, notification, messenger().getGlobalState().getGlobalCounter().get());
+        manager.notify(NOTIFICATION_ID, notification);
     }
 
     public void addCustomLedAndSound(Notification topNotification, android.app.Notification result) {
@@ -282,7 +298,10 @@ public class AndroidNotifications implements NotificationProvider {
         return notification;
     }
 
-    private android.app.Notification buildSingleMessageNotification(Drawable d, NotificationCompat.Builder builder, String sender, CharSequence text, Notification topNotification) {
+    private android.app.Notification buildSingleMessageNotification(Drawable d, NotificationCompat.Builder builder,
+                                                                    String sender,
+                                                                    CharSequence text,
+                                                                    Notification topNotification) {
         android.app.Notification notification = builder
                 .setContentTitle(sender)
                 .setContentText(text)

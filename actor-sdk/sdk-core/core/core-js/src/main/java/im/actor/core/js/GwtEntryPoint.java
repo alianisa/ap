@@ -11,10 +11,13 @@ import org.timepedia.exporter.client.ExporterUtil;
 
 import im.actor.core.entity.Contact;
 import im.actor.core.entity.Dialog;
+import im.actor.core.entity.GroupPre;
 import im.actor.core.entity.Message;
 import im.actor.core.entity.SearchEntity;
 import im.actor.core.js.entity.JsContact;
 import im.actor.core.js.entity.JsDialog;
+import im.actor.core.js.entity.JsGroupPermissions;
+import im.actor.core.js.entity.JsGroupPre;
 import im.actor.core.js.entity.JsMessage;
 import im.actor.core.js.entity.JsSearchEntity;
 import im.actor.core.js.providers.Assets;
@@ -30,6 +33,7 @@ public class GwtEntryPoint implements EntryPoint {
         JsEngineProvider.registerEntity(Dialog.ENTITY_NAME, JsDialog.CONVERTER);
         JsEngineProvider.registerEntity(Message.ENTITY_NAME, JsMessage.CONVERTER);
         JsEngineProvider.registerEntity(SearchEntity.ENTITY_NAME, JsSearchEntity.CONVERTER);
+        JsEngineProvider.registerEntity(GroupPre.ENTITY_NAME, JsGroupPre.CONVERTER);
 
         Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
             @Override

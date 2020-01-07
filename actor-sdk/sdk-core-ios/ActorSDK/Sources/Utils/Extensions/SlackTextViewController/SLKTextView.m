@@ -1,21 +1,12 @@
 //
-//   Copyright 2014 Slack Technologies, Inc.
+//  SlackTextViewController
+//  https://github.com/slackhq/SlackTextViewController
 //
-//   Licensed under the Apache License, Version 2.0 (the "License");
-//   you may not use this file except in compliance with the License.
-//   You may obtain a copy of the License at
-//
-//       http://www.apache.org/licenses/LICENSE-2.0
-//
-//   Unless required by applicable law or agreed to in writing, software
-//   distributed under the License is distributed on an "AS IS" BASIS,
-//   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-//   See the License for the specific language governing permissions and
-//   limitations under the License.
+//  Copyright 2014-2016 Slack Technologies, Inc.
+//  Licence: MIT-Licence
 //
 
 #import "SLKTextView.h"
-
 #import "SLKTextView+SLKAdditions.h"
 
 #import "SLKUIConstants.h"
@@ -32,8 +23,6 @@ NSString * const SLKTextViewPastedItemData =                        @"SLKTextVie
 
 static NSString *const SLKTextViewGenericFormattingSelectorPrefix = @"slk_format_";
 
-static BOOL isMenuInitialized = NO;
-
 @interface SLKTextView ()
 
 // The label used as placeholder
@@ -41,9 +30,6 @@ static BOOL isMenuInitialized = NO;
 
 // The initial font point size, used for dynamic type calculations
 @property (nonatomic) CGFloat initialFontSize;
-
-// The keyboard commands available for external keyboards
-@property (nonatomic, strong) NSArray *keyboardCommands;
 
 // Used for moving the caret up/down
 @property (nonatomic) UITextLayoutDirection verticalMoveDirection;
@@ -57,12 +43,14 @@ static BOOL isMenuInitialized = NO;
 @property (nonatomic, strong) NSMutableArray *registeredFormattingSymbols;
 @property (nonatomic, getter=isFormatting) BOOL formatting;
 
-
+// The keyboard commands available for external keyboards
+@property (nonatomic, strong) NSMutableDictionary *registeredKeyCommands;
+@property (nonatomic, strong) NSMutableDictionary *registeredKeyCallbacks;
 
 @end
 
 @implementation SLKTextView
-@synthesize delegate = _delegate;
+@dynamic delegate;
 
 #pragma mark - Initialization
 
@@ -88,7 +76,6 @@ static BOOL isMenuInitialized = NO;
     _dynamicTypeEnabled = YES;
 
     self.undoManagerEnabled = YES;
-    self.autoCompleteFormatting = YES;
     
     self.editable = YES;
     self.selectable = YES;
@@ -142,15 +129,6 @@ static BOOL isMenuInitialized = NO;
     }
 }
 
-- (void)addGestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
-{
-    if ([gestureRecognizer isKindOfClass:[UILongPressGestureRecognizer class]]) {
-        [gestureRecognizer addTarget:self action:@selector(slk_gestureRecognized:)];
-    }
-    
-    [super addGestureRecognizer:gestureRecognizer];
-}
-
 
 #pragma mark - Getters
 
@@ -159,12 +137,13 @@ static BOOL isMenuInitialized = NO;
     if (!_placeholderLabel) {
         _placeholderLabel = [UILabel new];
         _placeholderLabel.clipsToBounds = NO;
-        _placeholderLabel.autoresizesSubviews = NO;
         _placeholderLabel.numberOfLines = 1;
+        _placeholderLabel.autoresizesSubviews = NO;
         _placeholderLabel.font = self.font;
         _placeholderLabel.backgroundColor = [UIColor clearColor];
         _placeholderLabel.textColor = [UIColor lightGrayColor];
         _placeholderLabel.hidden = YES;
+        _placeholderLabel.isAccessibilityElement = NO;
         
         [self addSubview:_placeholderLabel];
     }
@@ -179,6 +158,11 @@ static BOOL isMenuInitialized = NO;
 - (UIColor *)placeholderColor
 {
     return self.placeholderLabel.textColor;
+}
+
+- (UIFont *)placeholderFont
+{
+    return self.placeholderLabel.font;
 }
 
 - (NSUInteger)numberOfLines
@@ -220,7 +204,7 @@ static BOOL isMenuInitialized = NO;
     
     if (self.isDynamicTypeEnabled) {
         NSString *contentSizeCategory = [[UIApplication sharedApplication] preferredContentSizeCategory];
-        CGFloat pointSizeDifference = [SLKTextView pointSizeDifferenceForCategory:contentSizeCategory];
+        CGFloat pointSizeDifference = SLKPointSizeDifferenceForCategory(contentSizeCategory);
         
         CGFloat factor = pointSizeDifference/self.initialFontSize;
         
@@ -239,12 +223,9 @@ static BOOL isMenuInitialized = NO;
     return (self.autocorrectionType == UITextAutocorrectionTypeNo) ? NO : YES;
 }
 
-- (BOOL)autoCompleteFormatting
+- (BOOL)isFormattingEnabled
 {
-    if (_registeredFormattingSymbols.count == 0) {
-        return NO;
-    }
-    return _autoCompleteFormatting;
+    return (self.registeredFormattingSymbols.count > 0) ? YES : NO;
 }
 
 // Returns only a supported pasted item
@@ -425,6 +406,23 @@ SLKPastableMediaType SLKPastableMediaTypeFromNSString(NSString *string)
     self.placeholderLabel.textColor = color;
 }
 
+- (void)setPlaceholderNumberOfLines:(NSInteger)numberOfLines
+{
+    self.placeholderLabel.numberOfLines = numberOfLines;
+    
+    [self setNeedsLayout];
+}
+
+- (void)setPlaceholderFont:(UIFont *)placeholderFont
+{
+    if (!placeholderFont) {
+        self.placeholderLabel.font = self.font;
+    }
+    else {
+        self.placeholderLabel.font = placeholderFont;
+    }
+}
+
 - (void)setUndoManagerEnabled:(BOOL)enabled
 {
     if (self.undoManagerEnabled == enabled) {
@@ -450,12 +448,21 @@ SLKPastableMediaType SLKPastableMediaTypeFromNSString(NSString *string)
     [self refreshFirstResponder];
 }
 
+- (void)setContentOffset:(CGPoint)contentOffset
+{
+    // At times during a layout pass, the content offset's x value may change.
+    // Since we only care about vertical offset, let's override its horizontal value to avoid other layout issues.
+    [super setContentOffset:CGPointMake(0.0, contentOffset.y)];
+}
+
 
 #pragma mark - UITextView Overrides
 
 - (void)setSelectedRange:(NSRange)selectedRange
 {
     [super setSelectedRange:selectedRange];
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:SLKTextViewSelectedRangeDidChangeNotification object:self userInfo:nil];
 }
 
 - (void)setSelectedTextRange:(UITextRange *)selectedTextRange
@@ -469,10 +476,20 @@ SLKPastableMediaType SLKPastableMediaTypeFromNSString(NSString *string)
 {
     // Registers for undo management
     [self slk_prepareForUndo:@"Text Set"];
-    
-    [super setText:text];
+
+    if (text) {
+        [self setAttributedText:[self slk_defaultAttributedStringForText:text]];
+    }
+    else {
+        [self setAttributedText:nil];
+    }
     
     [[NSNotificationCenter defaultCenter] postNotificationName:UITextViewTextDidChangeNotification object:self];
+}
+
+- (NSString *)text
+{
+    return self.attributedText.string;
 }
 
 - (void)setAttributedText:(NSAttributedString *)attributedText
@@ -497,7 +514,7 @@ SLKPastableMediaType SLKPastableMediaTypeFromNSString(NSString *string)
 - (void)setFontName:(NSString *)fontName pointSize:(CGFloat)pointSize withContentSizeCategory:(NSString *)contentSizeCategory
 {
     if (self.isDynamicTypeEnabled) {
-        pointSize += [SLKTextView pointSizeDifferenceForCategory:contentSizeCategory];
+        pointSize += SLKPointSizeDifferenceForCategory(contentSizeCategory);
     }
     
     UIFont *dynamicFont = [UIFont fontWithName:fontName size:pointSize];
@@ -532,18 +549,23 @@ SLKPastableMediaType SLKPastableMediaTypeFromNSString(NSString *string)
 
 #pragma mark - UITextInput Overrides
 
+#ifdef __IPHONE_9_0
 - (void)beginFloatingCursorAtPoint:(CGPoint)point
 {
+    [super beginFloatingCursorAtPoint:point];
+    
     _trackpadEnabled = YES;
 }
 
 - (void)updateFloatingCursorAtPoint:(CGPoint)point
 {
-    // Do something
+    [super updateFloatingCursorAtPoint:point];
 }
 
 - (void)endFloatingCursor
 {
+    [super endFloatingCursor];
+
     _trackpadEnabled = NO;
     
     // We still need to notify a selection change in the textview after the trackpad is disabled
@@ -553,13 +575,14 @@ SLKPastableMediaType SLKPastableMediaTypeFromNSString(NSString *string)
     
     [[NSNotificationCenter defaultCenter] postNotificationName:SLKTextViewSelectedRangeDidChangeNotification object:self userInfo:nil];
 }
-
+#endif
 
 #pragma mark - UIResponder Overrides
 
 - (BOOL)canBecomeFirstResponder
 {
     [self slk_addCustomMenuControllerItems];
+    
     return [super canBecomeFirstResponder];
 }
 
@@ -605,16 +628,8 @@ SLKPastableMediaType SLKPastableMediaTypeFromNSString(NSString *string)
         return NO;
     }
     
-    if (action == NSSelectorFromString(@"_share:") || action == NSSelectorFromString(@"_define:") || action == NSSelectorFromString(@"_promptForReplace:")) {
-        return NO;
-    }
-    
     if (action == @selector(slk_presentFormattingMenu:)) {
         return self.selectedRange.length > 0 ? YES : NO;
-    }
-    
-    if (action == @selector(paste:) && [self slk_isPasteboardItemSupported]) {
-        return YES;
     }
     
     if (action == @selector(paste:) && [self slk_isPasteboardItemSupported]) {
@@ -686,35 +701,6 @@ SLKPastableMediaType SLKPastableMediaTypeFromNSString(NSString *string)
 
 #pragma mark - Custom Actions
 
-- (void)slk_gestureRecognized:(UIGestureRecognizer *)gesture
-{
-    // In iOS 8 and earlier, the gesture recognizer responsible for the magnifying glass movement was 'UIVariableDelayLoupeGesture'
-    // Since iOS 9, that gesture is now called '_UITextSelectionForceGesture'
-    if ([gesture isMemberOfClass:NSClassFromString(@"UIVariableDelayLoupeGesture")] ||
-        [gesture isMemberOfClass:NSClassFromString(@"_UITextSelectionForceGesture")]) {
-        [self slk_willShowLoupe:gesture];
-    }
-}
-
-- (void)slk_willShowLoupe:(UIGestureRecognizer *)gesture
-{
-    if (gesture.state == UIGestureRecognizerStateBegan || gesture.state == UIGestureRecognizerStateChanged) {
-        _loupeVisible = YES;
-    }
-    else {
-        _loupeVisible = NO;
-    }
-    
-    // We still need to notify a selection change in the textview after the magnifying class is dismissed
-    if (gesture.state == UIGestureRecognizerStateEnded) {
-        if (self.delegate && [self.delegate respondsToSelector:@selector(textViewDidChangeSelection:)]) {
-            [self.delegate textViewDidChangeSelection:self];
-        }
-        
-        [[NSNotificationCenter defaultCenter] postNotificationName:SLKTextViewSelectedRangeDidChangeNotification object:self userInfo:nil];
-    }
-}
-
 - (void)slk_flashScrollIndicatorsIfNeeded
 {
     if (self.numberOfLines == self.maxNumberOfLines+1) {
@@ -752,23 +738,17 @@ SLKPastableMediaType SLKPastableMediaTypeFromNSString(NSString *string)
 
 - (void)slk_addCustomMenuControllerItems
 {
-    if(!isMenuInitialized){
-        UIMenuItem *undo = [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"Undo", nil) action:@selector(slk_undo:)];
-        UIMenuItem *redo = [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"Redo", nil) action:@selector(slk_redo:)];
+    UIMenuItem *undo = [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"Undo", nil) action:@selector(slk_undo:)];
+    UIMenuItem *redo = [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"Redo", nil) action:@selector(slk_redo:)];
+    
+    NSMutableArray *items = [NSMutableArray arrayWithObjects:undo, redo, nil];
+    
+    if (self.registeredFormattingTitles.count > 0) {
         UIMenuItem *format = [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"Format", nil) action:@selector(slk_presentFormattingMenu:)];
-        
-        if([UIMenuController sharedMenuController].menuItems == nil){
-            [[UIMenuController sharedMenuController] setMenuItems:@[undo, redo, format]];
-        }else{
-            NSMutableArray *oldItens = [NSMutableArray arrayWithArray:[UIMenuController sharedMenuController].menuItems];
-            [oldItens addObject:undo];
-            [oldItens addObject:redo];
-            [oldItens addObject:format];
-            [[UIMenuController sharedMenuController] setMenuItems:oldItens];
-        }
-        isMenuInitialized = YES;
+        [items addObject:format];
     }
- 
+    
+    [[UIMenuController sharedMenuController] setMenuItems:items];
 }
 
 - (void)slk_undo:(id)sender
@@ -937,12 +917,13 @@ SLKPastableMediaType SLKPastableMediaTypeFromNSString(NSString *string)
 
 - (void)slk_willShowMenuController:(NSNotification *)notification
 {
-    
+    // Do something
 }
 
 - (void)slk_didHideMenuController:(NSNotification *)notification
 {
     self.formatting = NO;
+    
     [self slk_addCustomMenuControllerItems];
 }
 
@@ -972,67 +953,69 @@ SLKPastableMediaType SLKPastableMediaTypeFromNSString(NSString *string)
 
 #pragma mark - External Keyboard Support
 
-- (NSArray *)keyCommands
+typedef void (^SLKKeyCommandHandler)(UIKeyCommand *keyCommand);
+
+- (void)observeKeyInput:(NSString *)input modifiers:(UIKeyModifierFlags)modifiers title:(NSString *_Nullable)title completion:(void (^)(UIKeyCommand *keyCommand))completion
 {
-    if (_keyboardCommands) {
-        return _keyboardCommands;
-    }
+    NSAssert([input isKindOfClass:[NSString class]], @"You must provide a string with one or more characters corresponding to the keys to observe.");
+    NSAssert(completion != nil, @"You must provide a non-nil completion block.");
     
-    _keyboardCommands = @[
-         // Return
-         [UIKeyCommand keyCommandWithInput:@"\r" modifierFlags:UIKeyModifierShift action:@selector(slk_didPressLineBreakKeys:)],
-         [UIKeyCommand keyCommandWithInput:@"\r" modifierFlags:UIKeyModifierAlternate action:@selector(slk_didPressLineBreakKeys:)],
-         [UIKeyCommand keyCommandWithInput:@"\r" modifierFlags:UIKeyModifierControl action:@selector(slk_didPressLineBreakKeys:)],
-         
-         // Undo/Redo
-         [UIKeyCommand keyCommandWithInput:@"z" modifierFlags:UIKeyModifierCommand action:@selector(slk_didPressCommandZKeys:)],
-         [UIKeyCommand keyCommandWithInput:@"z" modifierFlags:UIKeyModifierShift|UIKeyModifierCommand action:@selector(slk_didPressCommandZKeys:)],
-         ];
-    
-    return _keyboardCommands;
-}
-
-
-#pragma mark Line Break
-
-- (void)slk_didPressLineBreakKeys:(id)sender
-{
-    [self slk_insertNewLineBreak];
-}
-
-
-#pragma mark Undo/Redo Text
-
-- (void)slk_didPressCommandZKeys:(id)sender
-{
-    if (!self.undoManagerEnabled) {
+    if (!input || !completion) {
         return;
     }
     
-    UIKeyCommand *keyCommand = (UIKeyCommand *)sender;
+    UIKeyCommand *keyCommand = [UIKeyCommand keyCommandWithInput:input modifierFlags:modifiers action:@selector(didDetectKeyCommand:)];
     
-    if ((keyCommand.modifierFlags & UIKeyModifierShift) > 0) {
-        
-        if ([self.undoManager canRedo]) {
-            [self.undoManager redo];
-        }
+#ifdef __IPHONE_9_0
+    if ([UIKeyCommand respondsToSelector:@selector(keyCommandWithInput:modifierFlags:action:discoverabilityTitle:)] ) {
+        keyCommand.discoverabilityTitle = title;
     }
-    else {
-        if ([self.undoManager canUndo]) {
-            [self.undoManager undo];
-        }
+#endif
+    
+    if (!_registeredKeyCommands) {
+        _registeredKeyCommands = [NSMutableDictionary new];
+        _registeredKeyCallbacks = [NSMutableDictionary new];
+    }
+    
+    NSString *key = [self keyForKeyCommand:keyCommand];
+    
+    self.registeredKeyCommands[key] = keyCommand;
+    self.registeredKeyCallbacks[key] = completion;
+}
+
+- (void)didDetectKeyCommand:(UIKeyCommand *)keyCommand
+{
+    NSString *key = [self keyForKeyCommand:keyCommand];
+    
+    SLKKeyCommandHandler completion = self.registeredKeyCallbacks[key];
+    
+    if (completion) {
+        completion(keyCommand);
     }
 }
+
+- (NSString *)keyForKeyCommand:(UIKeyCommand *)keyCommand
+{
+    return [NSString stringWithFormat:@"%@_%ld", keyCommand.input, (long)keyCommand.modifierFlags];
+}
+
+- (NSArray *)keyCommands
+{
+    if (self.registeredKeyCommands) {
+        return [self.registeredKeyCommands allValues];
+    }
+    
+    return nil;
+}
+
 
 #pragma mark Up/Down Cursor Movement
 
-- (void)didPressAnyArrowKey:(id)sender
+- (void)didPressArrowKey:(UIKeyCommand *)keyCommand
 {
-    if (self.text.length == 0 || self.numberOfLines < 2) {
+    if (![keyCommand isKindOfClass:[UIKeyCommand class]] || self.text.length == 0 || self.numberOfLines < 2) {
         return;
     }
-    
-    UIKeyCommand *keyCommand = (UIKeyCommand *)sender;
     
     if ([keyCommand.input isEqualToString:UIKeyInputUpArrow]) {
         [self slk_moveCursorTodirection:UITextLayoutDirectionUp];
@@ -1078,7 +1061,7 @@ SLKPastableMediaType SLKPastableMediaTypeFromNSString(NSString *string)
     UITextPosition *checkPosition = position;
     UITextPosition *closestPosition = position;
     CGRect startingCaretRect = [self caretRectForPosition:position];
-    CGRect nextLineCaretRect;
+    CGRect nextLineCaretRect = CGRectZero;
     BOOL isInNextLine = NO;
     
     while (YES) {
@@ -1126,7 +1109,7 @@ SLKPastableMediaType SLKPastableMediaTypeFromNSString(NSString *string)
 }
 
 
-#pragma mark - NSNotificationCenter register/unregister
+#pragma mark - NSNotificationCenter registration
 
 - (void)slk_registerNotifications
 {
@@ -1158,8 +1141,6 @@ SLKPastableMediaType SLKPastableMediaTypeFromNSString(NSString *string)
     [self slk_unregisterNotifications];
     
     [self removeObserver:self forKeyPath:NSStringFromSelector(@selector(contentSize))];
-    
-    _placeholderLabel = nil;
 }
 
 @end

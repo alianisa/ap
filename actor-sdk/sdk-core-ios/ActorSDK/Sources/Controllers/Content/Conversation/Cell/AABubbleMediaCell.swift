@@ -31,7 +31,7 @@ open class AABubbleMediaCell : AABubbleBaseFileCell, NYTPhotosViewControllerDele
     
     // Constructors
     
-    public init(frame: CGRect) {
+    @objc public init(frame: CGRect) {
         super.init(frame: frame, isFullSize: false)
         
         preview.autoPlayAnimatedImage = true

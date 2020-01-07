@@ -13,7 +13,7 @@ open class AABubbleServiceCell : AABubbleCell {
     
     fileprivate var bindedLayout: ServiceCellLayout!
     
-    public init(frame: CGRect) {
+    @objc public init(frame: CGRect) {
         super.init(frame: frame, isFullSize: true)
        
         // Configuring service label

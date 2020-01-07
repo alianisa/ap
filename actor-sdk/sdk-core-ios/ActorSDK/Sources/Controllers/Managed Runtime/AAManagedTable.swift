@@ -478,12 +478,11 @@ private class AAManagedSearchController<BindCell>: NSObject, UISearchBarDelegate
         
         // Adding search to table header
         
-        let header = AATableViewHeader(frame: CGRect(x: 0, y: 0, width: 320, height: 44))
+        let header = AATableViewHeader(frame: CGRect(x: 0, y: 0, width: 320, height: 48))
         header.addSubview(self.searchDisplay.searchBar)
         tableView.tableHeaderView = header
         
         // Start receiving events
-        
         if let ds = searchList {
             ds.add(self)
         } else if let sm = searchModel {
@@ -494,8 +493,6 @@ private class AAManagedSearchController<BindCell>: NSObject, UISearchBarDelegate
     }
     
     // Model
-    
-    
     func objectAtIndexPath(_ indexPath: IndexPath) -> BindCell.BindData {
         if let ds = searchList {
             return ds.item(with: jint((indexPath as NSIndexPath).row)) as! BindCell.BindData

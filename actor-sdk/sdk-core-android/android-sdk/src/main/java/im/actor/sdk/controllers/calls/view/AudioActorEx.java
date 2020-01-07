@@ -5,6 +5,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 
+import im.actor.runtime.Log;
 import im.actor.sdk.R;
 import im.actor.sdk.core.audio.AndroidPlayerActor;
 import im.actor.sdk.core.audio.AudioPlayerActor;
@@ -43,7 +44,7 @@ public class AudioActorEx extends AndroidPlayerActor {
                 return false;
             });
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(AudioActorEx.class.getName(), e);
             destroyPlayer();
             callback.onError(currentFileName);
             return;

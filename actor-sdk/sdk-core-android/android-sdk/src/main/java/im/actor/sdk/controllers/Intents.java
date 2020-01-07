@@ -5,9 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Environment;
-import android.util.Log;
 import android.view.View;
 import android.webkit.MimeTypeMap;
 
@@ -17,6 +15,7 @@ import java.io.FileOutputStream;
 import im.actor.core.entity.FileReference;
 import im.actor.core.entity.Peer;
 import im.actor.core.utils.IOUtils;
+import im.actor.runtime.Log;
 import im.actor.sdk.controllers.contacts.AddContactActivity;
 import im.actor.sdk.controllers.conversation.ChatActivity;
 import im.actor.sdk.controllers.fragment.preview.PictureActivity;
@@ -154,20 +153,15 @@ public class Intents {
             mimeType = "*/*";
         }
 
-        Intent intent = null;
-        if (Build.VERSION.SDK_INT >= 23) {
-            intent = new Intent(Intent.ACTION_VIEW)
-                    .setDataAndType(Files.getUri(ctx, downloadFileName), mimeType);
-            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        } else {
-            intent = new Intent(Intent.ACTION_VIEW)
-                    .setDataAndType(Uri.fromFile(new File(downloadFileName)), mimeType);
-        }
+        Uri fileUri = Files.getUri(ctx, downloadFileName);
+        Intent intent = new Intent(Intent.ACTION_VIEW).setDataAndType(fileUri, mimeType);
+
+        Files.grantExternalPermissions(ctx, intent, fileUri);
 
         return intent;
     }
 
-    public static Intent shareDoc(String fileName, String downloadFileName) {
+    public static Intent shareDoc(String fileName, String downloadFileName, Context ctx) {
         String mimeType = MimeTypeMap.getSingleton()
                 .getMimeTypeFromExtension(IOUtils.getFileExtension(fileName));
         if (mimeType == null) {
@@ -175,7 +169,7 @@ public class Intents {
         }
 
         return new Intent(Intent.ACTION_SEND)
-                .putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(downloadFileName)))
+                .putExtra(Intent.EXTRA_STREAM, Files.getUri(ctx, downloadFileName))
                 .setType(mimeType);
     }
 
@@ -218,19 +212,21 @@ public class Intents {
             File pictureFile = new File(actorPicturesFolder, System.currentTimeMillis() + ".jpg");
             pictureFile.createNewFile();
 
-
             FileOutputStream ostream = new FileOutputStream(pictureFile);
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, ostream);
             ostream.close();
 
-
             Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-            Uri contentUri = Uri.fromFile(pictureFile);
+            Uri contentUri = Files.getUri(context, pictureFile);
+
+            Files.grantExternalPermissions(context, mediaScanIntent, contentUri);
+
             mediaScanIntent.setData(contentUri);
             context.sendBroadcast(mediaScanIntent);
+
             Log.d("Picture saving", "Saved as " + pictureFile.getPath());
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e("Picture saving", e);
         }
     }
 

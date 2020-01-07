@@ -27,7 +27,6 @@ import im.actor.core.network.mtp.entity.rpc.RpcInternalError;
 import im.actor.core.network.mtp.entity.rpc.RpcOk;
 import im.actor.core.network.mtp.entity.rpc.RpcRequest;
 import im.actor.core.network.parser.ApiParserConfig;
-import im.actor.core.network.parser.BaseParser;
 import im.actor.core.network.parser.ParsingExtension;
 import im.actor.core.network.parser.Request;
 import im.actor.core.network.parser.Response;
@@ -465,9 +464,10 @@ public class ApiBroker extends AskcableActor {
     public static class PerformCheckConnection {
         public boolean ignoreNetworkState;
 
-        public PerformCheckConnection(){}
+        public PerformCheckConnection() {
+        }
 
-        public PerformCheckConnection(boolean ignoreNetworkState){
+        public PerformCheckConnection(boolean ignoreNetworkState) {
             this.ignoreNetworkState = ignoreNetworkState;
         }
 

@@ -4,11 +4,12 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import me.leolin.shortcutbadger.Badger;
 import me.leolin.shortcutbadger.ShortcutBadgeException;
+import me.leolin.shortcutbadger.util.BroadcastHelper;
 
 /**
  * @author leolin
@@ -21,15 +22,28 @@ public class DefaultBadger implements Badger {
 
     @Override
     public void executeBadge(Context context, ComponentName componentName, int badgeCount) throws ShortcutBadgeException {
-        Intent intent = new Intent(INTENT_ACTION);
-        intent.putExtra(INTENT_EXTRA_BADGE_COUNT, badgeCount);
-        intent.putExtra(INTENT_EXTRA_PACKAGENAME, componentName.getPackageName());
-        intent.putExtra(INTENT_EXTRA_ACTIVITY_NAME, componentName.getClassName());
-        context.sendBroadcast(intent);
+            Intent intent = new Intent(INTENT_ACTION);
+            intent.putExtra(INTENT_EXTRA_BADGE_COUNT, badgeCount);
+            intent.putExtra(INTENT_EXTRA_PACKAGENAME, componentName.getPackageName());
+            intent.putExtra(INTENT_EXTRA_ACTIVITY_NAME, componentName.getClassName());
+        if (BroadcastHelper.canResolveBroadcast(context, intent)) {
+            context.sendBroadcast(intent);
+        } else {
+            throw new ShortcutBadgeException("unable to resolve intent: " + intent.toString());
+        }
     }
 
     @Override
     public List<String> getSupportLaunchers() {
-        return new ArrayList<String>(0);
+        return Arrays.asList(
+                "fr.neamar.kiss",
+                "com.quaap.launchtime",
+                "com.quaap.launchtime_official"
+        );
+    }
+
+    boolean isSupported(Context context) {
+        Intent intent = new Intent(INTENT_ACTION);
+        return BroadcastHelper.canResolveBroadcast(context, intent);
     }
 }

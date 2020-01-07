@@ -10,10 +10,9 @@ import com.facebook.drawee.generic.GenericDraweeHierarchy;
 import com.facebook.drawee.generic.GenericDraweeHierarchyBuilder;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.facebook.imagepipeline.common.ResizeOptions;
+import com.facebook.imagepipeline.common.RotationOptions;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
-
-import java.io.File;
 
 import im.actor.core.entity.Avatar;
 import im.actor.core.entity.AvatarImage;
@@ -27,6 +26,7 @@ import im.actor.runtime.actors.Props;
 import im.actor.runtime.files.FileSystemReference;
 import im.actor.sdk.controllers.activity.BaseActivity;
 import im.actor.sdk.controllers.conversation.view.FastThumbLoader;
+import im.actor.sdk.util.Files;
 import im.actor.sdk.util.Screen;
 
 import static im.actor.runtime.actors.ActorSystem.system;
@@ -124,25 +124,16 @@ public class CallBackgroundAvatarView extends SimpleDraweeView {
             @Override
             public void onDownloaded(FileSystemReference reference) {
 
-                blurActor.send(new BlurActor.RequestBlur(reference.getDescriptor(), 10, new BlurActor.BluredListener() {
-                    @Override
-                    public void onBlured(final File f) {
-                        ((BaseActivity) getContext()).runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                ImageRequest request = ImageRequestBuilder.newBuilderWithSource(Uri.fromFile(f))
-                                        .setResizeOptions(new ResizeOptions(Screen.getWidth(), Screen.getHeight()))
-                                        .build();
-                                PipelineDraweeController controller = (PipelineDraweeController) Fresco.newDraweeControllerBuilder()
-                                        .setOldController(getController())
-                                        .setImageRequest(request)
-                                        .build();
-                                setController(controller);
-                            }
-                        });
-
-                    }
-                }));
+                blurActor.send(new BlurActor.RequestBlur(reference.getDescriptor(), 10, f -> ((BaseActivity) getContext()).runOnUiThread(() -> {
+                    ImageRequest request = ImageRequestBuilder.newBuilderWithSource(/*Uri.fromFile(f)*/Files.getUri(getContext(), f))
+                            .setResizeOptions(new ResizeOptions(Screen.getWidth(), Screen.getHeight()))
+                            .build();
+                    PipelineDraweeController controller = (PipelineDraweeController) Fresco.newDraweeControllerBuilder()
+                            .setOldController(getController())
+                            .setImageRequest(request)
+                            .build();
+                    setController(controller);
+                })));
             }
         });
     }
@@ -159,8 +150,8 @@ public class CallBackgroundAvatarView extends SimpleDraweeView {
         }
         currentId = 0;
 
-        ImageRequest request = ImageRequestBuilder.newBuilderWithSource(Uri.fromFile(new File(fileName)))
-                .setAutoRotateEnabled(true)
+        ImageRequest request = ImageRequestBuilder.newBuilderWithSource(/*Uri.fromFile(new File(fileName))*/ Files.getUri(getContext(), fileName))
+                .setRotationOptions(RotationOptions.autoRotate())
                 .build();
         PipelineDraweeController controller = (PipelineDraweeController) Fresco.newDraweeControllerBuilder()
                 .setOldController(getController())

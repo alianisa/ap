@@ -32,10 +32,12 @@ final class IndexerStream(val client: ElasticClient, val indexName: String)(impl
   private val db = DbExtension(system).db
 
   def run(): Unit = {
+    log.debug("It will run the IndexerStream")
     // TODO: rewrite with stream DSL
     Source
       .fromGraph(MessagesSource(MessagesSource.DefaultFetchCount))
       .map { message ⇒
+        log.debug("Parsing message")
         message → parseMessage(message.messageContentData)
       }
       .alsoTo(errorLoggingSink)
@@ -65,6 +67,7 @@ final class IndexerStream(val client: ElasticClient, val indexName: String)(impl
           )
           parsed match {
             case ApiTextMessage(text, _, _) ⇒
+              log.debug("Message {}",text)
               (toIndex(ContentType.Text, text, userIds) +: URLExtractor.extractLinks(text).map { link ⇒
                 toIndex(ContentType.Link, link, userIds)
               }).toVector
@@ -87,25 +90,6 @@ final class IndexerStream(val client: ElasticClient, val indexName: String)(impl
   private def fetchUserIds(peer: Peer, randomId: Long) =
     db.run(HistoryMessageRepo.findUserIds(peer, Set(randomId))) map (_.toSet)
 
-  //                            ~> parseLinks  ~>
-  // getMessage ~> parseMessage ~> extractText ~> constructMessage ~> group100Messages ~>  indexMessages
-  //            ~> getUsers                    ~>
-
-  //  GraphDSL.create() { implicit builder =>
-  //    import GraphDSL.Implicits._
-  //
-  //    val messages = builder.add(MessagesSource(MessagesSource.DefaultFetchCount))
-  //
-  //    UnzipWith { e: HistoryMessage =>
-  //      (e, e, e, e)
-  //    }
-  //
-  //    messages ~>
-  //
-  //
-  //    ClosedShape
-  //  }
-
   private def bulkIndex(messages: Seq[IndexedMessage]): Future[Unit] = indexMessages(messages)
 
 }
@@ -120,9 +104,12 @@ object MessagesSource {
 final class MessagesSource(maxFetchCount: Int)(system: ActorSystem)
   extends GraphStage[SourceShape[HistoryMessage]] {
   import system.dispatcher
+
   private val out: Outlet[HistoryMessage] = Outlet("MessagesSourceOut")
 
   def shape: SourceShape[HistoryMessage] = SourceShape(out)
+
+  private val log = Logging(system, getClass)
 
   def createLogic(inheritedAttributes: Attributes): GraphStageLogic =
     new TimerGraphStageLogic(shape) {
@@ -168,29 +155,31 @@ final class MessagesSource(maxFetchCount: Int)(system: ActorSystem)
 
       private def prefetchMessages() = {
         canFetchMore = false
-        db.run(HistoryMessageRepo.uniqueAsc(lastDate, lastRandomId, maxFetchCount)).onComplete(callback)
-      }
-
-      private lazy val callback: Try[Seq[HistoryMessage]] ⇒ Unit =
-        getAsyncCallback[Try[Seq[HistoryMessage]]] {
-          case Success(messages) ⇒
-            messages match {
-              case Seq() ⇒ // no new messages, schedule refetch in 30 seconds
+        db.run(HistoryMessageRepo.uniqueAsc(lastDate, lastRandomId, maxFetchCount)).onComplete(historyMessages => {
+          historyMessages match {
+            case Success(messages) => {
+              if(messages.isEmpty){
                 canFetchMore = false
                 system.log.debug("No more messages to index, will fetch more after 30 seconds")
                 scheduleOnce(FetchLater, 30.seconds)
-              case _ :+ last ⇒
+              }else{
+                val last = messages.last
                 canFetchMore = true
                 lastRandomId = last.randomId
                 lastDate = last.date
                 buf ++= messages
+              }
+              deliverBuf()
             }
-            deliverBuf()
-          case Failure(err) ⇒
-            system.log.warning("Failed to fetch messages, will retry later")
-            canFetchMore = true
-            fail(out, err)
-        }.invoke(_)
+            case Failure(err) => {
+              log.error(err.getMessage, err)
+              system.log.warning("Failed to fetch messages, will retry later")
+              canFetchMore = true
+              fail(out, err)
+            }
+          }
+        });
+      }
     }
 
 }

@@ -140,7 +140,7 @@ open class AAExecutions {
         }
     }
 
-    class fileprivate func showProgress() -> MBProgressHUD {
+    class func showProgress() -> MBProgressHUD {
         let window = UIApplication.shared.windows[0]
         let hud = MBProgressHUD(view: window)
         hud.mode = MBProgressHUDMode.indeterminate

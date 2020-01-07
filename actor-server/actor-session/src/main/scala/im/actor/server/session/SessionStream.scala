@@ -36,49 +36,47 @@ private[session] object SessionStream {
     rpcHandler:     ActorRef,
     updatesHandler: ActorRef,
     reSender:       ActorRef
-  )(implicit context: ActorContext) = {
-    GraphDSL.create() { implicit builder ⇒
-      import GraphDSL.Implicits._
+  )(implicit context: ActorContext) = GraphDSL.create() { implicit builder ⇒
+    import GraphDSL.Implicits._
 
-      import SessionStreamMessage._
+    import SessionStreamMessage._
 
-      val discr = builder.add(new SessionMessageDiscriminator)
+    val discr = builder.add(new SessionMessageDiscriminator)
 
-      // TODO: think about buffer sizes and overflow strategies
-      val rpc = discr.out1.buffer(100, OverflowStrategy.backpressure)
-      val subscribe = discr.out2.buffer(100, OverflowStrategy.backpressure)
-      val incomingAck = discr.out4.buffer(100, OverflowStrategy.backpressure).map(in)
-      val outOutgoingAcks = discr.out0.buffer(100, OverflowStrategy.backpressure).map(out)
-      val outRequestResend = discr.out3.buffer(100, OverflowStrategy.backpressure).map(in)
-      val outResender = discr.out5.buffer(100, OverflowStrategy.backpressure)
+    // TODO: think about buffer sizes and overflow strategies
+    val rpc = discr.out1.buffer(100, OverflowStrategy.backpressure)
+    val subscribe = discr.out2.buffer(100, OverflowStrategy.backpressure)
+    val incomingAck = discr.out4.buffer(100, OverflowStrategy.backpressure).map(in)
+    val outOutgoingAcks = discr.out0.buffer(100, OverflowStrategy.backpressure).map(out)
+    val outRequestResend = discr.out3.buffer(100, OverflowStrategy.backpressure).map(in)
+    val outResender = discr.out5.buffer(100, OverflowStrategy.backpressure)
 
-      val rpcRequestSubscriber = builder.add(Sink.fromSubscriber(ActorSubscriber[HandleRpcRequest](rpcHandler)))
-      val rpcResponsePublisher = builder.add(Source.fromPublisher(ActorPublisher[(Option[RpcResult], Long)](rpcHandler)).map(out))
+    val rpcRequestSubscriber = builder.add(Sink.fromSubscriber(ActorSubscriber[HandleRpcRequest](rpcHandler)))
+    val rpcResponsePublisher = builder.add(Source.fromPublisher(ActorPublisher[(Option[RpcResult], Long)](rpcHandler)).map(out))
 
-      val updatesSubscriber = builder.add(Sink.fromSubscriber(ActorSubscriber[SubscribeCommand](updatesHandler)))
-      val updatesPublisher = builder.add(Source.fromPublisher(ActorPublisher[(UpdateBox, Option[String])](updatesHandler)).map(out))
+    val updatesSubscriber = builder.add(Sink.fromSubscriber(ActorSubscriber[SubscribeCommand](updatesHandler)))
+    val updatesPublisher = builder.add(Source.fromPublisher(ActorPublisher[(UpdateBox, Option[String])](updatesHandler)).map(out))
 
-      val reSendSubscriber = builder.add(Sink.fromSubscriber(ActorSubscriber[ReSenderMessage](reSender)))
-      val reSendPublisher = builder.add(Source.fromPublisher(ActorPublisher[MessageBox](reSender)))
+    val reSendSubscriber = builder.add(Sink.fromSubscriber(ActorSubscriber[ReSenderMessage](reSender)))
+    val reSendPublisher = builder.add(Source.fromPublisher(ActorPublisher[MessageBox](reSender)))
 
-      val merge = builder.add(MergePreferred[ReSenderMessage](4))
-      val mergePriority = builder.add(MergePreferred[ReSenderMessage](1))
+    val merge = builder.add(MergePreferred[ReSenderMessage](4))
+    val mergePriority = builder.add(MergePreferred[ReSenderMessage](1))
 
-      // @format: OFF
+    // @format: OFF
 
-      incomingAck      ~> mergePriority.preferred
-      outOutgoingAcks  ~> mergePriority        ~> merge.preferred
-                          outRequestResend     ~> merge ~> reSendSubscriber
-      rpc              ~> rpcRequestSubscriber
-                          rpcResponsePublisher ~> merge
-      subscribe        ~> updatesSubscriber
-                          updatesPublisher     ~> merge
-                          outResender          ~> merge
+    incomingAck      ~> mergePriority.preferred
+    outOutgoingAcks  ~> mergePriority        ~> merge.preferred
+                        outRequestResend     ~> merge ~> reSendSubscriber
+    rpc              ~> rpcRequestSubscriber
+                        rpcResponsePublisher ~> merge
+    subscribe        ~> updatesSubscriber
+                        updatesPublisher     ~> merge
+                        outResender          ~> merge
 
-      // @format: ON
+    // @format: ON
 
-      FlowShape(discr.in, reSendPublisher.out)
-    }
+    FlowShape(discr.in, reSendPublisher.out)
   }
 
   private def in(m: MessageAck): ReSenderMessage = ReSenderMessage.IncomingAck(m.messageIds)

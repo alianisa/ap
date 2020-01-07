@@ -3,6 +3,7 @@ package im.actor.sdk.controllers.conversation;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,6 +35,7 @@ import im.actor.sdk.controllers.conversation.placeholder.EmptyChatPlaceholder;
 import im.actor.sdk.controllers.conversation.quote.QuoteCallback;
 import im.actor.sdk.controllers.conversation.quote.QuoteFragment;
 import im.actor.sdk.controllers.conversation.toolbar.ChatToolbarFragment;
+import im.actor.sdk.util.SnackUtils;
 
 import static im.actor.sdk.util.ActorSDKMessenger.groups;
 import static im.actor.sdk.util.ActorSDKMessenger.messenger;
@@ -247,7 +249,10 @@ public class ChatFragment extends BaseFragment implements InputBarCallback, Mess
                     inputOverlayText.setText(getString(R.string.chat_mute));
                 }
             } else if (groupVM.getIsCanJoin().get()) {
-                messenger().joinGroup(groupVM.getId());
+                messenger().joinGroup(groupVM.getId())
+                        .failure(e ->{
+                            SnackUtils.showError(getView(), e.getMessage(),Snackbar.LENGTH_LONG, null, null);
+                        });
             } else {
                 // TODO: Rejoin
             }

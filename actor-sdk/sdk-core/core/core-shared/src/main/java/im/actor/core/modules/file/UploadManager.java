@@ -220,7 +220,7 @@ public class UploadManager extends ModuleActor {
         }
     }
 
-    public void onUploadTaskComplete(long rid, FileReference fileReference, FileSystemReference reference) {
+    public void onUploadTaskComplete(long rid, FileReference fileReference, FileSystemReference fileSystemReference) {
         if (LOG) {
             Log.d(TAG, "Upload #" + rid + " complete");
         }
@@ -239,12 +239,13 @@ public class UploadManager extends ModuleActor {
 
         // Saving reference to uploaded file
         context().getFilesModule().getDownloadedEngine().addOrUpdateItem(new Downloaded(fileReference.getFileId(),
-                fileReference.getFileSize(), reference.getDescriptor()));
+                fileReference.getFileSize(), fileSystemReference.getDescriptor()));
 
         ArrayList<UploadFileCallback> clist = callbacks.get(rid);
+
         if (clist != null) {
             for (final UploadFileCallback callback : clist) {
-                im.actor.runtime.Runtime.dispatch(() -> callback.onUploaded());
+                im.actor.runtime.Runtime.dispatch(() -> callback.onUploaded(fileSystemReference));
             }
         }
 

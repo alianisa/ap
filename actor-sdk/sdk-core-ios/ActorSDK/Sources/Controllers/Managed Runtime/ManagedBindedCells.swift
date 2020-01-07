@@ -68,7 +68,7 @@ open class AABindedRows<BindCell>: NSObject, AAManagedRange, ARDisplayList_Apple
     
     open func rangeCellForItem(_ table: AAManagedTable, indexPath: AARangeIndexPath) -> UITableViewCell {
         let data = displayList.item(with: jint(indexPath.item)) as! BindCell.BindData
-        let cell = self.table.tableView.dequeueReusableCell(withIdentifier: cellReuseId, for: indexPath.indexPath as IndexPath) as! BindCell
+        let cell = table.tableView.dequeueReusableCell(withIdentifier: cellReuseId, for: indexPath.indexPath as IndexPath) as! BindCell
         cell.bind(data, table: table, index: indexPath.item, totalCount: lastItemsCount)
         displayList.touch(with: jint(indexPath.item))
         didBind?(cell, data)

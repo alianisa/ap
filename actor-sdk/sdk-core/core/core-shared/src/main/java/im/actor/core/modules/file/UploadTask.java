@@ -137,7 +137,7 @@ public class UploadTask extends ModuleActor {
                 })
                 .failure(e -> {
                     if (LOG) {
-                        Log.w(TAG, "Error during initialization of upload");
+                        Log.w(TAG, "Error during initialization of upload: "+e.getMessage());
                     }
                     reportError();
                 });
@@ -176,7 +176,6 @@ public class UploadTask extends ModuleActor {
                     if (isWriteToDestProvider || alreadyInTemp) {
                         FileSystemReference reference = Storage.commitTempFile(alreadyInTemp ? srcReference : destReference, location.getFileId(),
                                 location.getFileName());
-                        //removind old file
                         Storage.removeFileFromDescriptor(srcReference.getDescriptor());
                         reportComplete(location, reference);
                     } else {

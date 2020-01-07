@@ -48,9 +48,9 @@ public class Emoji {
     private static boolean loadingEmoji[][] = new boolean[5][splitCount];
 
     private static final int[][] cols = {
-            {15, 15, 15, 15},
+            {16, 16, 16, 16},
             {6, 6, 6, 6},
-            {8, 8, 8, 8},
+            {9, 9, 9, 9},
             {9, 9, 9, 9},
             {10, 10, 10, 10}
     };
@@ -68,6 +68,7 @@ public class Emoji {
         } else {
             emojiFullSize = 64;
         }
+
         drawImgSize = Screen.dp(20);
         bigImgSize = Screen.dp(AndroidUtils.isTablet() ? 40 : 32);
 
@@ -95,29 +96,12 @@ public class Emoji {
                 scale = 2.0f;
                 imageResize = 2;
             } else if (Screen.getDensity() <= 1.5f) {
-                //scale = 3.0f;
-                //imageResize = 2;
                 scale = 2.0f;
             } else if (Screen.getDensity() <= 2.0f) {
                 scale = 2.0f;
             } else {
                 scale = 2.0f;
             }
-
-            /*String q = "";
-            for (int a = 0; a < EmojiData.data.length; a++) {
-                String arr[] = EmojiData.data[a];
-                for (int b = 0; b < arr.length; b++) {
-                    String emoji = arr[b];
-                    for (int c = 0; c < emoji.length(); c++) {
-                        if (emoji.charAt(c) == '\ufe0f') {
-                            q += String.format("0x%x, ", (int) emoji.charAt(0));
-                            break;
-                        }
-                    }
-                }
-            }
-            FileLog.e(q);*/
 
             String imageName;
             File imageFile;
@@ -135,7 +119,7 @@ public class Emoji {
                         imageFile.delete();
                     }
                 }
-                for (int a = 8; a < 11; a++) {
+                for (int a = 8; a < 12; a++) {
                     imageName = String.format(Locale.US, "v%d_emoji%.01fx_%d.png", a, scale, page);
                     imageFile = AndroidContext.getContext().getFileStreamPath(imageName);
                     if (imageFile.exists()) {
@@ -147,7 +131,7 @@ public class Emoji {
             }
             Bitmap bitmap = null;
             try {
-                InputStream is = AndroidContext.getContext().getAssets().open("emoji/" + String.format(Locale.US, "v11_emoji%.01fx_%d_%d.png", scale, page, page2));
+                InputStream is = AndroidContext.getContext().getAssets().open("emoji/" + String.format(Locale.US, "v12_emoji%.01fx_%d_%d.png", scale, page, page2));
                 BitmapFactory.Options opts = new BitmapFactory.Options();
                 opts.inJustDecodeBounds = false;
                 opts.inSampleSize = imageResize;
@@ -158,9 +142,7 @@ public class Emoji {
             }
 
             final Bitmap finalBitmap = bitmap;
-
             emojiBmp[page][page2] = finalBitmap;
-            loadingEmoji[page][page2] = false;
 
         } catch (Throwable x) {
             Log.e(Emoji.class.getName(), x);
@@ -223,6 +205,12 @@ public class Emoji {
     public static Drawable getEmojiBigDrawable(String code) {
         EmojiDrawable ed = getEmojiDrawable(code);
         if (ed == null) {
+            CharSequence newCode = EmojiData.emojiAliasMap.get(code);
+            if (newCode != null) {
+                ed = Emoji.getEmojiDrawable(newCode);
+            }
+        }
+        if (ed == null) {
             return null;
         }
         ed.setBounds(0, 0, bigImgSize, bigImgSize);
@@ -261,10 +249,19 @@ public class Emoji {
                 if (loadingEmoji[info.page][info.page2]) {
                     return;
                 }
+
+                loadingEmoji[info.page][info.page2] = true;
+
                 loadEmoji(info.page, info.page2);
+
+                loadingEmoji[info.page][info.page2] = false;
+
+                canvas.drawRect(getBounds(), placeholderPaint);
+                return;
             }
 
             Rect b;
+
             if (fullSize) {
                 b = getDrawRect();
             } else {
@@ -393,14 +390,31 @@ public class Emoji {
                         emojiOnly = null;
                     }
                 }
-                if (doneEmoji && i + 2 < length && cs.charAt(i + 1) == 0xD83C) {
-                    char next = cs.charAt(i + 2);
-                    if (next >= 0xDFFB && next <= 0xDFFF) {
-                        emojiCode.append(cs.subSequence(i + 1, i + 3));
-                        startLength += 2;
-                        i += 2;
+
+                if (doneEmoji && i + 2 < length) {
+                    char next = cs.charAt(i + 1);
+                    if (next == 0xD83C) {
+                        next = cs.charAt(i + 2);
+                        if (next >= 0xDFFB && next <= 0xDFFF) {
+                            emojiCode.append(cs.subSequence(i + 1, i + 3));
+                            startLength += 2;
+                            i += 2;
+                        }
+                    } else if (emojiCode.length() >= 2 && emojiCode.charAt(0) == 0xD83C && emojiCode.charAt(1) == 0xDFF4 && next == 0xDB40) {
+                        i++;
+                        while (true) {
+                            emojiCode.append(cs.subSequence(i, i + 2));
+                            startLength += 2;
+                            i += 2;
+                            if (i >= cs.length() || cs.charAt(i) != 0xDB40) {
+                                i--;
+                                break;
+                            }
+                        }
+
                     }
                 }
+
                 previousGoodIndex = i;
                 for (int a = 0; a < 3; a++) {
                     if (i + 1 < length) {
@@ -432,7 +446,8 @@ public class Emoji {
                     if (emojiOnly != null) {
                         emojiOnly[0]++;
                     }
-                    drawable = Emoji.getEmojiDrawable(emojiCode.subSequence(0, emojiCode.length()));
+                    CharSequence code = emojiCode.subSequence(0, emojiCode.length());
+                    drawable = Emoji.getEmojiDrawable(code);
                     if (drawable != null) {
                         span = new EmojiSpan(drawable, DynamicDrawableSpan.ALIGN_BOTTOM, size, fontMetrics);
                         s.setSpan(span, startIndex, startIndex + startLength, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);

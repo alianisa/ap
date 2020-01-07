@@ -9,7 +9,6 @@ open class AADialogSearchCell: AATableViewCell, AABindedSearchCell {
     public typealias BindData = ACSearchResult
     
     open static func bindedCellHeight(_ item: BindData) -> CGFloat {
-        
         return 76
     }
     

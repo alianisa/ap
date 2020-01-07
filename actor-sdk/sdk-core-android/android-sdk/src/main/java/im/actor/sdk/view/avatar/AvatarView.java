@@ -11,10 +11,9 @@ import com.facebook.drawee.generic.GenericDraweeHierarchyBuilder;
 import com.facebook.drawee.generic.RoundingParams;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.facebook.imagepipeline.common.ResizeOptions;
+import com.facebook.imagepipeline.common.RotationOptions;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
-
-import java.io.File;
 
 import im.actor.core.entity.Avatar;
 import im.actor.core.entity.AvatarImage;
@@ -27,6 +26,7 @@ import im.actor.core.viewmodel.FileVMCallback;
 import im.actor.core.viewmodel.GroupVM;
 import im.actor.core.viewmodel.UserVM;
 import im.actor.runtime.files.FileSystemReference;
+import im.actor.sdk.util.Files;
 
 import static im.actor.sdk.util.ActorSDKMessenger.messenger;
 
@@ -136,7 +136,8 @@ public class AvatarView extends SimpleDraweeView {
             public void onDownloaded(FileSystemReference reference) {
 
 
-                ImageRequest request = ImageRequestBuilder.newBuilderWithSource(Uri.fromFile(new File(reference.getDescriptor())))
+                ImageRequest request = ImageRequestBuilder
+                        .newBuilderWithSource(Files.getUri(getContext(), reference.getDescriptor())/* Uri.fromFile(new File(reference.getDescriptor()))*/)
                         .setResizeOptions(new ResizeOptions(size, size))
                         .build();
                 PipelineDraweeController controller = (PipelineDraweeController) Fresco.newDraweeControllerBuilder()
@@ -160,9 +161,10 @@ public class AvatarView extends SimpleDraweeView {
         }
         currentId = 0;
 
-        ImageRequest request = ImageRequestBuilder.newBuilderWithSource(Uri.fromFile(new File(fileName)))
+        ImageRequest request = ImageRequestBuilder
+                .newBuilderWithSource(Files.getUri(getContext(), fileName) /*Uri.fromFile(new File(fileName))*/)
                 .setResizeOptions(new ResizeOptions(size, size))
-                .setAutoRotateEnabled(true)
+                .setRotationOptions(RotationOptions.autoRotate())
                 .build();
         PipelineDraweeController controller = (PipelineDraweeController) Fresco.newDraweeControllerBuilder()
                 .setOldController(getController())

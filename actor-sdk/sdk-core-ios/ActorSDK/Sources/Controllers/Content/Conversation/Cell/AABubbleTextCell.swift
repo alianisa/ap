@@ -35,7 +35,7 @@ open class AABubbleTextCell : AABubbleCell {
     
     fileprivate var cellLayout: TextCellLayout!
     
-    public init(frame: CGRect) {
+    @objc public init(frame: CGRect) {
         super.init(frame: frame, isFullSize: false)
         
         messageText.displaysAsynchronously = true
@@ -53,7 +53,7 @@ open class AABubbleTextCell : AABubbleCell {
         }
         
         messageText.highlightLongPressAction = { (containerView: UIView, text: NSAttributedString, range: NSRange, rect: CGRect) -> () in
-            self.bubble
+            //self.bubble
             let attributes = text.attributes(at: range.location, effectiveRange: nil)
             if let attrs = attributes[NSAttributedStringKey("YYTextHighlight")] as? YYTextHighlight {
                 if let url = attrs.userInfo!["url"] as? String {
@@ -80,7 +80,6 @@ open class AABubbleTextCell : AABubbleCell {
         
         statusView.contentMode = UIViewContentMode.center
         
-    
         contentView.addSubview(messageText)
         contentView.addSubview(dateText)
         contentView.addSubview(statusView)

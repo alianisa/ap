@@ -6,12 +6,12 @@ object Dependencies {
   object V {
     val actorCommons = "0.0.27-SNAPSHOT"
     val actorBotkit = "1.0.108"
-    val akka = "2.4.19"
+    val akka = "2.4.20"
     val akkaHttp = "2.4.11.2"
     val akkaHttpJson = "1.10.0"
     val cats = "0.7.2"
     val circe = "0.5.1"
-    val elastic4s = "2.4.0"
+    val elastic4s = "2.4.1"
     val kamon = "0.5.2"
     val slick = "3.1.1"
     val slickPg = "0.14.3"
@@ -76,7 +76,7 @@ object Dependencies {
     val slickPgDate2            = "com.github.tminglei"           %% "slick-pg_date2"                % V.slickPg
     val slickTestkit            = "com.typesafe.slick"            %% "slick-testkit"                 % V.slick
     val flywayCore              = "org.flywaydb"                  %  "flyway-core"                   % "3.1"
-    val hikariCP                = "com.zaxxer"                    %  "HikariCP"                      % "2.4.6"
+    val hikariCP                = "com.zaxxer"                    %  "HikariCP"                      % "2.7.4"
 
     val amazonaws               = "com.amazonaws"                 %  "aws-java-sdk-s3"               % "1.11.32"
     val awsWrap                 = "com.github.dwhjames"           %% "aws-wrap"                      % "0.8.0"
@@ -116,7 +116,7 @@ object Dependencies {
     val alpn                    = "org.eclipse.jetty.alpn"        % "alpn-api"                       % "1.1.3.v20160715" % "runtime"
     //val tcnative                = "io.netty"                      % "netty-tcnative"                 % "1.1.33.Fork25" classifier "linux-x86_64"
 
-    val tcnative                = "io.netty"                      % "netty-tcnative-boringssl-static"  % "1.1.33.Fork25"
+    val tcnative                = "io.netty"                      % "netty-tcnative-boringssl-static"  % "2.0.0.Final"
     val silencer                = "com.github.ghik"               % "silencer-lib"                   % "0.4"
 
 

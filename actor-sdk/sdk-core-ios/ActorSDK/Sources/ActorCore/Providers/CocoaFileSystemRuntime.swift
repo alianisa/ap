@@ -26,7 +26,7 @@ open class CocoaFiles {
     
     func createTempFile() -> ARFileSystemReference! {
         let fileName = "/tmp/\(UUID().uuidString)"
-        FileManager.default.createFile(atPath: documentsFolder + fileName, contents: nil, attributes: nil)
+        manager.createFile(atPath: documentsFolder + fileName, contents: nil, attributes: nil)
         return CocoaFile(path: fileName)
     }
     

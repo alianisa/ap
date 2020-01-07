@@ -43,8 +43,8 @@ import im.actor.runtime.storage.KeyValueEngine;
 public class UsersModule extends AbsModule implements BusSubscriber {
 
     private UserRouterInt userRouter;
-    private KeyValueEngine<User> users;
     private MVVMCollection<User, UserVM> collection;
+    private KeyValueEngine<User> users;
 
     public UsersModule(ModuleContext context) {
         super(context);

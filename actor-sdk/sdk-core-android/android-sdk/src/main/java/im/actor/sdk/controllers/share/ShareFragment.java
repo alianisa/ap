@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import im.actor.core.entity.Peer;
 import im.actor.core.entity.PeerType;
 import im.actor.core.entity.content.AbsContent;
+import im.actor.runtime.Log;
 import im.actor.sdk.ActorSDK;
 import im.actor.sdk.R;
 import im.actor.sdk.controllers.BaseFragment;
@@ -36,6 +37,8 @@ public class ShareFragment extends BaseFragment implements DialogsFragmentDelega
     public static final String ARG_INTENT_TYPE = "intent_type";
 
     private ShareAction shareAction;
+    private String mimeType;
+
 
     public ShareFragment() {
         setRootFragment(true);
@@ -50,17 +53,17 @@ public class ShareFragment extends BaseFragment implements DialogsFragmentDelega
 
         Bundle args = getArguments();
         String action = args.getString(ARG_INTENT_ACTION);
+
         if (action != null) {
-            String type = args.getString(ARG_INTENT_TYPE);
+            mimeType = args.getString(ARG_INTENT_TYPE);
             if (action.equals(Intent.ACTION_SEND)) {
-                if ("text/plain".equals(type)) {
+                if ("text/plain".equals(mimeType)) {
                     shareAction = new ShareAction(args.getString(Intent.EXTRA_TEXT));
                 } else if (args.getParcelable(Intent.EXTRA_STREAM) != null) {
                     ArrayList<String> s = new ArrayList<>();
                     s.add(args.getParcelable(Intent.EXTRA_STREAM).toString());
                     shareAction = new ShareAction(s);
                 } else {
-                    // Unable to load
                     getActivity().finish();
                 }
             } else if (action.equals(Intent.ACTION_SEND_MULTIPLE)) {
@@ -74,11 +77,9 @@ public class ShareFragment extends BaseFragment implements DialogsFragmentDelega
                 if (s.size() > 0) {
                     shareAction = new ShareAction(s);
                 } else {
-                    // Unable to load
                     getActivity().finish();
                 }
             } else {
-                // Unable to load
                 getActivity().finish();
             }
         } else {
@@ -91,16 +92,15 @@ public class ShareFragment extends BaseFragment implements DialogsFragmentDelega
             } else if (args.containsKey(Intents.EXTRA_FORWARD_CONTENT)) {
                 shareAction = new ShareAction(args.getByteArray(Intents.EXTRA_FORWARD_CONTENT));
             } else {
-                // Unable to load
                 getActivity().finish();
             }
         }
 
         if (savedInstanceState == null) {
             getChildFragmentManager().beginTransaction()
-                    .add(R.id.content, new DialogsFragment())
-                    .add(R.id.search, new GlobalSearchFragment())
-                    .add(R.id.placeholder, new GlobalPlaceholderFragment())
+                    .replace(R.id.content, new DialogsFragment())
+                    .replace(R.id.search, new GlobalSearchFragment())
+                    .replace(R.id.placeholder, new GlobalPlaceholderFragment())
                     .commit();
         }
 
@@ -111,6 +111,7 @@ public class ShareFragment extends BaseFragment implements DialogsFragmentDelega
     public void onPeerClicked(Peer peer) {
         Activity activity = getActivity();
         String name;
+
         if (peer.getPeerType() == PeerType.PRIVATE) {
             name = messenger().getUser(peer.getPeerId()).getName().get();
         } else if (peer.getPeerType() == PeerType.GROUP) {
@@ -119,6 +120,7 @@ public class ShareFragment extends BaseFragment implements DialogsFragmentDelega
             activity.finish();
             return;
         }
+
         new AlertDialog.Builder(getActivity())
                 .setMessage(getActivity().getString(R.string.confirm_share) + " " + name + "?")
                 .setPositiveButton(R.string.dialog_ok, (dialog, which) -> {
@@ -135,12 +137,11 @@ public class ShareFragment extends BaseFragment implements DialogsFragmentDelega
                         intent.putExtra(Intents.EXTRA_FORWARD_CONTENT, shareAction.getForwardTextRaw());
                     }
 
-
                     if (shareAction.getText() != null) {
                         messenger().sendMessage(peer, shareAction.getText());
                     } else if (shareAction.getUris().size() > 0) {
                         for (String sendUri : shareAction.getUris()) {
-                            executeSilent(messenger().sendUri(peer, Uri.parse(sendUri), ActorSDK.sharedActor().getAppName()));
+                            executeSilent(messenger().sendUri(peer, Uri.parse(sendUri), ActorSDK.sharedActor().getAppName(), mimeType));
                         }
                     } else if (shareAction.getUserId() != null) {
                         String userName = users().get(shareAction.getUserId()).getName().get();
@@ -152,7 +153,7 @@ public class ShareFragment extends BaseFragment implements DialogsFragmentDelega
                         try {
                             messenger().forwardContent(peer, AbsContent.parse(shareAction.getDocContent()));
                         } catch (IOException e) {
-                            e.printStackTrace();
+                            Log.e(ShareFragment.class.getName(), e);
                         }
                     }
 

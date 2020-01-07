@@ -25,7 +25,6 @@ import im.actor.core.ConfigurationBuilder;
 import im.actor.core.DeviceCategory;
 import im.actor.core.PlatformType;
 import im.actor.core.entity.Peer;
-import im.actor.core.network.parser.BaseParser;
 import im.actor.runtime.Log;
 import im.actor.runtime.Runtime;
 import im.actor.runtime.actors.ActorSystem;
@@ -62,7 +61,15 @@ public class ActorSDK {
     /**
      * ActorSDKCreateListener default implementation
      */
-    protected ActorSDKCreateListener sdkCreateListener = ActorSDKCreateListener.stub;
+    protected ActorSDKCreateListener sdkCreateListener = new ActorSDKCreateListener() {
+        @Override
+        public void onCreateActor(Application application) {
+        }
+        @Override
+        public AndroidMessenger createMessenger(Application application, ConfigurationBuilder builder) {
+            return new AndroidMessenger(application, builder.build());
+        }
+    };
 
     //
     // SDK Objects
@@ -222,9 +229,6 @@ public class ActorSDK {
                 "6709b8b733a9f20a96b9091767ac19fd6a2a978ba0dccc85a9ac8f6b6560ac1a"
         };
     }
-
-    private BaseParser[] rpcParsers = new BaseParser[]{};
-    private BaseParser[] updateParsers = new BaseParser[]{};
 
     /**
      * Shared ActorSDK. Use this method to get instance of SDK for configuration and starting up
@@ -441,22 +445,6 @@ public class ActorSDK {
     public void setEndpoints(String[] endpoints) {
         this.endpoints = endpoints;
         this.trustedKeys = new String[0];
-    }
-
-    public BaseParser[] getRpcParsers() {
-        return rpcParsers;
-    }
-
-    public void setRpcParsers(BaseParser[] rpcParsers) {
-        this.rpcParsers = rpcParsers;
-    }
-
-    public BaseParser[] getUpdateParsers() {
-        return updateParsers;
-    }
-
-    public void setUpdateParsers(BaseParser[] updateParsers) {
-        this.updateParsers = updateParsers;
     }
 
     /**

@@ -52,7 +52,7 @@ object Session {
   }
 
   private[this] val extractShardId: ShardRegion.ExtractShardId = {
-    case SessionEnvelope(authId, sessionId, _) ⇒ (authId % 10).toString // TODO: configurable
+    case SessionEnvelope(authId, sessionId, _) ⇒ (authId % 10).toString
   }
 
   private val typeName = "Session"
@@ -165,6 +165,9 @@ final private class Session(config: SessionConfig)
 
   def anonymous: Receive = {
     case HandleMessageBox(messageBoxBytes, remoteAddr) ⇒
+
+      log.debug("HandleMessageBox...")
+
       idleControl.keepAlive()
 
       withValidMessageBox(messageBoxBytes.toByteArray) { mb ⇒
@@ -180,8 +183,6 @@ final private class Session(config: SessionConfig)
           val encode = b.add(Flow[MessageBox].map(MessageBoxCodec.encode(_).require))
           val bcast = b.add(Broadcast[BitVector](2))
 
-          // format: OFF
-
           source ~> graph ~> encode ~> bcast ~> sink
           bcast ~> Sink.onComplete { c ⇒
             c.failed foreach { e =>
@@ -189,8 +190,6 @@ final private class Session(config: SessionConfig)
             }
             self ! PoisonPill
           }
-
-          // format: ON
 
           ClosedShape
         }).run()
@@ -207,6 +206,7 @@ final private class Session(config: SessionConfig)
 
   def resolved(publisher: ActorRef, reSender: ActorRef): Receive = {
     case HandleMessageBox(messageBoxBytes, remoteAddr) ⇒
+      log.debug("resolved HandleMessageBox")
       idleControl.keepAlive()
       recordClient(sender(), reSender)
 
@@ -214,6 +214,7 @@ final private class Session(config: SessionConfig)
         publisher ! Tuple2(mb, ClientData(authId, sessionId, authData, remoteAddr.map(_.getHostAddress)))
       }
     case cmd: SubscribeCommand ⇒
+      log.debug("SubscribeCommand")
       idleControl.keepAlive()
 
       cmd match {
@@ -223,6 +224,7 @@ final private class Session(config: SessionConfig)
 
       publisher ! cmd
     case GetUpdateOptimizations() ⇒
+      log.debug("GetUpdateOptimizations")
       sender() ! GetUpdateOptimizationsAck(updateOptimizations.toSeq)
     case AuthorizeUser(userId, authSid, appId) ⇒ authorize(userId, authSid, appId, Some(sender()))
     case internal                              ⇒ handleInternal(internal, stashUnmatched = false)
@@ -313,7 +315,6 @@ final private class Session(config: SessionConfig)
 
   override def preRestart(reason: Throwable, message: Option[Any]): Unit = {
     super.preRestart(reason, message)
-
     log.error(reason, "Session failed")
   }
 }

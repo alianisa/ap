@@ -23,8 +23,6 @@ import com.facebook.imagepipeline.image.ImageInfo;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 
-import java.io.File;
-
 import im.actor.core.entity.FileReference;
 import im.actor.core.entity.Message;
 import im.actor.core.entity.content.AnimationContent;
@@ -45,6 +43,7 @@ import im.actor.sdk.controllers.conversation.view.FastBitmapDrawable;
 import im.actor.sdk.controllers.conversation.view.FastThumbLoader;
 import im.actor.sdk.controllers.docs.AbsDocsAdapter;
 import im.actor.sdk.controllers.docs.PhotoAdapter;
+import im.actor.sdk.util.Files;
 import im.actor.sdk.util.Screen;
 
 import static im.actor.sdk.util.ActorSDKMessenger.messenger;
@@ -253,7 +252,7 @@ public class PhotoViewHolder extends AbsDocsViewHolder {
                     }
 
                     @Override
-                    public void onUploaded() {
+                    public void onUploaded(FileSystemReference reference) {
                         // Nothing to do
                     }
                 });
@@ -361,7 +360,8 @@ public class PhotoViewHolder extends AbsDocsViewHolder {
                 if (drawingCache != null && !drawingCache.isRecycled()) {
                     previewView.getHierarchy().setPlaceholderImage(new FastBitmapDrawable(drawingCache));
                 }
-                Uri uri = Uri.fromFile(new File(reference.getDescriptor()));
+//                Uri uri = Uri.fromFile(new File(reference.getDescriptor()));
+                Uri uri = Files.getUri(previewView.getContext(), reference.getDescriptor());
                 bindImage(uri);
                 if (isAnimation) {
                     checkFastThumb();

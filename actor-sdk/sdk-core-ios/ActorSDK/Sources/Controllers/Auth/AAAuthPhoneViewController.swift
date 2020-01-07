@@ -4,9 +4,9 @@
 
 import Foundation
 
-class AAAuthPhoneViewController: AAAuthViewController, AACountryViewControllerDelegate {
+open class AAAuthPhoneViewController: AAAuthViewController, AACountryViewControllerDelegate {
     
-    let name: String
+    let name: String!
     
     let scrollView = UIScrollView()
     
@@ -30,11 +30,17 @@ class AAAuthPhoneViewController: AAAuthViewController, AACountryViewControllerDe
         super.init()
     }
     
-    required init(coder aDecoder: NSCoder) {
+    public override init() {
+        self.currentCountry = AATelephony.getCountry(AATelephony.loadDefaultISOCountry())
+        self.name = nil
+        super.init()
+    }
+    
+    required public init(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    override func viewDidLoad() {
+    override open func viewDidLoad() {
         
         view.backgroundColor = UIColor.white
         
@@ -171,7 +177,7 @@ class AAAuthPhoneViewController: AAAuthViewController, AACountryViewControllerDe
     
 
     
-    override func viewDidLayoutSubviews() {
+    override open func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
         welcomeLabel.frame = CGRect(x: 20, y: 90 - 66, width: view.width - 40, height: 28)
@@ -199,7 +205,7 @@ class AAAuthPhoneViewController: AAAuthViewController, AACountryViewControllerDe
         phoneCodeLabelLine.frame = CGRect(x: 10, y: 288 - 66, width: view.width - 20, height: 0.5)
     }
     
-    func countriesController(_ countriesController: AACountryViewController, didChangeCurrentIso currentIso: String) {
+    public func countriesController(_ countriesController: AACountryViewController, didChangeCurrentIso currentIso: String) {
         currentCountry = AATelephony.getCountry(currentIso)
         countryButton.setTitle(currentCountry.country, for: UIControlState())
         phoneCodeLabel.text = "+\(currentCountry.code)"
@@ -215,24 +221,33 @@ class AAAuthPhoneViewController: AAAuthViewController, AACountryViewControllerDe
     
     @objc func useEmailDidPressed() {
         let controllers = self.navigationController!.viewControllers
-        let updatedControllers = Array(controllers[0..<(controllers.count - 1)]) + [AAAuthEmailViewController(name: name)]
-        self.navigationController?.setViewControllers(updatedControllers, animated: false)
+        if let n = self.name{
+             let updatedControllers = Array(controllers[0..<(controllers.count - 1)]) + [AAAuthEmailViewController(name: n)]
+             self.navigationController?.setViewControllers(updatedControllers, animated: false)
+        }else{
+             let updatedControllers = Array(controllers[0..<(controllers.count - 1)]) + [AAAuthEmailViewController()]
+             self.navigationController?.setViewControllers(updatedControllers, animated: false)
+        }
     }
     
-    override func nextDidTap() {
+    override open func nextDidTap() {
         let numberStr = phoneNumberLabel.phoneNumber
         let number = phoneNumberLabel.phoneNumber.toJLong()
         
         Actor.doStartAuth(withPhone: number).startUserAction().then { (res: ACAuthStartRes!) -> () in
             if res.authMode == ACAuthMode_OTP {
-                self.navigateNext(AAAuthOTPViewController(phone: numberStr!, name: self.name, transactionHash: res.transactionHash))
+                if let n = self.name{
+                    self.navigateNext(AAAuthOTPViewController(phone: numberStr!, name: n, transactionHash: res.transactionHash))
+                }else{
+                    self.navigateNext(AAAuthOTPViewController(phone: numberStr!, transactionHash: res.transactionHash))
+                }
             } else {
                 self.alertUser(AALocalized("AuthUnsupported").replace("{app_name}", dest: ActorSDK.sharedActor().appName))
             }
         }
     }
     
-    override func keyboardWillAppear(_ height: CGFloat) {
+    override open func keyboardWillAppear(_ height: CGFloat) {
         scrollView.frame = CGRect(x: 0, y: 0, width: view.width, height: view.height - height)
         
         if AADevice.isiPhone4 || AADevice.isiPhone5 {
@@ -245,14 +260,12 @@ class AAAuthPhoneViewController: AAAuthViewController, AACountryViewControllerDe
         }
     }
     
-    override func keyboardWillDisappear() {
+    override open func keyboardWillDisappear() {
         scrollView.frame = CGRect(x: 0, y: 0, width: view.width, height: view.height)
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
+    override open func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        
         phoneNumberLabel.resignFirstResponder()
-
     }
 }

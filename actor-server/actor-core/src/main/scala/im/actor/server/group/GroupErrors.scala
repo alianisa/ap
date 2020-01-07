@@ -11,6 +11,8 @@ object GroupErrors {
 
   final case class GroupIdAlreadyExists(id: Int) extends Exception with NoStackTrace
 
+  final case class NotDomain(domains:String) extends Exception(s"You must be logged with the domain $domains to access this group") with NoStackTrace
+
   object NotAMember extends Exception("Not a group member") with NoStackTrace
 
   case object UserAlreadyJoined extends Exception with NoStackTrace
@@ -48,4 +50,6 @@ object GroupErrors {
   final case class IncorrectGroupType(value: Int) extends Exception with NoStackTrace
 
   case object InvalidExtension extends Exception with NoStackTrace
+
+
 }

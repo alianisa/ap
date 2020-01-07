@@ -59,11 +59,16 @@ object GroupProcessor {
       20026 → classOf[GroupCommands.DeleteGroup],
       20027 → classOf[GroupCommands.AddExt],
       20028 → classOf[GroupCommands.RemoveExt],
-      20029 → classOf[GroupCommands.UpdateAvatarAck],
-      20030 → classOf[GroupCommands.UpdateAdminSettingsAck],
-      20031 → classOf[GroupCommands.AddExtAck],
-      20032 → classOf[GroupCommands.RemoveExtAck],
-
+      20029 → classOf[GroupCommands.UpdateRestrictedDomains],
+      20030 → classOf[GroupCommands.UpdateRestrictedAck],
+      20031 → classOf[GroupCommands.UpdateAvatarAck],
+      20032 → classOf[GroupCommands.UpdateAdminSettingsAck],
+      20033 → classOf[GroupCommands.AddExtAck],
+      20034 → classOf[GroupCommands.RemoveExtAck],
+      20035 → classOf[GroupCommands.UpdateAvatarAck],
+      20036 → classOf[GroupCommands.UpdateAdminSettingsAck],
+      20037 → classOf[GroupCommands.AddExtAck],
+      20038 → classOf[GroupCommands.RemoveExtAck],
 
       21001 → classOf[GroupQueries.GetIntegrationToken],
       21002 → classOf[GroupQueries.GetIntegrationTokenResponse],
@@ -109,10 +114,15 @@ object GroupProcessor {
       22023 → classOf[GroupEvents.MembersBecameAsync],
       22024 → classOf[GroupEvents.ExtAdded],
       22025 → classOf[GroupEvents.ExtRemoved],
-      22026 → classOf[GroupEnvelope],
-      22027 → classOf[GroupQueries.GetTitleResponse],
-      22028 → classOf[GroupQueries.LoadMembersResponse],
-      22029 → classOf[GroupQueries.GetApiFullStructResponse]
+      22026 → classOf[GroupEvents.RestrictedDomainsUpdated]
+      22027 → classOf[GroupEnvelope],
+      22028 → classOf[GroupQueries.GetTitleResponse],
+      22029 → classOf[GroupQueries.LoadMembersResponse],
+      22030 → classOf[GroupQueries.GetApiFullStructResponse]
+      22031 → classOf[GroupEnvelope],
+      22032 → classOf[GroupQueries.GetTitleResponse],
+      22033 → classOf[GroupQueries.LoadMembersResponse],
+      22034 → classOf[GroupQueries.GetApiFullStructResponse]
     )
 
   def persistenceIdFor(groupId: Int): String = s"Group-${groupId}"
@@ -179,6 +189,7 @@ private[group] final class GroupProcessor
     case s: UpdateAdminSettings                ⇒ updateAdminSettings(s)
     case m: MakeHistoryShared                  ⇒ makeHistoryShared(m)
     case d: DeleteGroup                        ⇒ deleteGroup(d)
+    case r: UpdateRestrictedDomains            ⇒ updateRestrictedDomains(r)
 
     // dialogs envelopes coming through group.
     case de: DialogEnvelope ⇒

@@ -75,7 +75,7 @@ import UserNotifications
     open var apiPushId: Int? = nil
     
     /// Strategy about authentication
-    open var authStrategy = AAAuthStrategy.phoneOnly
+    open var authStrategy = AAAuthStrategy.phoneEmail
     
     /// Enable phone book import
     open var enablePhoneBookImport = true
@@ -148,6 +148,9 @@ import UserNotifications
     
     // Use call to active app
     open var enableCallToValidateCode = false
+    
+    // Enable predefined groups
+    open var enablePredefinedGroups: Bool = false
     
     //
     // User Onlines

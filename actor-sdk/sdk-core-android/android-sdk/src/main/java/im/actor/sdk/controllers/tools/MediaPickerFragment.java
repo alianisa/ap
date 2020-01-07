@@ -28,6 +28,7 @@ import im.actor.runtime.android.AndroidContext;
 import im.actor.sdk.ActorSDK;
 import im.actor.sdk.R;
 import im.actor.sdk.controllers.BaseFragment;
+import im.actor.sdk.controllers.conversation.attach.photoeditor.PhotoEditorActivity;
 import im.actor.sdk.controllers.pickers.file.FilePickerActivity;
 import im.actor.sdk.util.Files;
 import im.actor.sdk.util.Randoms;
@@ -45,13 +46,22 @@ public class MediaPickerFragment extends BaseFragment {
 
     private String pendingFile;
     private boolean pickCropped;
+    private boolean pickEdited;
+
+    private int cameraAction = 0;
 
     public void requestPhoto() {
-        requestPhoto(false);
+        requestPhoto(false, false);
     }
 
-    public void requestPhoto(boolean pickCropped) {
+    public void requestPhotoEdited() {
+        requestPhoto(false, true);
+    }
+
+    public void requestPhoto(boolean pickCropped, boolean pickEdited) {
         this.pickCropped = pickCropped;
+        this.pickEdited = pickEdited;
+        this.cameraAction = 1;
 
         //
         // Checking permissions
@@ -83,50 +93,65 @@ public class MediaPickerFragment extends BaseFragment {
         // Requesting Photo
         //
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
-        if (Build.VERSION.SDK_INT >= 23) {
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, Files.getUri(getContext(), pendingFile));
-            intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-        } else {
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(pendingFile)));
-        }
-
+        Uri photoUri = Files.getUri(getContext(), pendingFile);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+        Files.grantExternalPermissions(getActivity(), intent, photoUri);
         startActivityForResult(intent, REQUEST_PHOTO);
     }
 
     public void requestVideo() {
         this.pickCropped = false;
+        this.pickEdited = false;
+        this.cameraAction = 2;
+
+        //
+        // Checking permissions
+        //
+        Activity activity = getActivity();
+        if (activity != null) {
+            if (Build.VERSION.SDK_INT >= 23) {
+                if (ContextCompat.checkSelfPermission(activity, Manifest.permission.CAMERA)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    requestPermissions(new String[]{Manifest.permission.CAMERA},
+                            PERMISSIONS_REQUEST_CAMERA);
+                    return;
+                }
+            }
+        } else {
+            return;
+        }
 
         //
         // Generating Temporary File Name
         //
         pendingFile = generateRandomFile(".mp4");
+
         if (pendingFile == null) {
             return;
         }
-
 
         //
         // Requesting Video
         //
         Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+        Uri videoUri = Files.getUri(getContext(), pendingFile);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, videoUri);
 
-        if (Build.VERSION.SDK_INT >= 23) {
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, Files.getUri(getContext(), pendingFile));
-            intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-        } else {
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(pendingFile)));
-        }
-
+        Files.grantExternalPermissions(getActivity(), intent, videoUri);
         startActivityForResult(intent, REQUEST_VIDEO);
     }
 
     public void requestGallery() {
-        requestGallery(false);
+        requestGallery(false, false);
     }
 
-    public void requestGallery(boolean pickCropped) {
+    public void requestGalleryEdited(){
+        requestGallery(false, true);
+    }
+
+    public void requestGallery(boolean pickCropped, boolean pickEdited) {
         this.pickCropped = pickCropped;
+        this.pickEdited = pickEdited;
 
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         intent.setType("image/* video/*");
@@ -176,18 +201,26 @@ public class MediaPickerFragment extends BaseFragment {
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == REQUEST_GALLERY) {
                 if (data.getData() != null) {
+                    Uri returnedUri = data.getData();
                     if (pickCropped) {
                         pendingFile = generateRandomFile(".jpg");
-                        Crop.of(data.getData(), Uri.fromFile(new File(pendingFile)))
+                        Crop.of(data.getData(), Files.getUri(getContext(), pendingFile))
                                 .asSquare()
                                 .start(getContext(), this);
                     } else {
-                        getCallback().onUriPicked(data.getData());
+                        String mimeType = getContext().getApplicationContext().getContentResolver().getType(returnedUri);
+                        if(pickEdited && mimeType.startsWith("image")){
+                            pendingFile = Files.getPathFromUri(getActivity(), returnedUri);
+                            Intent intent = new Intent(getActivity(), PhotoEditorActivity.class);
+                            intent.putExtra(PhotoEditorActivity.IMAGE_PATH_PARAM, pendingFile);
+                            startActivityForResult(intent, PhotoEditorActivity.REQUEST_EDIT);
+                        }else{
+                            getCallback().onUriPicked(returnedUri);
+                        }
                     }
                 }
             } else if (requestCode == REQUEST_PHOTO) {
                 if (pendingFile != null) {
-
                     String sourceFileName = pendingFile;
                     Context context = getContext();
                     if (context != null) {
@@ -197,12 +230,25 @@ public class MediaPickerFragment extends BaseFragment {
 
                     if (pickCropped) {
                         pendingFile = generateRandomFile(".jpg");
-                        Crop.of(Uri.fromFile(new File(sourceFileName)), Uri.fromFile(new File(pendingFile)))
+                        Crop.of(Files.getUri(getContext(), sourceFileName), Files.getUri(getContext(), pendingFile))
                                 .asSquare()
                                 .start(getContext(), this);
                     } else {
-                        getCallback().onPhotoPicked(sourceFileName);
+                        if(pickEdited){
+                            Intent intent = new Intent(getActivity(), PhotoEditorActivity.class);
+                            intent.putExtra(PhotoEditorActivity.IMAGE_PATH_PARAM, sourceFileName);
+                            startActivityForResult(intent, PhotoEditorActivity.REQUEST_EDIT);
+                        }else{
+                            getCallback().onPhotoPicked(sourceFileName);
+                        }
                     }
+                }
+            }else if (requestCode == PhotoEditorActivity.REQUEST_EDIT) {
+                String editedImagePath = data.getStringExtra(PhotoEditorActivity.IMAGE_RETURN_PATH);
+                if(editedImagePath != null && !editedImagePath.equals("")){
+                    getCallback().onPhotoPicked(editedImagePath);
+                }else if (pendingFile != null) {
+                    getCallback().onPhotoPicked(pendingFile);
                 }
             } else if (requestCode == Crop.REQUEST_CROP) {
                 if (pendingFile != null) {
@@ -241,9 +287,7 @@ public class MediaPickerFragment extends BaseFragment {
                 Cursor c = activity.managedQuery(contactData, null, null, null, null);
                 if (c.moveToFirst()) {
 
-
                     String id = c.getString(c.getColumnIndexOrThrow(ContactsContract.Contacts._ID));
-
                     String hasPhone = c.getString(c.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER));
 
                     if (hasPhone.equalsIgnoreCase("1")) {
@@ -271,6 +315,7 @@ public class MediaPickerFragment extends BaseFragment {
                             ContactsContract.CommonDataKinds.Email.CONTENT_URI, null,
                             ContactsContract.CommonDataKinds.Email.CONTACT_ID + " = " + id,
                             null, null);
+
                     if (emailCursor != null && emailCursor.moveToFirst()) {
                         int emailColumnIndex = emailCursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA);
                         do {
@@ -305,7 +350,10 @@ public class MediaPickerFragment extends BaseFragment {
                                            @NonNull int[] grantResults) {
         if (requestCode == PERMISSIONS_REQUEST_CAMERA) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                requestPhoto();
+                if(cameraAction == 1)
+                    requestPhotoEdited();
+                else if(cameraAction == 2)
+                    requestVideo();
             }
         }
 

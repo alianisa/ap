@@ -55,7 +55,7 @@ final class GroupsServiceImpl(groupInviteConfig: GroupInviteConfig)(implicit act
   private val globalNamesStorage = new GlobalNamesStorageKeyValueStorage
   private val dialogExt = DialogExtension(actorSystem)
 
-  /**
+  /**F
    * Loading Full Groups
    *
    * @param groups Groups to load
@@ -539,7 +539,7 @@ final class GroupsServiceImpl(groupInviteConfig: GroupInviteConfig)(implicit act
       }
     }
 
-  private val inviteUriBase = s"${groupInviteConfig.baseUrl}/join/"
+  private val inviteUriBase = s"${groupInviteConfig.baseUrl}/#/join/"
 
   private def genInviteUrl(token: String) = s"$inviteUriBase$token"
 
@@ -650,6 +650,7 @@ final class GroupsServiceImpl(groupInviteConfig: GroupInviteConfig)(implicit act
     case GroupErrors.AboutTooLong            ⇒ GroupRpcErrors.AboutTooLong
     case GroupErrors.TopicTooLong            ⇒ GroupRpcErrors.TopicTooLong
     case GroupErrors.BlockedByUser           ⇒ GroupRpcErrors.BlockedByUser
+    case e: GroupErrors.NotDomain            ⇒ CommonRpcErrors.forbidden(e.getMessage)
     case FileErrors.LocationInvalid          ⇒ FileRpcErrors.LocationInvalid
     case GroupErrors.UserAlreadyInvited      ⇒ GroupRpcErrors.AlreadyInvited
     case GroupErrors.UserAlreadyJoined       ⇒ GroupRpcErrors.AlreadyJoined
@@ -681,6 +682,17 @@ final class GroupsServiceImpl(groupInviteConfig: GroupInviteConfig)(implicit act
       } yield ResponseSeq(seq, state.toByteArray)
 
       action.value
+    }
+  }
+
+  /** Update restricted domains */
+  override protected def doHandleUpdateRestrictedDomains(groupPeer: ApiGroupOutPeer, domains: String, clientData: ClientData): Future[HandlerResult[ResponseVoid]] = {
+    authorized(clientData) { implicit client ⇒
+      withGroupOutPeer(groupPeer) {
+        for {
+          _ ← groupExt.updateRestrictionsDomain(groupPeer.groupId, client.userId, client.authId, domains)
+        } yield Ok(ResponseVoid)
+      }
     }
   }
 }

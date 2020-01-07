@@ -1,7 +1,6 @@
 package im.actor.sdk.controllers.conversation.attach;
 
 import android.content.Context;
-import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,7 +16,6 @@ import com.facebook.imagepipeline.common.ResizeOptions;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -26,6 +24,7 @@ import im.actor.runtime.mvvm.ValueModel;
 import im.actor.sdk.ActorSDK;
 import im.actor.sdk.R;
 import im.actor.sdk.controllers.ActorBinder;
+import im.actor.sdk.util.Files;
 import im.actor.sdk.util.Screen;
 
 import static im.actor.sdk.util.ActorSDKMessenger.messenger;
@@ -109,7 +108,7 @@ public class FastAttachAdapter extends RecyclerView.Adapter<FastAttachAdapter.Fa
 
         public void bind(String path) {
             data = path;
-            ImageRequest request = ImageRequestBuilder.newBuilderWithSource(Uri.fromFile(new File(path)))
+            ImageRequest request = ImageRequestBuilder.newBuilderWithSource(Files.getUri(context, path) /*Uri.fromFile(new File(path))*/)
                     .setResizeOptions(new ResizeOptions(v.getLayoutParams().width,
                             v.getLayoutParams().height))
                     .build();
