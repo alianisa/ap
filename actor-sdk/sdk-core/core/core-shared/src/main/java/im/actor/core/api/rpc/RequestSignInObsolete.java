@@ -27,15 +27,21 @@ public class RequestSignInObsolete extends Request<ResponseAuth> {
     private String smsCode;
     private byte[] deviceHash;
     private String deviceTitle;
+    private String deviceIpAddress;
+    private String deviceLocation;
+    private String deviceOS;
     private int appId;
     private String appKey;
 
-    public RequestSignInObsolete(long phoneNumber, @NotNull String smsHash, @NotNull String smsCode, @NotNull byte[] deviceHash, @NotNull String deviceTitle, int appId, @NotNull String appKey) {
+    public RequestSignInObsolete(long phoneNumber, @NotNull String smsHash, @NotNull String smsCode, @NotNull byte[] deviceHash, @NotNull String deviceTitle, @NotNull String deviceIpAddress, @NotNull String deviceLocation, @NotNull String deviceOS, int appId, @NotNull String appKey) {
         this.phoneNumber = phoneNumber;
         this.smsHash = smsHash;
         this.smsCode = smsCode;
         this.deviceHash = deviceHash;
         this.deviceTitle = deviceTitle;
+        this.deviceIpAddress = deviceIpAddress;
+        this.deviceLocation = deviceLocation;
+        this.deviceOS = deviceOS;
         this.appId = appId;
         this.appKey = appKey;
     }
@@ -68,6 +74,21 @@ public class RequestSignInObsolete extends Request<ResponseAuth> {
         return this.deviceTitle;
     }
 
+    @NotNull
+    public String getDeviceIpAddress() {
+        return this.deviceIpAddress;
+    }
+
+    @NotNull
+    public String getDeviceLocation() {
+        return this.deviceLocation;
+    }
+
+    @NotNull
+    public String getDeviceOS() {
+        return this.deviceOS;
+    }
+
     public int getAppId() {
         return this.appId;
     }
@@ -84,8 +105,11 @@ public class RequestSignInObsolete extends Request<ResponseAuth> {
         this.smsCode = values.getString(3);
         this.deviceHash = values.getBytes(5);
         this.deviceTitle = values.getString(6);
-        this.appId = values.getInt(7);
-        this.appKey = values.getString(8);
+        this.deviceIpAddress = values.getString(7);
+        this.deviceLocation = values.getString(8);
+        this.deviceOS = values.getString(9);
+        this.appId = values.getInt(10);
+        this.appKey = values.getString(11);
     }
 
     @Override
@@ -107,11 +131,23 @@ public class RequestSignInObsolete extends Request<ResponseAuth> {
             throw new IOException();
         }
         writer.writeString(6, this.deviceTitle);
-        writer.writeInt(7, this.appId);
+        if (this.deviceIpAddress == null) {
+            throw new IOException();
+        }
+        writer.writeString(7, this.deviceIpAddress);
+        if (this.deviceLocation == null) {
+            throw new IOException();
+        }
+        writer.writeString(8, this.deviceLocation);
+        if (this.deviceOS == null) {
+            throw new IOException();
+        }
+        writer.writeString(9, this.deviceOS);
+        writer.writeInt(10, this.appId);
         if (this.appKey == null) {
             throw new IOException();
         }
-        writer.writeString(8, this.appKey);
+        writer.writeString(11, this.appKey);
     }
 
     @Override
@@ -119,6 +155,9 @@ public class RequestSignInObsolete extends Request<ResponseAuth> {
         String res = "rpc SignInObsolete{";
         res += "deviceHash=" + byteArrayToString(this.deviceHash);
         res += ", deviceTitle=" + this.deviceTitle;
+        res += ", deviceIpAddress=" + this.deviceIpAddress;
+        res += ", deviceLocation=" + this.deviceLocation;
+        res += ", deviceOS=" + this.deviceOS;
         res += "}";
         return res;
     }

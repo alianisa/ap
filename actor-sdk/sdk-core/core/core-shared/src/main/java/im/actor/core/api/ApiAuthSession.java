@@ -21,17 +21,23 @@ public class ApiAuthSession extends BserObject {
     private int appId;
     private String appTitle;
     private String deviceTitle;
+    private String deviceIpAddress;
+    private String deviceLocation;
+    private String deviceOSVersion;
     private int authTime;
     private String authLocation;
     private Double latitude;
     private Double longitude;
 
-    public ApiAuthSession(int id, @NotNull ApiAuthHolder authHolder, int appId, @NotNull String appTitle, @NotNull String deviceTitle, int authTime, @NotNull String authLocation, @Nullable Double latitude, @Nullable Double longitude) {
+    public ApiAuthSession(int id, @NotNull ApiAuthHolder authHolder, int appId, @NotNull String appTitle, @NotNull String deviceTitle, @NotNull String deviceIpAddress, @NotNull String deviceLocation, @NotNull String deviceOSVersion, int authTime, @NotNull String authLocation, @Nullable Double latitude, @Nullable Double longitude) {
         this.id = id;
         this.authHolder = authHolder;
         this.appId = appId;
         this.appTitle = appTitle;
         this.deviceTitle = deviceTitle;
+        this.deviceIpAddress = deviceIpAddress;
+        this.deviceLocation = deviceLocation;
+        this.deviceOSVersion = deviceOSVersion;
         this.authTime = authTime;
         this.authLocation = authLocation;
         this.latitude = latitude;
@@ -65,6 +71,21 @@ public class ApiAuthSession extends BserObject {
         return this.deviceTitle;
     }
 
+    @NotNull
+    public String getDeviceIpAddress() {
+        return this.deviceIpAddress;
+    }
+
+    @NotNull
+    public String getDeviceLocation() {
+        return this.deviceLocation;
+    }
+
+    @NotNull
+    public String getDeviceOSVersion() {
+        return this.deviceOSVersion;
+    }
+
     public int getAuthTime() {
         return this.authTime;
     }
@@ -91,10 +112,13 @@ public class ApiAuthSession extends BserObject {
         this.appId = values.getInt(3);
         this.appTitle = values.getString(4);
         this.deviceTitle = values.getString(5);
-        this.authTime = values.getInt(6);
-        this.authLocation = values.getString(7);
-        this.latitude = values.optDouble(8);
-        this.longitude = values.optDouble(9);
+        this.deviceIpAddress = values.getString(6);
+        this.deviceLocation = values.getString(7);
+        this.deviceOSVersion = values.getString(8);
+        this.authTime = values.getInt(9);
+        this.authLocation = values.getString(10);
+        this.latitude = values.optDouble(11);
+        this.longitude = values.optDouble(12);
     }
 
     @Override
@@ -113,16 +137,28 @@ public class ApiAuthSession extends BserObject {
             throw new IOException();
         }
         writer.writeString(5, this.deviceTitle);
-        writer.writeInt(6, this.authTime);
+        if (this.deviceIpAddress == null) {
+            throw new IOException();
+        }
+        writer.writeString(6, this.deviceIpAddress);
+        if (this.deviceLocation == null) {
+            throw new IOException();
+        }
+        writer.writeString(7, this.deviceLocation);
+        if (this.deviceOSVersion == null) {
+            throw new IOException();
+        }
+        writer.writeString(8, this.deviceOSVersion);
+        writer.writeInt(9, this.authTime);
         if (this.authLocation == null) {
             throw new IOException();
         }
-        writer.writeString(7, this.authLocation);
+        writer.writeString(10, this.authLocation);
         if (this.latitude != null) {
-            writer.writeDouble(8, this.latitude);
+            writer.writeDouble(11, this.latitude);
         }
         if (this.longitude != null) {
-            writer.writeDouble(9, this.longitude);
+            writer.writeDouble(12, this.longitude);
         }
     }
 
@@ -134,6 +170,8 @@ public class ApiAuthSession extends BserObject {
         res += ", appId=" + this.appId;
         res += ", appTitle=" + this.appTitle;
         res += ", deviceTitle=" + this.deviceTitle;
+        res += ", deviceIpAddress=" + this.deviceIpAddress;
+        res += ", deviceLocation=" + this.deviceLocation;
         res += ", authTime=" + this.authTime;
         res += "}";
         return res;

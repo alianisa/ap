@@ -61,9 +61,11 @@ private[activation] final class ActivationStateActor[Id, CodeType <: Code](repea
         Xor.right(())
       } recover {
         case e ⇒ {
+          //forgetSentCodeAfterDelay(code)
+          //log.error(e, "Failed to send code: {}", code)
           forgetSentCodeAfterDelay(code)
-          log.error(e, "Failed to send code: {}", code)
-          Xor.left(SendFailure("Unable to send code"))
+		Xor.right(())
+	  //Xor.left(SendFailure("Unable to send code"))
         }
       }
     } else {

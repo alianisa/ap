@@ -29,8 +29,9 @@ public class ResponseGetCallInfo extends Response {
     private Boolean isAudioOnlyCall;
     private Boolean isVideoOnlyCall;
     private Boolean isVideoPreferred;
+    private Boolean isBusy;
 
-    public ResponseGetCallInfo(@NotNull ApiPeer peer, @NotNull List<ApiGroupOutPeer> groups, @NotNull List<ApiUserOutPeer> users, @NotNull String eventBusId, @Nullable Boolean isAudioOnlyCall, @Nullable Boolean isVideoOnlyCall, @Nullable Boolean isVideoPreferred) {
+    public ResponseGetCallInfo(@NotNull ApiPeer peer, @NotNull List<ApiGroupOutPeer> groups, @NotNull List<ApiUserOutPeer> users, @NotNull String eventBusId, @Nullable Boolean isAudioOnlyCall, @Nullable Boolean isVideoOnlyCall, @Nullable Boolean isVideoPreferred, @Nullable Boolean isBusy) {
         this.peer = peer;
         this.groups = groups;
         this.users = users;
@@ -38,6 +39,7 @@ public class ResponseGetCallInfo extends Response {
         this.isAudioOnlyCall = isAudioOnlyCall;
         this.isVideoOnlyCall = isVideoOnlyCall;
         this.isVideoPreferred = isVideoPreferred;
+        this.isBusy = isBusy;
     }
 
     public ResponseGetCallInfo() {
@@ -79,6 +81,11 @@ public class ResponseGetCallInfo extends Response {
         return this.isVideoPreferred;
     }
 
+    @Nullable
+    public Boolean isBusy() {
+        return this.isBusy;
+    }
+
     @Override
     public void parse(BserValues values) throws IOException {
         this.peer = values.getObj(1, new ApiPeer());
@@ -96,6 +103,7 @@ public class ResponseGetCallInfo extends Response {
         this.isAudioOnlyCall = values.optBool(5);
         this.isVideoOnlyCall = values.optBool(6);
         this.isVideoPreferred = values.optBool(7);
+        this.isBusy = values.optBool(8);
     }
 
     @Override
@@ -118,6 +126,9 @@ public class ResponseGetCallInfo extends Response {
         }
         if (this.isVideoPreferred != null) {
             writer.writeBool(7, this.isVideoPreferred);
+        }
+        if (this.isBusy != null) {
+            writer.writeBool(8, this.isBusy);
         }
     }
 

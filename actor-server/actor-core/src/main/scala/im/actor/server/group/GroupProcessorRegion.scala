@@ -23,6 +23,7 @@ object GroupProcessorRegion {
   }
 
   private def extractShardId(system: ActorSystem): ShardRegion.ExtractShardId = {
+//private def extractShardId(system: ActorSystem): ShardRegion.ExtractShardId = msg ⇒ msg match {
     case env: GroupEnvelope ⇒ (env.groupId % 100).toString // TODO: configurable
   }
 

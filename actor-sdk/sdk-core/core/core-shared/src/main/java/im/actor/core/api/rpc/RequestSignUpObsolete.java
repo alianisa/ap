@@ -28,17 +28,23 @@ public class RequestSignUpObsolete extends Request<ResponseAuth> {
     private String name;
     private byte[] deviceHash;
     private String deviceTitle;
+    private String deviceIpAddress;
+    private String deviceLocation;
+    private String deviceOS;
     private int appId;
     private String appKey;
     private boolean isSilent;
 
-    public RequestSignUpObsolete(long phoneNumber, @NotNull String smsHash, @NotNull String smsCode, @NotNull String name, @NotNull byte[] deviceHash, @NotNull String deviceTitle, int appId, @NotNull String appKey, boolean isSilent) {
+    public RequestSignUpObsolete(long phoneNumber, @NotNull String smsHash, @NotNull String smsCode, @NotNull String name, @NotNull byte[] deviceHash, @NotNull String deviceTitle, @NotNull String deviceIpAddress, @NotNull String deviceLocation, @NotNull String deviceOS, int appId, @NotNull String appKey, boolean isSilent) {
         this.phoneNumber = phoneNumber;
         this.smsHash = smsHash;
         this.smsCode = smsCode;
         this.name = name;
         this.deviceHash = deviceHash;
         this.deviceTitle = deviceTitle;
+        this.deviceIpAddress = deviceIpAddress;
+        this.deviceLocation = deviceLocation;
+        this.deviceOS = deviceOS;
         this.appId = appId;
         this.appKey = appKey;
         this.isSilent = isSilent;
@@ -77,6 +83,21 @@ public class RequestSignUpObsolete extends Request<ResponseAuth> {
         return this.deviceTitle;
     }
 
+    @NotNull
+    public String getDeviceIpAddress() {
+        return this.deviceIpAddress;
+    }
+
+    @NotNull
+    public String getDeviceLocation() {
+        return this.deviceLocation;
+    }
+
+    @NotNull
+    public String getDeviceOS() {
+        return this.deviceOS;
+    }
+
     public int getAppId() {
         return this.appId;
     }
@@ -98,9 +119,12 @@ public class RequestSignUpObsolete extends Request<ResponseAuth> {
         this.name = values.getString(4);
         this.deviceHash = values.getBytes(7);
         this.deviceTitle = values.getString(8);
-        this.appId = values.getInt(9);
-        this.appKey = values.getString(10);
-        this.isSilent = values.getBool(11);
+        this.deviceIpAddress = values.getString(9);
+        this.deviceLocation = values.getString(10);
+        this.deviceOS = values.getString(11);
+        this.appId = values.getInt(12);
+        this.appKey = values.getString(13);
+        this.isSilent = values.getBool(14);
     }
 
     @Override
@@ -126,12 +150,24 @@ public class RequestSignUpObsolete extends Request<ResponseAuth> {
             throw new IOException();
         }
         writer.writeString(8, this.deviceTitle);
-        writer.writeInt(9, this.appId);
+        if (this.deviceIpAddress == null) {
+            throw new IOException();
+        }
+        writer.writeString(9, this.deviceIpAddress);
+        if (this.deviceLocation == null) {
+            throw new IOException();
+        }
+        writer.writeString(10, this.deviceLocation);
+        if (this.deviceOS == null) {
+            throw new IOException();
+        }
+        writer.writeString(11, this.deviceOS);
+        writer.writeInt(12, this.appId);
         if (this.appKey == null) {
             throw new IOException();
         }
-        writer.writeString(10, this.appKey);
-        writer.writeBool(11, this.isSilent);
+        writer.writeString(13, this.appKey);
+        writer.writeBool(14, this.isSilent);
     }
 
     @Override
@@ -140,6 +176,9 @@ public class RequestSignUpObsolete extends Request<ResponseAuth> {
         res += "name=" + this.name;
         res += ", deviceHash=" + byteArrayToString(this.deviceHash);
         res += ", deviceTitle=" + this.deviceTitle;
+        res += ", deviceIpAddress=" + this.deviceIpAddress;
+        res += ", deviceLocation=" + this.deviceLocation;
+        res += ", deviceOS=" + this.deviceOS;
         res += "}";
         return res;
     }

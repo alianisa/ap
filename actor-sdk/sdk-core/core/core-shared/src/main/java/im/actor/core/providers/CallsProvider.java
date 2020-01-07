@@ -35,10 +35,18 @@ public interface CallsProvider {
     void onCallEnd(long callId);
 
     /**
+     * Call Busy event
+     *
+     * @param callId Unique Call Id
+     */
+    @ObjectiveCName("onCallBusyWithCallId:")
+    void onCallBusy(long callId);
+
+    /**
      * Event When outgoing beep need to start
      */
     @ObjectiveCName("startOutgoingBeep")
-    void startOutgoingBeep();
+    void startOutgoingBeep(boolean connected);
 
     /**
      * Event when outgoing beep need to stop

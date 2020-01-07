@@ -12,6 +12,8 @@ public enum ApiCallMemberState {
     CONNECTING(2),
     CONNECTED(3),
     ENDED(5),
+    BUSY(6),
+    NO_ANSWER(7),
     UNSUPPORTED_VALUE(-1);
 
     private int value;
@@ -31,6 +33,8 @@ public enum ApiCallMemberState {
             case 2: return ApiCallMemberState.CONNECTING;
             case 3: return ApiCallMemberState.CONNECTED;
             case 5: return ApiCallMemberState.ENDED;
+            case 6: return ApiCallMemberState.BUSY;
+            case 7: return ApiCallMemberState.NO_ANSWER;
             default: return ApiCallMemberState.UNSUPPORTED_VALUE;
         }
     }

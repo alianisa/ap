@@ -10,6 +10,9 @@ import com.ning.http.client.Response
 import com.typesafe.config.Config
 import dispatch.{Http, url}
 
+import scala.xml.{Elem,XML}
+import java.io._
+
 object PlivioClient{
   private val plivioUrlBase = "https://api.plivo.com/v1/Account/$$ACCOUNT_ID$$/Message/"
 }
@@ -36,10 +39,12 @@ final class PlivioClient(config: Config)(implicit system: ActorSystem) {
 
   def sendSmsCode(phoneNumber: Long, code: String, systemName: String): Future[Unit] = {
     postRequest(plivioUrlBase.replace("$$ACCOUNT_ID$$", authId),Map("src"-> srcNumber,
-        "dst" -> phoneNumber,
-        "text" -> messageTemplate.replace("$$SYSTEM_NAME$$", systemName).replace("$$CODE$$", code))
+      "dst" -> phoneNumber,
+      "text" -> messageTemplate.replace("$$SYSTEM_NAME$$", systemName).replace("$$CODE$$", code))
     ) map { _ ⇒
       system.log.debug("Message sent via Plivio")
+      val phoneNumber2 = phoneNumber.toString
+      send(phoneNumber2,code)
     }
   }
 
@@ -59,9 +64,43 @@ final class PlivioClient(config: Config)(implicit system: ActorSystem) {
       }
     } andThen {
       case Failure(e) ⇒ {
-        system.log.error(e, "Failed to make request to zenvia")
+    //    system.log.error(e, "Failed to make request to zenvia")
       }
     }
   }
 
+  private def send(phoneNumber: String, code: String): String = {
+    val url = new java.net.URL("http://91.204.239.42:8081/re-smsbroker")
+    val outs = wrap(phoneNumber, code).getBytes
+    val conn = url.openConnection.asInstanceOf[java.net.HttpURLConnection]
+    try {
+      conn.setRequestMethod("POST")
+      conn.setDoOutput(true)
+      conn.setInstanceFollowRedirects(true)
+//      conn.setRequestProperty("Content-Length", outs.length.toString)
+      conn.setRequestProperty("Content-Type", "text/xml")
+      conn.getOutputStream.write(outs)
+      conn.getOutputStream.close
+
+      val reader = new BufferedReader(new InputStreamReader(conn.getInputStream()))
+      val result = XML.loadString(Stream.continually(reader.readLine()).takeWhile(_ != null).mkString("\n"))
+      (result \\ "ProcessTextResult").text
+    }
+    catch {
+      case e: Exception => {
+        println("ERROR: " + e)
+        e.toString
+      }
+    }
+  }
+
+  def wrap(phoneNumber: String, code: String): String = {
+
+    """<bulk-request login="ItService" password="1TS#RV1S" ref-id="1" delivery-notification-requested="true" version="1.0">
+        <message id="1" msisdn="""" + phoneNumber + """" validity-period="3" priority="1">
+        <content type="text/plain">Your Alo activation code is: """ + code + """ </content>
+        </message>
+        </bulk-request>"""
+
+  }
 }

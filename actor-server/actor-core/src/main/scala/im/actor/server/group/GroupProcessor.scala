@@ -16,6 +16,7 @@ import im.actor.server.db.DbExtension
 import im.actor.server.dialog._
 import im.actor.server.group.GroupErrors._
 import im.actor.server.group.GroupCommands._
+import im.actor.server.group.GroupEnvelope._
 import im.actor.server.group.GroupExt.Value.{ BoolValue, StringValue }
 import im.actor.server.group.GroupQueries._
 import im.actor.server.names.GlobalNamesStorageKeyValueStorage
@@ -58,6 +59,11 @@ object GroupProcessor {
       20026 → classOf[GroupCommands.DeleteGroup],
       20027 → classOf[GroupCommands.AddExt],
       20028 → classOf[GroupCommands.RemoveExt],
+      20029 → classOf[GroupCommands.UpdateAvatarAck],
+      20030 → classOf[GroupCommands.UpdateAdminSettingsAck],
+      20031 → classOf[GroupCommands.AddExtAck],
+      20032 → classOf[GroupCommands.RemoveExtAck],
+
 
       21001 → classOf[GroupQueries.GetIntegrationToken],
       21002 → classOf[GroupQueries.GetIntegrationTokenResponse],
@@ -102,7 +108,11 @@ object GroupProcessor {
       22022 → classOf[GroupEvents.GroupDeleted],
       22023 → classOf[GroupEvents.MembersBecameAsync],
       22024 → classOf[GroupEvents.ExtAdded],
-      22025 → classOf[GroupEvents.ExtRemoved]
+      22025 → classOf[GroupEvents.ExtRemoved],
+      22026 → classOf[GroupEnvelope],
+      22027 → classOf[GroupQueries.GetTitleResponse],
+      22028 → classOf[GroupQueries.LoadMembersResponse],
+      22029 → classOf[GroupQueries.GetApiFullStructResponse]
     )
 
   def persistenceIdFor(groupId: Int): String = s"Group-${groupId}"
@@ -173,6 +183,9 @@ private[group] final class GroupProcessor
     // dialogs envelopes coming through group.
     case de: DialogEnvelope ⇒
       groupPeerActor forward de.getAllFields.values.head
+
+    case ge: GroupEnvelope ⇒
+      groupPeerActor forward ge.getAllFields.values.head
 
     // actor's lifecycle
     case StopProcessor  ⇒ context stop self

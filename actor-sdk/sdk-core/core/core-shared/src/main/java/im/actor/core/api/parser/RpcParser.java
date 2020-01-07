@@ -149,6 +149,7 @@ public class RpcParser extends BaseParser<RpcScope> {
             case 2678: return RequestDoCallAgain.fromBytes(payload);
             case 2683: return RequestJoinCall.fromBytes(payload);
             case 2684: return RequestRejectCall.fromBytes(payload);
+            case 2687: return RequestBusyCall.fromBytes(payload);
             case 2685: return RequestOptimizeSDP.fromBytes(payload);
             case 134: return RequestGetParameters.fromBytes(payload);
             case 128: return RequestEditParameter.fromBytes(payload);

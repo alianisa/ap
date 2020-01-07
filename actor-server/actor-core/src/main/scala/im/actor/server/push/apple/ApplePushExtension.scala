@@ -5,7 +5,7 @@ import java.util.concurrent.{ ExecutionException, TimeUnit, TimeoutException }
 
 import akka.actor.{ ActorSystem, ExtendedActorSystem, Extension, ExtensionId, ExtensionIdProvider }
 import akka.event.Logging
-import com.relayrides.pushy.apns.{ ApnsClient, ApnsClientBuilder }
+import com.turo.pushy.apns.{ ApnsClient, ApnsClientBuilder }
 import im.actor.server.db.DbExtension
 import im.actor.server.model.push.ApplePushCredentials
 import im.actor.server.persist.push.ApplePushCredentialsRepo
@@ -66,14 +66,14 @@ final class ApplePushExtension(system: ActorSystem) extends Extension with AnyRe
   private def createClient(cert: ApnsCert, attemptsLeft: Int): Future[Client] = {
     val certKey = extractCertKey(cert)
     val host = cert.isSandbox match {
-      case false ⇒ ApnsClient.PRODUCTION_APNS_HOST
-      case true  ⇒ ApnsClient.DEVELOPMENT_APNS_HOST
+      case false ⇒ ApnsClientBuilder.PRODUCTION_APNS_HOST
+      case true  ⇒ ApnsClientBuilder.DEVELOPMENT_APNS_HOST
     }
 
     val connectFuture: Future[Client] = Future {
       blocking {
-        val client = new ApnsClientBuilder().setClientCredentials(new File(cert.path), cert.password).build()
-        client.connect(host).get(20, TimeUnit.SECONDS)
+        val client = new ApnsClientBuilder().setApnsServer(host).setClientCredentials(new File(cert.path), cert.password).build()
+        // client.connect(host).get(20, TimeUnit.SECONDS)
         log.debug("Established client connection for cert: {}, is voip: {}", certKey, cert.isVoip)
         client
       }

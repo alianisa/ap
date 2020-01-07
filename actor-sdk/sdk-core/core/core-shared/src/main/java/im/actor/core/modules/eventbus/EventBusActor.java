@@ -272,6 +272,7 @@ public class EventBusActor extends ModuleActor {
 
         private int uid;
         private long deviceId;
+        private boolean busy;
 
         public EventBusDeviceConnected(int uid, long deviceId) {
             this.uid = uid;
@@ -285,6 +286,7 @@ public class EventBusActor extends ModuleActor {
         public long getDeviceId() {
             return deviceId;
         }
+
     }
 
     public static class EventBusDeviceDisconnected {

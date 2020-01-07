@@ -27,16 +27,22 @@ public class RequestStartPhoneAuth extends Request<ResponseStartPhoneAuth> {
     private String apiKey;
     private byte[] deviceHash;
     private String deviceTitle;
+    private String deviceIpAddress;
+    private String deviceLocation;
+    private String deviceOS;
     private String systemName;
     private String timeZone;
     private List<String> preferredLanguages;
 
-    public RequestStartPhoneAuth(long phoneNumber, int appId, @NotNull String apiKey, @NotNull byte[] deviceHash, @NotNull String deviceTitle, @NotNull String systemName, @Nullable String timeZone, @NotNull List<String> preferredLanguages) {
+    public RequestStartPhoneAuth(long phoneNumber, int appId, @NotNull String apiKey, @NotNull byte[] deviceHash, @NotNull String deviceTitle, @NotNull String deviceIpAddress, @NotNull String deviceLocation, @NotNull String deviceOS, @NotNull String systemName, @Nullable String timeZone, @NotNull List<String> preferredLanguages) {
         this.phoneNumber = phoneNumber;
         this.appId = appId;
         this.apiKey = apiKey;
         this.deviceHash = deviceHash;
         this.deviceTitle = deviceTitle;
+        this.deviceIpAddress = deviceIpAddress;
+        this.deviceLocation = deviceLocation;
+        this.deviceOS = deviceOS;
         this.systemName = systemName;
         this.timeZone = timeZone;
         this.preferredLanguages = preferredLanguages;
@@ -70,6 +76,21 @@ public class RequestStartPhoneAuth extends Request<ResponseStartPhoneAuth> {
     }
 
     @NotNull
+    public String getDeviceIpAddress() {
+        return this.deviceIpAddress;
+    }
+
+    @NotNull
+    public String getDeviceLocation() {
+        return this.deviceLocation;
+    }
+
+    @NotNull
+    public String getDeviceOS() {
+        return this.deviceOS;
+    }
+
+    @NotNull
     public String getSystemName() {
         return this.systemName;
     }
@@ -91,9 +112,12 @@ public class RequestStartPhoneAuth extends Request<ResponseStartPhoneAuth> {
         this.apiKey = values.getString(3);
         this.deviceHash = values.getBytes(4);
         this.deviceTitle = values.getString(5);
-        this.systemName = values.getString(6);
-        this.timeZone = values.optString(7);
-        this.preferredLanguages = values.getRepeatedString(8);
+        this.deviceIpAddress = values.getString(6);
+        this.deviceLocation = values.getString(7);
+        this.deviceOS = values.getString(8);
+        this.systemName = values.getString(9);
+        this.timeZone = values.optString(10);
+        this.preferredLanguages = values.getRepeatedString(11);
     }
 
     @Override
@@ -112,14 +136,26 @@ public class RequestStartPhoneAuth extends Request<ResponseStartPhoneAuth> {
             throw new IOException();
         }
         writer.writeString(5, this.deviceTitle);
+        if (this.deviceIpAddress == null) {
+            throw new IOException();
+        }
+        writer.writeString(6, this.deviceIpAddress);
+        if (this.deviceLocation == null) {
+            throw new IOException();
+        }
+        writer.writeString(7, this.deviceLocation);
+        if (this.deviceOS == null) {
+            throw new IOException();
+        }
+        writer.writeString(8, this.deviceOS);
         if (this.systemName == null) {
             throw new IOException();
         }
-        writer.writeString(6, this.systemName);
+        writer.writeString(9, this.systemName);
         if (this.timeZone != null) {
-            writer.writeString(7, this.timeZone);
+            writer.writeString(10, this.timeZone);
         }
-        writer.writeRepeatedString(8, this.preferredLanguages);
+        writer.writeRepeatedString(11, this.preferredLanguages);
     }
 
     @Override
@@ -128,6 +164,10 @@ public class RequestStartPhoneAuth extends Request<ResponseStartPhoneAuth> {
         res += "phoneNumber=" + this.phoneNumber;
         res += ", deviceHash=" + byteArrayToString(this.deviceHash);
         res += ", deviceTitle=" + this.deviceTitle;
+        res += ", deviceIpAddress=" + this.deviceIpAddress;
+        res += ", deviceLocation=" + this.deviceLocation;
+        res += ", deviceOS=" + this.deviceOS;
+        res += ", systemName=" + this.systemName;
         res += ", timeZone=" + this.timeZone;
         res += ", preferredLanguages=" + this.preferredLanguages;
         res += "}";

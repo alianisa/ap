@@ -2,8 +2,8 @@ package im.actor.server.push.apple
 
 import akka.actor.ActorSystem
 import akka.event.Logging
-import com.relayrides.pushy.apns.ApnsClient
-import com.relayrides.pushy.apns.util.{ ApnsPayloadBuilder, SimpleApnsPushNotification }
+import com.turo.pushy.apns.ApnsClient
+import com.turo.pushy.apns.util.{ ApnsPayloadBuilder, SimpleApnsPushNotification }
 import im.actor.server.dialog.DialogExtension
 import im.actor.server.model.push.ApplePushCredentials
 import im.actor.server.push.PushProvider

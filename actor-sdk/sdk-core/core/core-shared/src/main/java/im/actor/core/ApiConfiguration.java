@@ -17,6 +17,9 @@ public class ApiConfiguration {
     private final String appKey;
 
     private final String deviceTitle;
+    private final String deviceIpAddress;
+    private final String deviceLocation;
+    private final String deviceOS;
     private final String deviceString;
 
     /**
@@ -26,14 +29,20 @@ public class ApiConfiguration {
      * @param appId        app id for API
      * @param appKey       app key for API
      * @param deviceTitle  device title
+     * @param deviceIpAddress  device ip address
+     * @param deviceLocation  device location
+     * @param deviceOS  device OS
      * @param deviceString device unique key
      */
-    @ObjectiveCName("initWithAppTitle:withAppId:withAppKey:withDeviceTitle:withDeviceId:")
-    public ApiConfiguration(String appTitle, int appId, String appKey, String deviceTitle, String deviceString) {
+    @ObjectiveCName("initWithAppTitle:withAppId:withAppKey:withDeviceTitle:withDeviceIpAddress:withDeviceLocation:withDeviceOS:withDeviceId:")
+    public ApiConfiguration(String appTitle, int appId, String appKey, String deviceTitle, String deviceIpAddress, String deviceLocation, String deviceOS, String deviceString) {
         this.appTitle = appTitle;
         this.appId = appId;
         this.appKey = appKey;
         this.deviceTitle = deviceTitle;
+        this.deviceIpAddress = deviceIpAddress;
+        this.deviceLocation = deviceLocation;
+        this.deviceOS = deviceOS;
         this.deviceString = deviceString;
     }
 
@@ -75,6 +84,36 @@ public class ApiConfiguration {
     @ObjectiveCName("getDeviceTitle")
     public String getDeviceTitle() {
         return deviceTitle;
+    }
+
+    /**
+     * Get Device Ip Address
+     *
+     * @return the Device Ip Address
+     */
+    @ObjectiveCName("getDeviceIpAddress")
+    public String getDeviceIpAddress() {
+        return deviceIpAddress;
+    }
+
+    /**
+     * Get Device Location
+     *
+     * @return the Device Location
+     */
+    @ObjectiveCName("getDeviceLocation")
+    public String getDeviceLocation() {
+        return deviceLocation;
+    }
+
+    /**
+     * Get Device OS
+     *
+     * @return the Device OS
+     */
+    @ObjectiveCName("getDeviceOS")
+    public String getDeviceOS() {
+        return deviceOS;
     }
 
     /**

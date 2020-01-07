@@ -50,8 +50,8 @@ public class CallsModule extends AbsModule {
         callManager.send(new CallManagerActor.ProbablyEndCall());
     }
 
-    public Command<Long> makeCall(final Peer peer, boolean enableVideoCall) {
-        return callback -> callManager.send(new CallManagerActor.DoCall(peer, callback, enableVideoCall));
+    public Command<Long> makeCall(final Peer peer, boolean enableVideoCall, boolean isBusy) {
+        return callback -> callManager.send(new CallManagerActor.DoCall(peer, callback, enableVideoCall, isBusy));
     }
 
     public void muteCall(long callId) {
@@ -72,6 +72,10 @@ public class CallsModule extends AbsModule {
 
     public void endCall(long callId) {
         callManager.send(new CallManagerActor.DoEndCall(callId));
+    }
+
+    public void busyCall(long callId) {
+        callManager.send(new CallManagerActor.CallBusy(callId));
     }
 
     public void answerCall(long callId) {

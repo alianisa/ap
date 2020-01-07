@@ -11,6 +11,9 @@ final case class AuthTransaction(
   apiKey:          String,
   deviceHash:      Array[Byte],
   deviceTitle:     String,
+  deviceIpAddress: String,
+  deviceLocation:  String,
+  deviceOS:        String,
   accessSalt:      String,
   deviceInfo:      Array[Byte],
   isChecked:       Boolean               = false,
@@ -27,6 +30,9 @@ final case class AuthPhoneTransaction(
   apiKey:          String,
   deviceHash:      Array[Byte],
   deviceTitle:     String,
+  deviceIpAddress: String,
+  deviceLocation:  String,
+  deviceOS:        String,
   accessSalt:      String,
   deviceInfo:      Array[Byte],
   isChecked:       Boolean               = false,
@@ -44,6 +50,9 @@ final case class AuthEmailTransaction(
   apiKey:          String,
   deviceHash:      Array[Byte],
   deviceTitle:     String,
+  deviceIpAddress: String,
+  deviceLocation:  String,
+  deviceOS:        String,
   accessSalt:      String,
   deviceInfo:      Array[Byte],
   isChecked:       Boolean               = false,
@@ -61,6 +70,9 @@ final case class AuthUsernameTransaction(
   apiKey:          String,
   deviceHash:      Array[Byte],
   deviceTitle:     String,
+  deviceIpAddress: String,
+  deviceLocation:  String,
+  deviceOS:        String,
   accessSalt:      String,
   deviceInfo:      Array[Byte],
   isChecked:       Boolean               = false,
@@ -74,6 +86,9 @@ final case class AuthAnonymousTransaction(
   apiKey:          String,
   deviceHash:      Array[Byte],
   deviceTitle:     String,
+  deviceIpAddress: String,
+  deviceLocation:  String,
+  deviceOS:        String,
   accessSalt:      String,
   deviceInfo:      Array[Byte],
   isChecked:       Boolean               = false,
@@ -88,6 +103,9 @@ sealed trait AuthTransactionBase {
   def apiKey: String
   def deviceHash: Array[Byte]
   def deviceTitle: String
+  def deviceIpAddress: String
+  def deviceLocation: String
+  def deviceOS: String
   def isChecked: Boolean
   def accessSalt: String
   def deviceInfo: Array[Byte]

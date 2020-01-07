@@ -13,17 +13,20 @@ public final class SDPOptimizer {
 
         // Prefer ISAC over other audio codecs
         for (SDPMedia media : sdpScheme.getMediaLevel()) {
-            SDPCodec isacCodec = null;
+            SDPCodec opusCodec = null;
+
             for (SDPCodec codec : media.getCodecs()) {
-                if (codec.getName().toLowerCase().equals("isac")) {
-                    isacCodec = codec;
+                if (codec.getName().toLowerCase().equals("opus")) {
+                    opusCodec = codec;
                     break;
                 }
             }
-            if (isacCodec != null) {
-                media.getCodecs().remove(isacCodec);
-                media.getCodecs().add(0, isacCodec);
+
+            if (opusCodec != null) {
+                media.getCodecs().remove(opusCodec);
+                media.getCodecs().add(0, opusCodec);
             }
+
         }
 
         return new WebRTCSessionDescription(src.getType(), sdpScheme.toSDP());

@@ -100,7 +100,7 @@ object Dependencies {
 
     val tyrex                   = "tyrex"                         %  "tyrex"                         % "1.0.1"
 
-    val pushy                   = "com.relayrides"                %  "pushy"                         % "0.9.2"
+    val pushy                   = "com.turo"                %  "pushy"                         % "0.13.0"
 
     val logbackClassic          = "ch.qos.logback"                % "logback-classic"                % "1.1.2"
     val scalaLogging            = "com.typesafe.scala-logging"    %% "scala-logging"                 % "3.1.0"
@@ -122,6 +122,7 @@ object Dependencies {
 
     val protobufJava            = "com.google.protobuf"           % "protobuf-java"                  % "3.1.0"  % "protobuf"
     val scalaPbRuntime          = "com.trueaccord.scalapb"        %% "scalapb-runtime"               % "0.5.47" % "protobuf"
+    val scalaj                  = "org.scalaj"                    % "scalaj-http_2.11"               % "2.3.0"
 
   }
 
@@ -212,7 +213,7 @@ object Dependencies {
 
   val presences = shared :+ akkaClusterSharding
 
-  val sms = shared ++ Seq(akkaActor, akkaHttp, dispatch)
+  val sms = shared ++ Seq(akkaActor, akkaHttp, dispatch, scalaj)
 
   val codecs = shared ++ Seq(scodecBits, scodecCore)
   

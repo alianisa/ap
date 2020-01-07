@@ -89,6 +89,9 @@ final class AuthServiceImpl(val oauth2Service: GoogleProvider)(
             sessionModel.appId,
             sessionModel.appTitle,
             sessionModel.deviceTitle,
+            sessionModel.deviceIpAddress,
+            sessionModel.deviceLocation,
+            sessionModel.deviceOS,
             (sessionModel.authTime.getMillis / 1000).toInt,
             sessionModel.authLocation,
             sessionModel.latitude,
@@ -127,6 +130,9 @@ final class AuthServiceImpl(val oauth2Service: GoogleProvider)(
           appTitle = AuthSession.appTitleOf(transaction.appId),
           deviceHash = transaction.deviceHash,
           deviceTitle = transaction.deviceTitle,
+          deviceIpAddress = transaction.deviceIpAddress,
+          deviceLocation = transaction.deviceLocation,
+          deviceOS = transaction.deviceOS,
           authTime = DateTime.now,
           authLocation = "",
           latitude = None,
@@ -155,6 +161,9 @@ final class AuthServiceImpl(val oauth2Service: GoogleProvider)(
     apiKey:             String,
     deviceHash:         Array[Byte],
     deviceTitle:        String,
+    deviceIpAddress:    String,
+    deviceLocation:     String,
+    deviceOS:           String,
     systemName:         String,
     timeZone:           Option[String],
     preferredLanguages: IndexedSeq[String],
@@ -177,6 +186,9 @@ final class AuthServiceImpl(val oauth2Service: GoogleProvider)(
             apiKey,
             deviceHash,
             deviceTitle,
+            deviceIpAddress,
+            deviceLocation,
+            deviceOS,
             accessSalt,
             DeviceInfo(timeZone.getOrElse(""), preferredLanguages).toByteArray
           )
@@ -196,6 +208,9 @@ final class AuthServiceImpl(val oauth2Service: GoogleProvider)(
     apiKey:             String,
     deviceHash:         Array[Byte],
     deviceTitle:        String,
+    deviceIpAddress:    String,
+    deviceLocation:     String,
+    deviceOS:           String,
     timeZone:           Option[String],
     preferredLanguages: IndexedSeq[String],
     clientData:         ClientData
@@ -219,6 +234,9 @@ final class AuthServiceImpl(val oauth2Service: GoogleProvider)(
               apiKey,
               deviceHash,
               deviceTitle,
+              deviceIpAddress,
+              deviceLocation,
+              deviceOS,
               accessSalt,
               DeviceInfo(timeZone.getOrElse(""), preferredLanguages).toByteArray,
               isChecked = optUserId.isEmpty // we don't need to check password if user signs up
@@ -236,6 +254,9 @@ final class AuthServiceImpl(val oauth2Service: GoogleProvider)(
     apiKey:             String,
     deviceHash:         Array[Byte],
     deviceTitle:        String,
+    deviceIpAddress:    String,
+    deviceLocation:     String,
+    deviceOS:           String,
     timeZone:           Option[String],
     preferredLanguages: IndexedSeq[String],
     clientData:         ClientData
@@ -254,6 +275,9 @@ final class AuthServiceImpl(val oauth2Service: GoogleProvider)(
           apiKey,
           deviceHash,
           deviceTitle,
+          deviceIpAddress,
+          deviceLocation,
+          deviceOS,
           accessSalt,
           DeviceInfo(timeZone.getOrElse(""), preferredLanguages).toByteArray,
           isChecked = false // we don't need to check password if user signs up
@@ -314,6 +338,9 @@ final class AuthServiceImpl(val oauth2Service: GoogleProvider)(
     apiKey:             String,
     deviceHash:         Array[Byte],
     deviceTitle:        String,
+    deviceIpAddress:    String,
+    deviceLocation:     String,
+    deviceOS:           String,
     timeZone:           Option[String],
     preferredLanguages: IndexedSeq[String],
     clientData:         ClientData
@@ -349,6 +376,9 @@ final class AuthServiceImpl(val oauth2Service: GoogleProvider)(
             apiKey,
             deviceHash,
             deviceTitle,
+            deviceIpAddress,
+            deviceLocation,
+            deviceOS,
             accessSalt,
             DeviceInfo(timeZone.getOrElse(""), preferredLanguages).toByteArray
           )
@@ -436,7 +466,7 @@ final class AuthServiceImpl(val oauth2Service: GoogleProvider)(
       db.run(action)
     }
 
-  override def doHandleStartTokenAuth(token: String, appId: Int, apiKey: String, deviceHash: Array[Byte], deviceTitle: String, timeZone: Option[String], preferredLanguages: IndexedSeq[String], clientData: ClientData): Future[HandlerResult[ResponseAuth]] =
+  override def doHandleStartTokenAuth(token: String, appId: Int, apiKey: String, deviceHash: Array[Byte], deviceTitle: String, deviceIpAddress: String, deviceLocation: String, deviceOS: String, timeZone: Option[String], preferredLanguages: IndexedSeq[String], clientData: ClientData): Future[HandlerResult[ResponseAuth]] =
     Future.failed(new RuntimeException("Not implemented"))
 
   override def onFailure: PartialFunction[Throwable, RpcError] = recoverCommon orElse {
